@@ -1,0 +1,66 @@
+import java.util.HashMap;
+import java.util.Map;
+
+public class Player {
+
+    private final String name;
+    private int score;
+    private Map<String, Integer> inventory;
+    private int actionPoints;
+
+    public Player(String name) {
+        this.name = name;
+        this.score = 0;
+        this.inventory = new HashMap<>();
+        this.actionPoints = 10;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getActionPoints() {
+        return actionPoints;
+    }
+
+    public Map<String, Integer> getInventory() {
+        return Map.copyOf(inventory);
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void addActionPoints(int value){
+        actionPoints += value;
+    }
+
+    public void addScore(int value) {
+        score += value;
+    }
+
+    public int getResourceQuantity(Resources resource){
+
+        if ((inventory.containsKey(resource.name()))) {
+            return inventory.get(resource.name());
+        }
+
+        return 0;
+    }
+
+    public void addResource(Resources resource, int quantity){
+
+        if (inventory.containsKey(resource.name())){
+            inventory.put(resource.name(),getResourceQuantity(resource) + quantity);
+        } else {
+            inventory.put(resource.name(), quantity);
+
+        }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Player %s[Score: %d]\n" +
+                "Current Inventory: %s", name,score,inventory);
+    }
+}

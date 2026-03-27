@@ -6,13 +6,12 @@ public class Player {
     private final String name;
     private int score;
     private Map<String, Integer> inventory;
-    private int actionPoints;
 
     public Player(String name) {
         this.name = name;
         this.score = 0;
         this.inventory = new HashMap<>();
-        this.actionPoints = 10;
+        inventory.put("actionPoint", 10);
     }
 
     public String getName() {
@@ -20,7 +19,7 @@ public class Player {
     }
 
     public int getActionPoints() {
-        return actionPoints;
+        return inventory.get("actionPoint");
     }
 
     public Map<String, Integer> getInventory() {
@@ -32,29 +31,40 @@ public class Player {
     }
 
     public void addActionPoints(int value){
-        actionPoints += value;
+        addResource("actionPoint", getResourceQuantity("actionPoint") + value);
     }
 
     public void addScore(int value) {
         score += value;
     }
 
-    public int getResourceQuantity(Resources resource){
+    public int getResourceQuantity(String resource){
 
-        if ((inventory.containsKey(resource.name()))) {
-            return inventory.get(resource.name());
+        if ((inventory.containsKey(resource))) {
+            return inventory.get(resource);
         }
 
         return 0;
     }
 
-    public void addResource(Resources resource, int quantity){
+    public void addResource(String resource, int quantity){
 
-        if (inventory.containsKey(resource.name())){
-            inventory.put(resource.name(),getResourceQuantity(resource) + quantity);
+        if (inventory.containsKey(resource)){
+            inventory.put(resource,getResourceQuantity(resource) + quantity);
         } else {
-            inventory.put(resource.name(), quantity);
+            inventory.put(resource, quantity);
 
+        }
+    }
+
+    public boolean removeResource(String resource, int quantity) {
+        if (!inventory.containsKey(resource)){
+            return false;
+        } else if (inventory.get(resource) > quantity){
+            inventory.put(resource,getResourceQuantity(resource) - quantity);
+            return true;
+        } else {
+            return false;
         }
     }
 

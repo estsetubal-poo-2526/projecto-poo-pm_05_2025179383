@@ -4,49 +4,34 @@ public class Main {
     public static void main(String[] args){
 
         Player p1 = new Player("Fabio");
+        Player p2 = new Player("Tiago");
 
-        p1.addResource("WOOD", 10);
-        p1.addResource("STONE", 3);
-        p1.addResource("STONE",10000);
+        Map m1 = new Map(p1,p2);
 
-        System.out.println(p1);
+        m1.printMap();
 
-        p1.addScore(100);
-        System.out.println(p1);
-
-        Structures s1 = new Structures("Fazenda", "WOOD", "STONE", 10, 15, p1,"STONE");
         Florest f1 = new Florest(p1);
-        Mine m1 = new Mine(p1);
 
-        m1.generateResource();
-        m1.upgradeStructure();
+        m1.addStructure(f1,2,4);
 
-        f1.consumeResources();
-        f1.upgradeStructure();
-
-        City c1 = new City(p1);
-        Ranch r1 = new Ranch(p1);
-
-        c1.generateResource();
-        r1.generateResource();
-        r1.generateResource();
-        r1.generateResource();
-        r1.generateResource();
-        r1.generateResource();
-
-        for (int i = 0; i < 100; i ++) {
-            r1.generateResource();
+        for (int i = 0; i <= 6; i++) {
+            for (int j = 0; j <= 6; j++){
+                m1.addStructure(f1,i,j);
+            }
         }
 
-        c1.consumeResources();
+        m1.printMap();
 
-        System.out.println(p1);
-        System.out.println(c1);
-        System.out.println(f1);
-        System.out.println(m1);
-        System.out.println(r1);
+        System.out.println(m1.getOwner(5,3));
 
+        m1.clearMap();
+        m1.printMap();
 
+        System.out.println(m1.isOccupied(2,3));
+
+        m1.addStructure(f1,2,3);
+
+        System.out.println(m1.isOccupied(2,3));
 
 
     }

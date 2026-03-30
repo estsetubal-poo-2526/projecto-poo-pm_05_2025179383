@@ -44,6 +44,10 @@ public class Structures {
 
     @Override
     public String toString() {
-        return String.format("Strutura[Tipo: %s | Dono: %s | Level: %d | Produção: %s]", structureType,owner.getName(), level, production);
+        return String.format(structureType);
+    }
+
+    public Player getOwner() {
+        return owner;
     }
 }

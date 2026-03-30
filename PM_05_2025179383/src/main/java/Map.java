@@ -56,4 +56,14 @@ public class Map {
     public boolean isNotOccupied(int s, int d) {
         return map[s][d] == null;
     }
+
+    public void generateResources(){
+        for (int i = 0; i < COLLUN_SIZE; i++) {
+            for (int j = 0; j < LINE_SIZE; j++) {
+                 if (map[i][j] != null){
+                     map[i][j].generateResource();
+                 }
+            }
+        }
+    }
 }

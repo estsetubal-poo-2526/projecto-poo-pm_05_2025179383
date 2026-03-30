@@ -1,13 +1,13 @@
 public class Florest extends Structures{
 
     private Player owner;
-    private final int actionPointsNeeded = 2;
+    private static final int actionPointsNeeded = 2;
 
     public Florest(Player owner) {
         super("Floresta","WOOD","STONE", 5, 3, owner, "STONE");
     }
 
-    public int getActionPointsNeeded() {
+    public static int getActionPointsNeeded() {
         return actionPointsNeeded;
     }
 }

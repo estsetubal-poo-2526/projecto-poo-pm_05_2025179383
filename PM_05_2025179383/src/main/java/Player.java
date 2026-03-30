@@ -6,12 +6,13 @@ public class Player {
     private final String name;
     private int score;
     private Map<String, Integer> inventory;
+    private Integer max_AP = 10;
 
     public Player(String name) {
         this.name = name;
         this.score = 0;
         this.inventory = new HashMap<>();
-        inventory.put("actionPoint", 10);
+        inventory.put("actionPoint", max_AP);
     }
 
     public String getName() {
@@ -28,6 +29,10 @@ public class Player {
 
     public int getScore() {
         return score;
+    }
+
+    public void resetAC(){
+        inventory.put("actionPoint", max_AP);
     }
 
     public void addActionPoints(int value){
@@ -60,7 +65,7 @@ public class Player {
     public boolean removeResource(String resource, int quantity) {
         if (!inventory.containsKey(resource)){
             return false;
-        } else if (inventory.get(resource) > quantity){
+        } else if (inventory.get(resource) >= quantity){
             inventory.put(resource,getResourceQuantity(resource) - quantity);
             return true;
         } else {

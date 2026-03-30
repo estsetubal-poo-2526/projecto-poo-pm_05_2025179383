@@ -22,11 +22,22 @@ public class Map {
     }
 
     public void addStructure(Structures c, int s, int d) {
-        map[s][d] = c;
+       if (isNotOccupied(s,d)) {
+           map[s][d] = c;
+       } else {
+           System.out.println("Espaço Já ocupado");
+       }
+
     }
 
     public Player getOwner(int s, int d) {
-        return map[s][d].getOwner();
+        if (!isNotOccupied(s,d)) {
+            return map[s][d].getOwner();
+        } else{
+            return null;
+        }
+
+
     }
 
     public void clearMap() {
@@ -38,7 +49,11 @@ public class Map {
 
     }
 
-    public boolean isOccupied(int s, int d) {
-        return map[s][d] != null;
+    public Structures getStructure(int s, int d) {
+        return map[s][d];
+    }
+
+    public boolean isNotOccupied(int s, int d) {
+        return map[s][d] == null;
     }
 }

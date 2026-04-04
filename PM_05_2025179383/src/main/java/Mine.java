@@ -1,6 +1,5 @@
 public class Mine extends Structures{
 
-    private Player owner;
     private static final int actionPointsNeeded = 5;
 
     public Mine(Player owner) {
@@ -8,8 +7,18 @@ public class Mine extends Structures{
     }
 
 
-    public static int getActionPointsNeeded() {
+    public static int getApNeeded() {
         return actionPointsNeeded;
+    }
+
+    @Override
+    public String getMaterialToUpgrade() {
+        return super.getMaterialToUpgrade();
+    }
+
+    @Override
+    public String getCost() {
+        return super.getCost();
     }
 
 }

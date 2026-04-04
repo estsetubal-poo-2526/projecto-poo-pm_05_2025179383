@@ -7,12 +7,17 @@ public class Player {
     private int score;
     private Map<String, Integer> inventory;
     private Integer max_AP = 10;
+    private final Integer BASE_ITENS = 10;
 
     public Player(String name) {
         this.name = name;
         this.score = 0;
         this.inventory = new HashMap<>();
         inventory.put("actionPoint", max_AP);
+        inventory.put("WOOD",BASE_ITENS);
+        inventory.put("STONE", BASE_ITENS);
+        inventory.put("FOOD", BASE_ITENS);
+
     }
 
     public String getName() {

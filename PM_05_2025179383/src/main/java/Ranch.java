@@ -1,22 +1,6 @@
-public class Ranch extends Structures{
-
-    private static final int actionPointsNeeded = 3;
-
+public class Ranch extends Structures {
     public Ranch(Player owner) {
-        super("Rancho","FOOD","WOOD", 8, 4, owner, "STONE");
+        super("Ranch", ResourceType.FOOD, ResourceType.WOOD, 8, 4, owner, ResourceType.STONE);
     }
-
-    public static int getApNeeded() {
-        return actionPointsNeeded;
-    }
-
-    @Override
-    public String getMaterialToUpgrade() {
-        return super.getMaterialToUpgrade();
-    }
-
-    @Override
-    public String getCost() {
-        return super.getCost();
-    }
+    public static int getApNeeded() { return 5; }
 }

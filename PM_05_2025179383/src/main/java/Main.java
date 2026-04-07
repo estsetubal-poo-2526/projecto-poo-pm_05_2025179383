@@ -3,42 +3,42 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args){
 
-        Player p1 = new Player("Fabio");
-        Player p2 = new Player("Tiago");
+        final int TOTAL_DAYS = 7;
 
-        Map m1 = new Map(p1,p2);
+        Player player1 = new Player("Fabio");
+        Player player2 = new Player("Tiago");
 
-
+        WorldMap map = new WorldMap();
 
         int day = 0;
-        while (day < 7){
+        while (day <= TOTAL_DAYS){
             System.out.println("---------------------- DIA " + (day + 1) + " ----------------------------------");
-            System.out.println("-------------------- Turno de " + p1.getName() + "--------------------------");
-            menu(m1,p1);
-            p1.resetAC();
+            System.out.println("-------------------- Turno de " + player1.getName() + "--------------------------");
+            menu(map,player1);
+            player1.resetAC();
 
-            System.out.println("-------------------- Turno de " + p2.getName() + "--------------------------");
-            menu(m1,p2);
-            p2.resetAC();
+            System.out.println("-------------------- Turno de " + player2.getName() + "--------------------------");
+            menu(map,player2);
+            player2.resetAC();
 
-            m1.generateResources();
+            map.generateResources();
             day += 1;
-            m1.consumeResources();
+            map.consumeResources();
         }
 
 
     }
 
-    public static void menu(Map map, Player p1){
-        Scanner s1 =  new Scanner(System.in);
+    public static void menu(WorldMap map, Player actualPlayer){
+        Scanner scanner =  new Scanner(System.in);
 
-        boolean continuee = true;
-        while (continuee){
+        boolean turnContinues = true;
+        while (turnContinues){
         System.out.println(" 1 - Ver Mapa\n 2 - Adicionar Estrutura\n 3 - Ver Informações da Estrutura\n 4 - Terminar Turno\n 5 - Visualizar Inventario\n 6 - Melhorar Estruturas");
 
-        int c = s1.nextInt();
+        int choice = scanner.nextInt();
 
-        switch (c) {
+        switch (choice) {
             case 1:
                 System.out.println("---------------------- Mapa ---------------------");
                 map.printMap();
@@ -52,21 +52,21 @@ public class Main {
                         "Floresta %d Material to Upgrade: 5  STONES\n" +
                         "Mina %d Material to Upgrade: 8  WOOD\n" +
                         "Cidade %d Material to Upgrade: 20 STONE\n" +
-                        "Rancho %d Material to Upgrade: 8 WOOD\n", Florest.getApNeeded(),Mine.getApNeeded(),City.getApNeeded(),Ranch.getApNeeded());
+                        "Rancho %d Material to Upgrade: 8 WOOD\n", Forest.getApNeeded(),Mine.getApNeeded(),City.getApNeeded(),Ranch.getApNeeded());
 
-                System.out.println("\nPontos de Ação atuais: " + p1.getActionPoints());
+                System.out.println("\nPontos de Ação atuais: " + actualPlayer.getActionPoints());
 
-                String k = s1.next();
+                String createStructure = scanner.next();
 
-                System.out.print("\nx: ");
-                int x = correctCordinates("x",s1);
+                System.out.print("\nX: ");
+                int createStructureX = correctCoordinates("x",scanner);
                 System.out.print("\ny: ");
-                int y = correctCordinates("y",s1);
+                int createStructureY = correctCoordinates("y",scanner);
 
-                createStructure(map,p1,k,x,y);
+                createStructure(map,actualPlayer,createStructure,createStructureX,createStructureY);
 
 
-                System.out.println(p1.getActionPoints());
+                System.out.println(actualPlayer.getActionPoints());
                 break;
             case 3:
                 System.out.println("--------------- Estrutura --------------------");
@@ -75,24 +75,24 @@ public class Main {
 
 
                 System.out.print("\nx: ");
-                int x2 = correctCordinates("x",s1);
+                int getStructureX = correctCoordinates("x",scanner);
                 System.out.print("\ny: ");
-                int y2 = correctCordinates("y",s1);
+                int getStructureY = correctCoordinates("y",scanner);
 
-                System.out.println(map.getStructure(x2,y2));
-                System.out.println(map.getOwner(x2,y2));
+                System.out.println(map.getStructure(getStructureX,getStructureY));
+                System.out.println(map.getOwner(getStructureX,getStructureY));
 
                 break;
 
 
             case 4:
                  System.out.println("-------------------- Turno Terminado -----------------------");
-                continuee = false;
+                turnContinues = false;
                 break;
 
             case 5:
                 System.out.println("------------------------ Inventario -------------------------");
-                System.out.println(p1.getInventory());
+                System.out.println(actualPlayer.getInventory());
                 break;
 
             case 6:
@@ -100,53 +100,50 @@ public class Main {
                 System.out.println("--------------- Upgrade --------------------");
 
                 System.out.print("\nx: ");
-                int x3 = correctCordinates("x",s1);
+                int upgradeStructureX = correctCoordinates("x",scanner);
                 System.out.print("\ny: ");
-                int y3 = correctCordinates("y",s1);
+                int upgradeStructureY = correctCoordinates("y",scanner);
 
-                if (map.canInteract(x3,y3,p1)) {
-                    map.getStructure(x3,y3).upgradeStructure();
+                if (map.canInteract(upgradeStructureX,upgradeStructureY,actualPlayer)) {
+                    map.getStructure(upgradeStructureX,upgradeStructureY).upgradeStructure();
                 } else {
                     System.out.println("Estrutura não é sua");
                 }
-
-
-        }
-        }
-
-
-        }
-
-        public static void createStructure(Map map, Player player,String structure, int x, int y) {
-            int custo = 0;
-            Structures nova = null;
-
-            if (structure.equalsIgnoreCase("floresta")) {
-                custo = Florest.getApNeeded();
-                nova = new Florest(player);
-            } else if (structure.equalsIgnoreCase("mina")) {
-                custo = Mine.getApNeeded();
-                nova = new Mine(player);
-            } else if (structure.equalsIgnoreCase("Rancho")) {
-                custo = Ranch.getApNeeded();
-                nova = new Ranch(player);
-            } else if (structure.equalsIgnoreCase("City")) {
-                custo = City.getApNeeded();
-                nova = new City(player);
             }
-
-            if (nova != null && player.getActionPoints() >= custo) {
-                player.removeResource("actionPoint", custo);
-                map.addStructure(nova, x, y);
-                if (structure.equalsIgnoreCase("City")) {
-                    player.addActionPoints(3);
-                }
-            } else {
-                System.out.println("Erro: Pontos insuficientes ou tipo inválido.");
-            }
+        }
     }
 
-    public static int correctCordinates(String axis, Scanner scanner) {
+        public static void createStructure(WorldMap map, Player player, String structure, int coordinateX, int coordinateY) {
+
+            int cost = CreateStructure.getApCost(structure);
+
+            if (player.getActionPoints() < cost) {
+                System.out.println("Pontos Insuficientes");
+                return;
+            }
+
+            Structures newStructure = CreateStructure.create(structure,player);
+
+            if (newStructure == null) {
+                System.out.println("Estrutura Invalida");
+                return;
+            }
+
+            if (map.addStructure(newStructure,coordinateX,coordinateY)) {
+                player.removeResource(ResourceType.ACTION_POINTS,cost);
+            }
+
+            if (newStructure.getClass() == City.class){
+                player.addActionPoints(3);
+            }
+
+            System.out.println("Estrutura Criada com Sucesso");
+
+
+
+        }
+
+    public static int correctCoordinates(String axis, Scanner scanner) {
         int val;
 
         do {

@@ -1,35 +1,15 @@
-public class City extends Structures{
-
-    private static final int apNeeded = 3;
-
+public class City extends Structures {
     public City(Player owner) {
-        super("Cidade","FOOD", 20, owner, "STONE");
+        super("City", ResourceType.FOOD, ResourceType.STONE, 20, 0, owner, ResourceType.STONE);
     }
 
     public static int getApNeeded() {
-        return apNeeded;
-    }
-
-
-    @Override
-    public void upgradeStructure(){
-        if (owner.removeResource(this.materialToUpgrade,level * 5)) {
-            level += 1;
-            profit += 5;
-            expense += 6;
-            owner.addActionPoints(2*level);
-        } else {
-            System.out.println("Falha");
-        }
+        return 3;
     }
 
     @Override
-    public String getMaterialToUpgrade() {
-        return super.getMaterialToUpgrade();
-    }
-
-    @Override
-    public String getCost() {
-        return super.getCost();
+    public void upgradeStructure() {
+        super.upgradeStructure();
+        owner.addActionPoints(2 * level); // Bónus específico da cidade
     }
 }

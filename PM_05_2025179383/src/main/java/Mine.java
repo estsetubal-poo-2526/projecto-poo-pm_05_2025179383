@@ -1,24 +1,6 @@
-public class Mine extends Structures{
-
-    private static final int actionPointsNeeded = 5;
-
+public class Mine extends Structures {
     public Mine(Player owner) {
-        super("Mina","STONE","WOOD", 8, 4, owner, "WOOD");
+        super("Mine", ResourceType.STONE, ResourceType.WOOD, 8, 4, owner, ResourceType.WOOD);
     }
-
-
-    public static int getApNeeded() {
-        return actionPointsNeeded;
-    }
-
-    @Override
-    public String getMaterialToUpgrade() {
-        return super.getMaterialToUpgrade();
-    }
-
-    @Override
-    public String getCost() {
-        return super.getCost();
-    }
-
+    public static int getApNeeded() { return 5; }
 }

@@ -1,14 +1,10 @@
-public class Map {
+public class WorldMap {
 
-    private final Player p1;
-    private final Player p2;
     private final int COLLUMN_SIZE = 7;
     private final int LINE_SIZE = 7;
     private Structures[][] map;
 
-    public Map( Player p1, Player p2){
-        this.p2 = p2;
-        this.p1 = p1;
+    public WorldMap(){
         this.map = new Structures[COLLUMN_SIZE][LINE_SIZE];
     }
 
@@ -21,18 +17,20 @@ public class Map {
         }
     }
 
-    public void addStructure(Structures c, int s, int d) {
-       if (isNotOccupied(s,d)) {
-           map[s][d] = c;
+    public boolean addStructure(Structures structure, int coordinateX, int coordinateY) {
+       if (isNotOccupied(coordinateX,coordinateY)) {
+           map[coordinateX][coordinateY] = structure;
+           return true;
        } else {
            System.out.println("Espaço Já ocupado");
+           return false;
        }
 
     }
 
-    public Player getOwner(int s, int d) {
-        if (!isNotOccupied(s,d)) {
-            return map[s][d].getOwner();
+    public Player getOwner(int coordinateX, int coordinateY) {
+        if (!isNotOccupied(coordinateX,coordinateY)) {
+            return map[coordinateX][coordinateY].getOwner();
         } else{
             return null;
         }
@@ -49,12 +47,12 @@ public class Map {
 
     }
 
-    public Structures getStructure(int s, int d) {
-        return map[s][d];
+    public Structures getStructure(int coordinateX, int coordinateY) {
+        return map[coordinateX][coordinateY];
     }
 
-    public boolean isNotOccupied(int s, int d) {
-        return map[s][d] == null;
+    public boolean isNotOccupied(int coordinateX, int coordinateY) {
+        return map[coordinateX][coordinateY] == null;
     }
 
     public void generateResources(){
@@ -77,12 +75,20 @@ public class Map {
         }
     }
 
-    public boolean canInteract(int x, int y, Player player) {
-        if (x <= COLLUMN_SIZE-1  && x >= 0 && y <= LINE_SIZE-1 && y >= 0) {
-            if (!isNotOccupied(x,y)) {
-                return map[x][y].getOwner().getName().equals(player.getName());
+    public boolean canInteract(int coordinateX, int coordinateY, Player player) {
+        if (coordinateX <= COLLUMN_SIZE-1  && coordinateX >= 0 && coordinateY <= LINE_SIZE-1 && coordinateY >= 0) {
+            if (!isNotOccupied(coordinateX,coordinateY)) {
+                return getStructureOwnerName(coordinateX,coordinateY).equals(player.getName());
             }
         }
         return false;
+    }
+
+    public String getStructureOwnerName(int coordinateX, int coordinateY) {
+        if (getStructure(coordinateX,coordinateY) == null) {
+            return null;
+        }
+
+        return map[coordinateX][coordinateY].getOwner().getName();
     }
 }

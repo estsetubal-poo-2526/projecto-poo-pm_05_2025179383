@@ -5,30 +5,34 @@ public class Player {
 
     private final String name;
     private int score;
-    private Map<String, Integer> inventory;
-    private Integer max_AP = 10;
-    private final Integer BASE_ITENS = 10;
+    private final Map<ResourceType, Integer> inventory;
+    private final Integer max_AP = 10;
 
     public Player(String name) {
+        final Integer BASE_ITENS = 10;
+
         this.name = name;
         this.score = 0;
         this.inventory = new HashMap<>();
-        inventory.put("actionPoint", max_AP);
-        inventory.put("WOOD",BASE_ITENS);
-        inventory.put("STONE", BASE_ITENS);
-        inventory.put("FOOD", BASE_ITENS);
+        inventory.put(ResourceType.ACTION_POINTS, max_AP);
+        inventory.put(ResourceType.WOOD,BASE_ITENS);
+        inventory.put(ResourceType.STONE, BASE_ITENS);
+        inventory.put(ResourceType.FOOD, BASE_ITENS);
 
     }
 
     public String getName() {
+
         return name;
     }
 
     public int getActionPoints() {
-        return inventory.get("actionPoint");
+
+        return inventory.get(ResourceType.ACTION_POINTS);
     }
 
-    public Map<String, Integer> getInventory() {
+    public Map<ResourceType, Integer> getInventory() {
+
         return Map.copyOf(inventory);
     }
 
@@ -37,18 +41,18 @@ public class Player {
     }
 
     public void resetAC(){
-        inventory.put("actionPoint", max_AP);
+        inventory.put(ResourceType.ACTION_POINTS, max_AP);
     }
 
     public void addActionPoints(int value){
-        addResource("actionPoint", getResourceQuantity("actionPoint") + value);
+        addResource(ResourceType.ACTION_POINTS, value);
     }
 
     public void addScore(int value) {
         score += value;
     }
 
-    public int getResourceQuantity(String resource){
+    public int getResourceQuantity(ResourceType resource){
 
         if ((inventory.containsKey(resource))) {
             return inventory.get(resource);
@@ -57,17 +61,12 @@ public class Player {
         return 0;
     }
 
-    public void addResource(String resource, int quantity){
+    public void addResource(ResourceType resource, int quantity){
 
-        if (inventory.containsKey(resource)){
-            inventory.put(resource,getResourceQuantity(resource) + quantity);
-        } else {
-            inventory.put(resource, quantity);
-
-        }
+        inventory.merge(resource,quantity,Integer::sum);
     }
 
-    public boolean removeResource(String resource, int quantity) {
+    public boolean removeResource(ResourceType resource, int quantity) {
         if (!inventory.containsKey(resource)){
             return false;
         } else if (inventory.get(resource) >= quantity){

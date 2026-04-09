@@ -6,7 +6,7 @@ public class Player {
     private final String name;
     private int score;
     private final Map<ResourceType, Integer> inventory;
-    private final Integer max_AP = 10;
+    private Integer BASE_AP = 10;
 
     public Player(String name) {
         final Integer BASE_ITENS = 10;
@@ -14,7 +14,7 @@ public class Player {
         this.name = name;
         this.score = 0;
         this.inventory = new HashMap<>();
-        inventory.put(ResourceType.ACTION_POINTS, max_AP);
+        inventory.put(ResourceType.ACTION_POINTS, BASE_AP);
         inventory.put(ResourceType.WOOD,BASE_ITENS);
         inventory.put(ResourceType.STONE, BASE_ITENS);
         inventory.put(ResourceType.FOOD, BASE_ITENS);
@@ -40,12 +40,20 @@ public class Player {
         return score;
     }
 
+    /**
+     * Restaura o valor de AP do jogador
+     */
     public void resetAC(){
-        inventory.put(ResourceType.ACTION_POINTS, max_AP);
+        inventory.put(ResourceType.ACTION_POINTS, BASE_AP   );
     }
 
+    /**
+     * Aumenta o valor de AP máximo e adiciona ao inventario
+     * @param value valor em que deve ser aumentado
+     */
     public void addActionPoints(int value){
         addResource(ResourceType.ACTION_POINTS, value);
+        BASE_AP += value;
     }
 
     public void addScore(int value) {

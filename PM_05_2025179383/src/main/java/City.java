@@ -1,6 +1,7 @@
 public class City extends Structures {
     public City(Player owner) {
-        super("City", ResourceType.FOOD, ResourceType.STONE, 20, 0, owner, ResourceType.STONE);
+        super("City", ResourceType.NONE, ResourceType.FOOD, 10, 0, owner, ResourceType.STONE, 15);
+        owner.addActionPoints(3);
     }
 
     public static int getApNeeded() {
@@ -8,8 +9,11 @@ public class City extends Structures {
     }
 
     @Override
-    public void upgradeStructure() {
-        super.upgradeStructure();
-        owner.addActionPoints(2 * level); // Bónus específico da cidade
+    public boolean upgradeStructure() {
+        if (super.upgradeStructure()) {
+            owner.addActionPoints(2 * level); // Bónus específico da cidade
+            return true;
+        }
+        return false;
     }
 }

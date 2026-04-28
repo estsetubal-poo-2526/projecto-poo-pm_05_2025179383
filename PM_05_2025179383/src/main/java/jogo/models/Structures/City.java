@@ -1,6 +1,11 @@
+package jogo.models.Structures;
+
+import jogo.models.Player;
+import jogo.models.ResourceType;
+
 public class City extends Structures {
     public City(Player owner) {
-        super("City", ResourceType.NONE, ResourceType.FOOD, 10, 0, owner, ResourceType.STONE, 15);
+        super("jogo.models.Structures.City", ResourceType.NONE, ResourceType.FOOD, 10, 0, owner, ResourceType.STONE, 15);
         owner.addActionPoints(3);
     }
 

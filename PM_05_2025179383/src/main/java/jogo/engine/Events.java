@@ -1,3 +1,5 @@
+package jogo.engine;
+
 import java.util.Random;
 
 public class Events {

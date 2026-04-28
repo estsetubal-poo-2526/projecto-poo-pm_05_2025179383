@@ -1,5 +1,8 @@
+package jogo.models;
+
 import java.util.HashMap;
 import java.util.Map;
+
 
 public class Player {
 
@@ -26,7 +29,7 @@ public class Player {
         return name;
     }
 
-    public int getActionPoints() {
+    public Integer getActionPoints() {
 
         return inventory.get(ResourceType.ACTION_POINTS);
     }
@@ -51,7 +54,7 @@ public class Player {
      * Aumenta o valor de AP máximo e adiciona ao inventario
      * @param value valor em que deve ser aumentado
      */
-    public void addActionPoints(int value){
+    public void addActionPoints(Integer value){
         addResource(ResourceType.ACTION_POINTS, value);
         BASE_AP += value;
     }
@@ -60,7 +63,7 @@ public class Player {
         score += value;
     }
 
-    public int getResourceQuantity(ResourceType resource){
+    public Integer getResourceQuantity(ResourceType resource){
 
         if ((inventory.containsKey(resource))) {
             return inventory.get(resource);
@@ -87,7 +90,11 @@ public class Player {
 
     @Override
     public String toString() {
-        return String.format("Player %s[Score: %d]\n" +
+        return String.format("jogo.models.Player %s[Score: %d]\n" +
                 "Current Inventory: %s", name,score,inventory);
+    }
+
+    public Integer getBaseAp() {
+        return BASE_AP;
     }
 }

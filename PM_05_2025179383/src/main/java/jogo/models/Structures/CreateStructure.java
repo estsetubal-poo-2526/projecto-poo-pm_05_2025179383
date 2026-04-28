@@ -1,3 +1,8 @@
+package jogo.models.Structures;
+
+import jogo.models.Player;
+import jogo.models.ResourceType;
+
 public class CreateStructure {
 
     /**
@@ -47,11 +52,25 @@ public class CreateStructure {
     public static Structures create(String structure, Player owner) {
 
         switch (structure.toLowerCase()) {
-            case "floresta": return new Forest(owner);
-            case "mina":    return new Mine(owner);
-            case "rancho":  return new Ranch(owner);
-            case "cidade":  return new City(owner);
-            default: return null;
+            case "floresta":
+            case "forest":
+                return new Forest(owner);
+
+            case "mina":
+            case "mine":
+                return new Mine(owner);
+
+            case "rancho":
+            case "ranch":
+                return new Ranch(owner);
+
+            case "cidade":
+            case "city":
+                return new City(owner);
+
+            default:
+                System.out.println("Erro: Tipo de estrutura '" + structure + "' não reconhecido.");
+                return null;
         }
     }
 

@@ -1,3 +1,9 @@
+
+package jogo.engine;
+import jogo.models.*;
+import jogo.models.Structures.*;
+
+
 public class WorldMap {
 
     private final int COLUMN_SIZE = 7;

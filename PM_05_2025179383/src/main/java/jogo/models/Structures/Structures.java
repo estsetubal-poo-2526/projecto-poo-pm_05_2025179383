@@ -1,3 +1,9 @@
+package jogo.models.Structures;
+
+import jogo.engine.Events;
+import jogo.models.Player;
+import jogo.models.ResourceType;
+
 public abstract class Structures {
     protected final String structureType;
     protected final ResourceType production;
@@ -26,7 +32,7 @@ public abstract class Structures {
         this.owner = owner;
         this.level = 1;
         this.upgradeMaterial = upgradeMaterial;
-        this.owner.addScore(scoreValue*Events.getScoreModifier());
+        this.owner.addScore(scoreValue* Events.getScoreModifier());
     }
 
     public void generateResource() {
@@ -91,6 +97,14 @@ public abstract class Structures {
 
     public Player getOwner() {
         return owner;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level){
+        this.level = level;
     }
 
 }

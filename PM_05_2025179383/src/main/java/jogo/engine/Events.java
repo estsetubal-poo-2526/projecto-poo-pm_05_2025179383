@@ -10,6 +10,7 @@ public class Events {
 
     private static int scoreModifier = 1;
     private static int resourceModifier = 1;
+    public static Random random = new Random();
 
     public static int getResourceModifier() {
         return resourceModifier;
@@ -23,7 +24,6 @@ public class Events {
      * Altera os modificadores consoante um valor aleatorio
      */
     public static void triggerEvent() {
-        Random random = new Random();
 
         scoreModifier = 1;
         resourceModifier = 1;

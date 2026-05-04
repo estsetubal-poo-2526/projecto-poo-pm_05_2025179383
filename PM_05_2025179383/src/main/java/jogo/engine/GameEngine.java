@@ -1,70 +1,51 @@
 package jogo.engine;
 
-import java.util.Scanner;
-import java.util.InputMismatchException;
-
-import jogo.models.*;
-import jogo.models.Structures.*;
-import jogo.io.*;
+import jogo.io.ConsoleUI;
+import jogo.io.FileHandler;
+import jogo.models.Player;
+import jogo.models.ResourceType;
+import jogo.models.Structures.CreateStructure;
+import jogo.models.Structures.Structures;
+import jogo.models.Structures.StructuresType;
 
 public class GameEngine {
 
+    private static final ConsoleUI consoleUI = new ConsoleUI();
+
     public static void menuGame() {
-        Scanner scanner = new Scanner(System.in);
-        int choice = -1;
 
-        do {
-            System.out.println("\n=== MENU PRINCIPAL ===");
-            System.out.println("1 - Novo Jogo");
-            System.out.println("2 - Carregar Jogo Guardado");
-            System.out.println("3 - Sair");
-            System.out.print("> ");
+        int choice = consoleUI.showPrincipalMenu(1, 3);
 
-            try {
-                choice = scanner.nextInt();
-            } catch (InputMismatchException e) {
-                System.out.println("Introduz um Numero");
-                scanner.nextLine();
-                continue;
-            }
-
-            switch (choice) {
-                case 1:
-                    startGame(new WorldMap(), new Player("Fabio"), new Player("Tiago"));
-                    break;
-                case 2:
-                    FileHandler.SaveData loaded = FileHandler.loadGame();
-                    if (loaded != null) {
-                        startGame(loaded.map, loaded.p1, loaded.p2);
-                    } else {
-                        System.out.println("Erro: Não foi possível carregar o ficheiro.");
-                    }
-                    break;
-                case 3:
-                    System.out.println("A fechar o jogo...");
-                    break;
-                default:
-                    System.out.println("Opção inválida.");
-            }
-        } while (choice != 3);
+        switch (choice) {
+            case 1:
+                startGame(new WorldMap(), new Player(consoleUI.readString("Jogador 1: ")), new Player(consoleUI.readString("Jogador 2:")));
+                break;
+            case 2:
+                loadSave();
+                break;
+            case 3:
+                consoleUI.showMsg("A encerrar o jogo... ");
+                break;
+            default:
+                consoleUI.showMsg("Opção Invalida! ");
+        }
     }
 
     public static void startGame(WorldMap map, Player player1, Player player2) {
-        Scanner scanner = new Scanner(System.in);
+
         final int TOTAL_DAYS = 10;
         int day = 0;
 
         while (day < TOTAL_DAYS) {
-            System.out.println("\n---------------------- DIA " + (day + 1) + " ----------------------------------");
-
+            consoleUI.showMsg("---------------------- DIA " + (day + 1) + " ----------------------------------");
             Events.triggerEvent();
 
-            System.out.println("-------------------- Turno de " + player1.getName() + " --------------------------");
-            if (!menu(map, player1, player2, scanner, true)) return;
+            consoleUI.showMsg("-------------------- Turno de " + player1.getName() + " --------------------------");
+            if (!menu(map, player1, player2, true)) return;
             player1.resetAC();
 
-            System.out.println("-------------------- Turno de " + player2.getName() + " --------------------------");
-            if (!menu(map, player2, player1, scanner, false)) return;
+            consoleUI.showMsg("-------------------- Turno de " + player2.getName() + " --------------------------");
+            if (!menu(map, player2, player1, false)) return;
             player2.resetAC();
 
             map.generateResources();
@@ -73,69 +54,50 @@ public class GameEngine {
         }
 
 
-        System.out.println("\n----------------- Fim de Jogo ---------------");
+        consoleUI.showMsg("----------------- Fim de Jogo ---------------");
         System.out.printf("Pontos de %s : %d\nPontos de %s : %d\n",
                 player1.getName(), player1.getScore(), player2.getName(), player2.getScore());
 
         if (player1.getScore() == player2.getScore()) {
-            System.out.println("Empate!");
+            consoleUI.showMsg("Empate!");
         } else {
             Player winner = player1.getScore() > player2.getScore() ? player1 : player2;
-            System.out.println("Vencedor: " + winner.getName());
+            consoleUI.showMsg("Vencedor: " + winner.getName());
         }
     }
 
-    public static boolean menu(WorldMap map, Player actualPlayer, Player opponent, Scanner scanner, boolean isPlayerOne) {
+    public static boolean menu(WorldMap map, Player actualPlayer, Player opponent, boolean isPlayerOne) {
         boolean turnContinues = true;
 
         while (turnContinues) {
-            System.out.println("\n--- Ações de " + actualPlayer.getName() + " (AP: " + actualPlayer.getActionPoints() + ") ---");
-            System.out.println("" +
-                    " 1 - Ver Mapa\n" +
-                    " 2 - Construir Estruturas\n" +
-                    " 3 - Informações de Estrutura\n" +
-                    " 4 - Terminar Turno\n" +
-                    " 5 - Ver Inventário\n" +
-                    " 6 - Melhorar Estrutura\n" +
-                    " 7 - Encontrar Recursos\n" +
-                    " 8 - Guardar Jogo\n" +
-                    " 9 - Sair do Jogo");
-            System.out.print("> ");
 
-            int choice;
-            try {
-                choice = scanner.nextInt();
-            } catch (InputMismatchException e) {
-                System.out.println("Introduz um número de 1 a 9.");
-                scanner.nextLine();
-                continue;
-            }
+            int choice = consoleUI.showActionMenu(1, 9, actualPlayer);
 
             switch (choice) {
                 case 1:
                     map.printMap();
                     break;
                 case 2:
-                    System.out.print("Tipo (Floresta/Mina/Cidade/Rancho): ");
-                    String type = scanner.next();
-                    createStructure(map, actualPlayer, type, correctCoordinates("x", scanner), correctCoordinates("y", scanner));
+                    StructuresType type = getStructureByMenu(consoleUI.showStructuresCreate(1,4));
+
+                    createStructure(map, actualPlayer, type, correctCoordinates("x"), correctCoordinates("y"));
                     break;
                 case 3:
                     map.printMap();
-                    showStructureInfo(map, scanner);
+                    showStructureInfo(map);
                     break;
                 case 4:
                     turnContinues = false;
                     break;
                 case 5:
-                    System.out.println("Inventário: " + actualPlayer.getInventory());
+                    consoleUI.showMsg("Inventário: " + actualPlayer.getInventory());
                     break;
                 case 6:
                     map.printMap();
-                    performUpgrade(map, actualPlayer, scanner);
+                    performUpgrade(map, actualPlayer);
                     break;
                 case 7:
-                    searchResources(actualPlayer, scanner);
+                    searchResources(actualPlayer);
                     break;
                 case 8:
                     // Mantém a ordem original dos jogadores no ficheiro
@@ -144,7 +106,7 @@ public class GameEngine {
                     break;
                 case 9:
                     System.out.print("Sair sem guardar? (1-Sim / 0-Não): ");
-                    if (scanner.nextInt() == 1) return false;
+                    if (consoleUI.readInteger("> ", 0, 1) == 1) return false;
                     break;
                 case 999:
                     actualPlayer.addActionPoints(1000);
@@ -154,21 +116,21 @@ public class GameEngine {
         return true;
     }
 
-    private static void showStructureInfo(WorldMap map, Scanner scanner) {
-        int x = correctCoordinates("x", scanner);
-        int y = correctCoordinates("y", scanner);
+    private static void showStructureInfo(WorldMap map) {
+        int x = correctCoordinates("x");
+        int y = correctCoordinates("y");
         Structures s = map.getStructure(x, y);
         if (s != null) {
-            System.out.println("Estrutura: " + s);
-            System.out.println("Dono: " + s.getOwner().getName());
+            consoleUI.showMsg("Estrutura: " + s);
+            consoleUI.showMsg("Dono: " + s.getOwner().getName());
         } else {
-            System.out.println("Espaço vazio.");
+            consoleUI.showMsg("Espaço vazio.");
         }
     }
 
-    private static void performUpgrade(WorldMap map, Player player, Scanner scanner) {
-        int x = correctCoordinates("x", scanner);
-        int y = correctCoordinates("y", scanner);
+    private static void performUpgrade(WorldMap map, Player player) {
+        int x = correctCoordinates("x");
+        int y = correctCoordinates("y");
         Structures s = map.getStructure(x, y);
 
         if (s != null) {
@@ -177,67 +139,69 @@ public class GameEngine {
                     if (s.upgradeStructure()) {
                         player.removeResource(ResourceType.ACTION_POINTS, 10);
                     }
-                } else System.out.println("AP insuficiente.");
-            } else System.out.println("Esta estrutura não te pertence.");
-        } else System.out.println("Não existem estruturas aqui.");
+                } else consoleUI.showMsg("AP insuficiente.");
+            } else consoleUI.showMsg("Esta estrutura não te pertence.");
+        } else consoleUI.showMsg("Não existem estruturas aqui.");
     }
 
-    private static void searchResources(Player player, Scanner scanner) {
-        int res = -1;
-        while (res < 1 || res > 3) {
-            try {
-                System.out.print("1-Wood, 2-Stone, 3-Food: ");
-                res = scanner.nextInt();
-            } catch (InputMismatchException e) {
-                System.out.println("Número inválido.");
-                scanner.nextLine();
-            }
-        }
+    private static void searchResources(Player player) {
+        int res = consoleUI.showSearchResourcesMenu(1,3);
 
         if (player.getActionPoints() >= 4) {
             player.removeResource(ResourceType.ACTION_POINTS, 4);
             int gathered = new java.util.Random().nextInt(3) + 2;
             ResourceType type = (res == 1) ? ResourceType.WOOD : (res == 2) ? ResourceType.STONE : ResourceType.FOOD;
             player.addResource(type, gathered);
-            System.out.println("Encontraste " + gathered + " unidades.");
-        } else System.out.println("AP insuficiente.");
-        scanner.nextLine();
+            consoleUI.showMsg("Encontraste " + gathered + " unidades.");
+        } else consoleUI.showMsg("AP insuficiente.");
     }
 
-    public static void createStructure(WorldMap map, Player player, String structure, int x, int y) {
+    public static void createStructure(WorldMap map, Player player, StructuresType structure, int x, int y) {
         if (!map.isNotOccupied(x, y)) {
-            System.out.println("O espaço Já está ocupado!");
+            consoleUI.showMsg("O espaço Já está ocupado!");
             return;
         }
-        String type = structure.substring(0, 1).toUpperCase() + structure.substring(1).toLowerCase();
 
-        int apCost = CreateStructure.getApCost(type);
-        int matCost = CreateStructure.getMaterialCost(type);
-        ResourceType matType = CreateStructure.getMaterialType(type);
+        int apCost = CreateStructure.getApCost(structure);
+        int matCost = CreateStructure.getMaterialCost(structure);
+        ResourceType matType = CreateStructure.getMaterialType(structure);
 
         if (player.getActionPoints() >= apCost && player.getResourceQuantity(matType) >= matCost) {
-            Structures newStr = CreateStructure.create(type, player);
+            Structures newStr = CreateStructure.create(structure, player);
             if (newStr != null) {
                 map.addStructure(newStr, x, y);
                 player.removeResource(ResourceType.ACTION_POINTS, apCost);
                 player.removeResource(matType, matCost);
-                System.out.println("Estrutura criada.");
+                consoleUI.showMsg("Estrutura criada.");
             }
-        } else System.out.println("Recursos ou AP insuficientes.");
+        } else consoleUI.showMsg("Recursos ou AP insuficientes.");
     }
 
-    public static int correctCoordinates(String axis, Scanner scanner) {
-        int val = -1;
-        while (true) {
-            try {
-                System.out.print(axis + " (0-6): ");
-                val = scanner.nextInt();
-                if (val >= 0 && val <= 6) return val;
-                System.out.println("Entre 0 e 6, por favor.");
-            } catch (InputMismatchException e) {
-                System.out.println("Número inválido.");
-                scanner.nextLine();
-            }
+    public static int correctCoordinates(String axis) {
+        return consoleUI.readInteger(axis + "> ", 0, 6);
+    }
+
+    private static StructuresType getStructureByMenu(int val) {
+        switch (val){
+            case 1:
+                return StructuresType.FOREST;
+            case 2:
+                return StructuresType.MINE;
+            case 3:
+                return StructuresType.RANCH;
+            case 4:
+                return StructuresType.CITY;
+        }
+
+        return null;
+    }
+
+    private static void loadSave(){
+        FileHandler.SaveData loaded = FileHandler.loadGame();
+        if (loaded != null) {
+            startGame(loaded.map, loaded.p1, loaded.p2);
+        } else {
+            consoleUI.showMsg("Erro: Save não Encontrado! ");
         }
     }
 }

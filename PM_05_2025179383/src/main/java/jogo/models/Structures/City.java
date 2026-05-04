@@ -4,8 +4,13 @@ import jogo.models.Player;
 import jogo.models.ResourceType;
 
 public class City extends Structures {
+
+    private static final int EXPENSE = 10;
+    private static final int PROFIT = 0;
+    private static final int SCOREVALUE = 15;
+
     public City(Player owner) {
-        super("jogo.models.Structures.City", ResourceType.NONE, ResourceType.FOOD, 10, 0, owner, ResourceType.STONE, 15);
+        super("City", ResourceType.NONE, ResourceType.FOOD, EXPENSE, PROFIT, owner, ResourceType.STONE, SCOREVALUE);
         owner.addActionPoints(3);
     }
 
@@ -20,5 +25,9 @@ public class City extends Structures {
             return true;
         }
         return false;
+    }
+
+    public static int getEXPENSE() {
+        return EXPENSE;
     }
 }

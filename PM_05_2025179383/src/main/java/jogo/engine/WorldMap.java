@@ -27,6 +27,14 @@ public class WorldMap {
         }
     }
 
+    public int getCOLUMN_SIZE() {
+        return COLUMN_SIZE;
+    }
+
+    public int getLINE_SIZE() {
+        return LINE_SIZE;
+    }
+
     /**
      *
      * Metodo para adicionar uma estrutura ao mapa

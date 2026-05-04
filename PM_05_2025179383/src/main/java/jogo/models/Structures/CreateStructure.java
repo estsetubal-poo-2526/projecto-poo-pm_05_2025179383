@@ -12,14 +12,16 @@ public class CreateStructure {
      * @param structure estrutura em que se quer saber
      * @return valor do custo
      */
-    public static int getMaterialCost(String structure) {
-        switch (structure.toLowerCase()) {
-            case "floresta":
-            case "mina":
-            case "rancho":
-                return 3;
-            case "cidade":
-                return 10;
+    public static int getMaterialCost(StructuresType structure) {
+        switch (structure) {
+            case FOREST:
+                return Forest.getExpense();
+            case MINE:
+                return Mine.getExpense();
+            case RANCH:
+                return Ranch.getEXPENSE();
+            case CITY:
+                return City.getEXPENSE();
             default:
                 return 0;
         }
@@ -34,10 +36,10 @@ public class CreateStructure {
      */
 
 
-    public static ResourceType getMaterialType(String structure) {
-        switch (structure.toLowerCase()) {
-            case "floresta": case "cidade": return ResourceType.STONE;
-            case "mina":    case "rancho": return ResourceType.WOOD;
+    public static ResourceType getMaterialType(StructuresType structure) {
+        switch (structure) {
+            case FOREST: case CITY: return ResourceType.STONE;
+            case MINE:    case RANCH: return ResourceType.WOOD;
 
             default: return ResourceType.NONE;
         }
@@ -49,23 +51,19 @@ public class CreateStructure {
      * @param owner dono da estrutura
      * @return a estrutura criada
      */
-    public static Structures create(String structure, Player owner) {
+    public static Structures create(StructuresType structure, Player owner) {
 
-        switch (structure.toLowerCase()) {
-            case "floresta":
-            case "forest":
+        switch (structure) {
+            case FOREST:
                 return new Forest(owner);
 
-            case "mina":
-            case "mine":
+            case MINE:
                 return new Mine(owner);
 
-            case "rancho":
-            case "ranch":
+            case RANCH:
                 return new Ranch(owner);
 
-            case "cidade":
-            case "city":
+            case CITY:
                 return new City(owner);
 
             default:
@@ -80,18 +78,18 @@ public class CreateStructure {
      * @param structure estrutura de que se quer saber
      * @return valor necessario para construir
      */
-    public static int getApCost(String structure) {
-        switch (structure.toLowerCase()) {
-            case "floresta":
+    public static int getApCost(StructuresType structure) {
+        switch (structure) {
+            case FOREST:
                 return Forest.getApNeeded();
 
-            case "mina":
+            case MINE:
                 return Mine.getApNeeded();
 
-            case "rancho":
+            case RANCH:
                 return Ranch.getApNeeded();
 
-            case "cidade":
+            case CITY:
                 return City.getApNeeded();
 
             default:

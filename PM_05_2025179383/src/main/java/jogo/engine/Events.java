@@ -33,7 +33,7 @@ public class Events {
             int event = random.nextInt(13);
 
             switch (event) {
-                // 1/20 de produzir e ganhar pontuaçao em dobro
+                // 1/13 de produzir e ganhar pontuaçao em dobro
                 case 0:
                     System.out.println("------- Evento: Estruturas Produzem o dobro de Recursos e de Pontuação!!! -------");
                     resourceModifier = 2;

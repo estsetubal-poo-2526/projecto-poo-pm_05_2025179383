@@ -23,7 +23,7 @@ public class FileHandler {
                     Structures s = map.getStructure(i, j);
                     if (s != null) {
 
-                        writer.println(s.getClass().getSimpleName() + "," + i + "," + j + "," +
+                        writer.println(s.getClass().getSimpleName().toUpperCase() + "," + i + "," + j + "," +
                                 s.getLevel() + "," + s.getOwner().getName());
                     }
                 }
@@ -65,12 +65,12 @@ public class FileHandler {
                     // Nome, Score, BaseAP, Wood, Stone, Food, CurrentAP
                     Player p = new Player(data[0]);
                     p.addScore(Integer.parseInt(data[1]));
-                    // Precisas de um método no jogo.models.Player para definir o BaseAP ou ajustá-lo
+
                     p.addActionPoints(Integer.parseInt(data[2]) - 10);
                     p.addResource(ResourceType.WOOD, Integer.parseInt(data[3]) - 10);
                     p.addResource(ResourceType.STONE, Integer.parseInt(data[4]) - 10);
                     p.addResource(ResourceType.FOOD, Integer.parseInt(data[5]) - 10);
-                    // Define o AP atual
+
                     p.removeResource(ResourceType.ACTION_POINTS, p.getActionPoints());
                     p.addResource(ResourceType.ACTION_POINTS, Integer.parseInt(data[6]));
 
@@ -78,7 +78,7 @@ public class FileHandler {
 
                 } else if (section.equals("#STRUCTURES")) {
                     // Tipo, X, Y, Nivel, Dono
-                    String type = data[0];
+                    StructuresType type = StructuresType.valueOf(data[0]);
                     int x = Integer.parseInt(data[1]);
                     int y = Integer.parseInt(data[2]);
                     int level = Integer.parseInt(data[3]);
@@ -89,7 +89,7 @@ public class FileHandler {
 
 
                     if (s != null) {
-                        s.setLevel(level); // Força o nível guardado
+                        s.setLevel(level);
                         map.addStructure(s, x, y);
                     }
 
@@ -103,7 +103,6 @@ public class FileHandler {
         }
     }
 
-    // Classe auxiliar para transportar os dados
     public static class SaveData {
         public WorldMap map;
         public Player p1, p2;

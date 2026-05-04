@@ -100,7 +100,7 @@ public class GameEngine {
                     searchResources(actualPlayer);
                     break;
                 case 8:
-                    // Mantém a ordem original dos jogadores no ficheiro
+
                     if (isPlayerOne) FileHandler.saveFullGame(map, actualPlayer, opponent);
                     else FileHandler.saveFullGame(map, opponent, actualPlayer);
                     break;

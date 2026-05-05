@@ -3,7 +3,6 @@ package jogo.models;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class Player {
 
     private final String name;
@@ -22,6 +21,17 @@ public class Player {
         inventory.put(ResourceType.STONE, BASE_ITENS);
         inventory.put(ResourceType.FOOD, BASE_ITENS);
 
+    }
+
+    public Player(String name,int score,Integer wood, Integer stone, Integer food, Integer action_points ){
+        this.name = name;
+        this.score = score;
+
+        this.inventory = new HashMap();
+        inventory.put(ResourceType.WOOD,wood);
+        inventory.put(ResourceType.STONE,stone);
+        inventory.put(ResourceType.FOOD,food);
+        inventory.put(ResourceType.ACTION_POINTS,action_points);
     }
 
     public String getName() {
@@ -96,5 +106,11 @@ public class Player {
 
     public Integer getBaseAp() {
         return BASE_AP;
+    }
+
+    public void clearInventory() {
+        for (ResourceType type : ResourceType.values()) {
+            inventory.put(type, 0);
+        }
     }
 }

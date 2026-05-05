@@ -2,6 +2,7 @@ package jogo.models.Structures;
 
 import jogo.models.Player;
 import jogo.models.ResourceType;
+import jogo.exceptions.*;
 
 public class CreateStructure {
 
@@ -51,24 +52,24 @@ public class CreateStructure {
      * @param owner dono da estrutura
      * @return a estrutura criada
      */
-    public static Structures create(StructuresType structure, Player owner) {
+    public static Structures create(StructuresType structure, Player owner, int scoreModifier) throws GameException {
 
         switch (structure) {
             case FOREST:
-                return new Forest(owner);
+                return new Forest(owner, scoreModifier);
 
             case MINE:
-                return new Mine(owner);
+                return new Mine(owner, scoreModifier);
 
             case RANCH:
-                return new Ranch(owner);
+                return new Ranch(owner, scoreModifier);
 
             case CITY:
-                return new City(owner);
+                return new City(owner, scoreModifier);
 
             default:
-                System.out.println("Erro: Tipo de estrutura '" + structure + "' não reconhecido.");
-                return null;
+                throw new StructureDontExistException();
+
         }
     }
 

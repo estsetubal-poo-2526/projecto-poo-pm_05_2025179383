@@ -2,13 +2,14 @@
 package jogo.engine;
 import jogo.models.*;
 import jogo.models.Structures.*;
+import jogo.exceptions.*;
 
 
 public class WorldMap {
 
     private final int COLUMN_SIZE = 7;
     private final int LINE_SIZE = 7;
-    private Structures[][] map;
+    private final Structures[][] map;
 
     public WorldMap(){
         this.map = new Structures[COLUMN_SIZE][LINE_SIZE];
@@ -42,36 +43,22 @@ public class WorldMap {
      * @param structure estrutura a ser construida no mapa
      * @param coordinateX coordenada x da estrutura
      * @param coordinateY coordenada y da estrutura
-     * @return true se foi possivel construir, false caso contrario
      */
 
-    public boolean addStructure(Structures structure, int coordinateX, int coordinateY) {
-       if (isNotOccupied(coordinateX,coordinateY)) {
-           map[coordinateX][coordinateY] = structure;
-           return true;
-       } else {
-           System.out.println("Espaço Já ocupado");
-           return false;
-       }
-
-    }
-
-    /**
-     * Metodo para devolver o dono da estrutura
-     *
-     * @param coordinateX cordenada x
-     * @param coordinateY cordenada y
-     * @return devolve o player, se não existir dono, devolve null
-     */
-    public Player getOwner(int coordinateX, int coordinateY) {
-        if (!isNotOccupied(coordinateX,coordinateY)) {
-            return map[coordinateX][coordinateY].getOwner();
-        } else{
-            return null;
+    public void addStructure(Structures structure, int coordinateX, int coordinateY) throws GameException {
+        // Valida coordenadas primeiro!
+        if (coordinateX < 0 || coordinateX >= COLUMN_SIZE || coordinateY < 0 || coordinateY >= LINE_SIZE) {
+            throw new CoordinatesOutOfBoundsException(coordinateX,coordinateY);
         }
 
+        if (!isNotOccupied(coordinateX, coordinateY)) {
+            throw new SpaceAlreadyOccupiedException();
+        }
 
+        map[coordinateX][coordinateY] = structure;
     }
+
+    
 
     /**
      * Limpa o mapa
@@ -94,7 +81,10 @@ public class WorldMap {
      * @param coordinateY cordenadas y
      * @return a estrutura nas cordenadas
      */
-    public Structures getStructure(int coordinateX, int coordinateY) {
+    public Structures getStructure(int coordinateX, int coordinateY) throws GameException {
+        if (coordinateX < 0 || coordinateX >= COLUMN_SIZE || coordinateY < 0 || coordinateY >= LINE_SIZE) {
+            throw new CoordinatesOutOfBoundsException(coordinateX, coordinateY);
+        }
         return map[coordinateX][coordinateY];
     }
 
@@ -113,23 +103,25 @@ public class WorldMap {
 
 
 
-    public void generateResources(){
+    public void generateResources(int resourceModifier){
         for (int i = 0; i < COLUMN_SIZE; i++) {
             for (int j = 0; j < LINE_SIZE; j++) {
                  if (map[i][j] != null){
-                     map[i][j].generateResource();
+                     map[i][j].generateResource(resourceModifier);
                  }
             }
         }
     }
 
-    public void consumeResources(){
+    public void consumeResources() {
         for (int i = 0; i < COLUMN_SIZE; i++) {
             for (int j = 0; j < LINE_SIZE; j++) {
-                if (map[i][j] != null){
-                    if (!map[i][j].consumeResources()) {
+                if (map[i][j] != null) {
+                    String status = map[i][j].consumeResources();
+                    System.out.println("[Jogo]: " + status);
+                    if (map[i][j].getLevel() <= 0) {
                         map[i][j] = null;
-                    };
+                    }
                 }
             }
         }
@@ -141,20 +133,23 @@ public class WorldMap {
      *
      * @param coordinateX cordenada x
      * @param coordinateY cordenada y
-     * @param player player atual
+     * @param player      player atual
      * @return true se o player for o dono da estrutura, false caso contrario
      */
 
-    public boolean canInteract(int coordinateX, int coordinateY, Player player) {
-        if (coordinateX <= COLUMN_SIZE -1  && coordinateX >= 0 && coordinateY <= LINE_SIZE-1 && coordinateY >= 0) {
-            if (!isNotOccupied(coordinateX,coordinateY)) {
-                return getStructureOwnerName(coordinateX,coordinateY).equals(player.getName());
-            }
+    public void canInteract(int coordinateX, int coordinateY, Player player) throws GameException {
+        if (coordinateX < 0 || coordinateX >= getCOLUMN_SIZE() || coordinateY < 0 || coordinateY >= getLINE_SIZE()) {
+            throw new CoordinatesOutOfBoundsException(coordinateX,coordinateY);
         }
-        return false;
+        if (isNotOccupied(coordinateX, coordinateY)) {
+            throw new StructureDontExistException();
+        }
+        if (!map[coordinateX][coordinateY].getOwner().equals(player)) {
+            throw new UnauthorizedActionException();
+        }
     }
 
-    public String getStructureOwnerName(int coordinateX, int coordinateY) {
+    public String getStructureOwnerName(int coordinateX, int coordinateY) throws GameException {
         if (getStructure(coordinateX,coordinateY) == null) {
             return null;
         }

@@ -10,12 +10,19 @@ public class Forest extends Structures {
     private static final int scoreValue = 5;
 
 
-    public Forest(Player owner) {
-        super("Forest", ResourceType.WOOD, ResourceType.STONE, expense, profit, owner, ResourceType.STONE, scoreValue);
+    public Forest(Player owner, int scoreModifier) {
+        super("Forest", ResourceType.WOOD, ResourceType.STONE, expense, profit, owner, ResourceType.STONE, scoreValue,scoreModifier);
     }
     public static int getApNeeded() { return 2; }
 
     public static int getExpense() {
         return expense;
+    }
+
+    @Override
+    public void generateResource(int resourcesModifier) {
+        if (production != ResourceType.NONE) {
+            owner.addResource(production, (5 + level * 2) * resourcesModifier);
+        }
     }
 }

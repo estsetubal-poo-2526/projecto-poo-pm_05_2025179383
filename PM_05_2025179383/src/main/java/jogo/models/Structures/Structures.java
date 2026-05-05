@@ -1,11 +1,11 @@
 package jogo.models.Structures;
 
-import jogo.engine.Events;
 import jogo.models.Player;
 import jogo.models.ResourceType;
+import jogo.exceptions.*;
 
 public abstract class Structures {
-    protected final String structureType;
+    protected final StructuresType structureType;
     protected final ResourceType production;
     protected final ResourceType costType; // Recurso necessário para manutenção
     protected final ResourceType upgradeMaterial;
@@ -15,14 +15,15 @@ public abstract class Structures {
     protected int level;
     protected final Player owner;
 
-    public Structures(String structureType,
+    public Structures(StructuresType structureType,
                       ResourceType production,
                       ResourceType costType,
                       int expense,
                       int profit,
                       Player owner,
                       ResourceType upgradeMaterial,
-                      int scoreValue) {
+                      int scoreValue,
+                      int scoreModifier) {
 
         this.structureType = structureType;
         this.production = production;
@@ -32,40 +33,34 @@ public abstract class Structures {
         this.owner = owner;
         this.level = 1;
         this.upgradeMaterial = upgradeMaterial;
-        this.owner.addScore(scoreValue* Events.getScoreModifier());
+        this.owner.addScore(scoreValue* scoreModifier);
     }
 
-    public void generateResource() {
+    public void generateResource(int resourcesModifier) {
         if (production != ResourceType.NONE) {
-            owner.addResource(production, level * 2 * Events.getResourceModifier());
+            owner.addResource(production, level * 2 * resourcesModifier);
         }
     }
 
-    /**
-     * Consome os recursos do inventário do jogador. Se o mesmo não possuir recursos suficientes, o level da estrutura
-     * diminui em 1. Se o nivel for 1, a estrutura é destruida
-     * @return true se a estrutura não foi destruida, false se foi destruida
-     */
-    public boolean consumeResources() {
-        if (owner.removeResource(costType, expense * level)) {
-            System.out.println(structureType + " de " + owner.getName() + ": Manutenção paga.");
-            return true;
+    public String consumeResources() {
+        int totalCost = expense * level;
 
+        // Se o dono conseguir pagar, o fluxo segue feliz
+        if (owner.removeResource(costType, totalCost)) {
+            return String.format("%s (%s): Manutenção paga (%d %s).",
+                    structureType, owner.getName(), totalCost, costType);
+        }
+
+
+        level--;
+        if (level > 0) {
+            this.expense = 3 + 6 * (level - 1);
+            this.profit = 5 + 5 * (level - 1);
+            return String.format("%s de %s falhou a manutenção! Degradou-se para Nível %d.",
+                    structureType, owner.getName(), level);
         } else {
-            System.out.println( structureType + " de " + owner.getName() + " falhou a manutenção!");
-            level--;
-
-            if (level > 0) {
-                System.out.println("A estrutura degradou-se para o Nível " + level);
-
-                expense -= 6;
-                profit -= 5;
-                return true;
-            } else {
-                System.out.println("A estrutura foi destruida");
-                return false;
-            }
-
+            return String.format("A estrutura %s de %s foi destruída por falta de pagamento!",
+                    structureType, owner.getName());
         }
     }
 
@@ -73,26 +68,24 @@ public abstract class Structures {
      * Melhora a Estrutura se o jogador possuir os recursos necessarios
      * @return true, se foi possivel melhorar, false caso contrario
      */
-    public boolean upgradeStructure() {
+    public boolean upgradeStructure(int scoreModifier) throws InsufficientResourcesException {
         int cost = level * 5;
 
         if (owner.removeResource(upgradeMaterial, cost)) {
             level++;
             profit += 5;
             expense += 6;
-            owner.addScore(level * 5 * Events.getScoreModifier());
-            System.out.println(structureType + " melhorada para nível " + level);
+            owner.addScore(level * 5 * scoreModifier);
 
             return true;
         } else {
-            System.out.println("Não tens " + upgradeMaterial + " suficiente para o upgrade.");
-            return false;
+            throw new InsufficientResourcesException();
         }
     }
 
     @Override
     public String toString() {
-        return String.format(structureType + level);
+        return structureType + level;
     }
 
     public Player getOwner() {
@@ -103,8 +96,10 @@ public abstract class Structures {
         return level;
     }
 
-    public void setLevel(int level){
+    public void setLevel(int level) {
         this.level = level;
+        this.expense = 3 + 6 *( level - 1);
+        this.profit = 5 + 5 * ( level - 1);
     }
 
 }

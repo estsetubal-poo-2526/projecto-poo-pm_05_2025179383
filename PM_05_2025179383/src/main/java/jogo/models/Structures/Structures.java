@@ -85,7 +85,7 @@ public abstract class Structures {
 
     @Override
     public String toString() {
-        return structureType + level;
+        return String.valueOf(structureType) + level;
     }
 
     public Player getOwner() {

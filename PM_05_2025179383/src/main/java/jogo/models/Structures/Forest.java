@@ -11,7 +11,7 @@ public class Forest extends Structures {
 
 
     public Forest(Player owner, int scoreModifier) {
-        super("Forest", ResourceType.WOOD, ResourceType.STONE, expense, profit, owner, ResourceType.STONE, scoreValue,scoreModifier);
+        super(StructuresType.FOREST, ResourceType.WOOD, ResourceType.STONE, expense, profit, owner, ResourceType.STONE, scoreValue,scoreModifier);
     }
     public static int getApNeeded() { return 2; }
 

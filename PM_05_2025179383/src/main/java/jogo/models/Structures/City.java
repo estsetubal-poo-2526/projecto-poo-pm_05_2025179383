@@ -11,7 +11,7 @@ public class City extends Structures {
     private static final int SCOREVALUE = 15;
 
     public City(Player owner, int scoreModifier) {
-        super("City", ResourceType.NONE, ResourceType.FOOD, EXPENSE, PROFIT, owner, ResourceType.STONE, SCOREVALUE,scoreModifier);
+        super(StructuresType.CITY, ResourceType.NONE, ResourceType.FOOD, EXPENSE, PROFIT, owner, ResourceType.STONE, SCOREVALUE,scoreModifier);
         owner.addActionPoints(3);
     }
 

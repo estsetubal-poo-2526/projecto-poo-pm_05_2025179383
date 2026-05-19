@@ -1,19 +1,20 @@
+
+
 import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import jogo.engine.GameSession;
+import jogo.screens.StartScreen;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
+        GameSession session = new GameSession();
 
-        Label label = new Label("Olá JavaFX!");
+        StartScreen startScreen = new StartScreen(stage, session);
 
-        Scene scene = new Scene(label, 400, 300);
-
-        stage.setTitle("Meu Projeto");
-        stage.setScene(scene);
+        stage.setTitle("Jogo");
+        stage.setScene(startScreen.createScene());
         stage.show();
     }
 

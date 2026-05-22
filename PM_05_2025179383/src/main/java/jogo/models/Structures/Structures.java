@@ -102,4 +102,27 @@ public abstract class Structures {
         this.profit = 5 + 5 * ( level - 1);
     }
 
+    public String getName(){
+        return String.valueOf(structureType);
+    }
+
+    public int getExpense() {
+        return expense;
+    }
+
+    public String getUpgradeMaterial() {
+        return String.valueOf(upgradeMaterial);
+    }
+
+    public String getCostType() {
+        return String.valueOf(costType);
+    }
+
+    public String getProduction() {
+        return String.valueOf(production);
+    }
+
+    public int getProfit() {
+        return profit;
+    }
 }

@@ -1,5 +1,7 @@
 package jogo.screens;
 
+import jogo.models.Structures.*;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -69,7 +71,10 @@ public class MainGameScreen {
         endTurnButton.setMaxWidth(Double.MAX_VALUE);
 
         searchResourceButton.setOnAction(event -> {
-            messageLabel.setText("Aqui vais abrir a ação de procurar recurso.");
+            SearchResourcesScreen searchResourcesScreen = new SearchResourcesScreen(stage,session);
+
+            stage.setScene(searchResourcesScreen.searchResourcesMenu());
+
         });
 
         saveButton.setOnAction(event -> {
@@ -95,8 +100,8 @@ public class MainGameScreen {
                 return;
             }
 
-            updateInfo();
-            messageLabel.setText("Turno terminado.");
+            MainGameScreen updatedScreen = new MainGameScreen(stage, session);
+            stage.setScene(updatedScreen.createScene());
         });
 
         exitButton.setOnAction(event -> {
@@ -124,23 +129,49 @@ public class MainGameScreen {
         mapGrid.setAlignment(Pos.CENTER);
         mapGrid.setHgap(5);
         mapGrid.setVgap(5);
-        mapGrid.setPadding(new Insets(20));
 
-        int rows = session.getMap().getLINE_SIZE();
         int columns = session.getMap().getCOLUMN_SIZE();
+        int rows = session.getMap().getLINE_SIZE();
 
         for (int x = 0; x < columns; x++) {
             for (int y = 0; y < rows; y++) {
                 Button cellButton = new Button();
 
-                cellButton.setPrefSize(65, 65);
-                cellButton.setText("");
+                cellButton.setPrefSize(70, 70);
+
+                try {
+                    Structures structure = session.getMap().getStructure(x, y);
+
+                    if (structure == null) {
+                        cellButton.setText("");
+                    } else {
+                        cellButton.setText(structure.getClass().getSimpleName());
+                    }
+
+                } catch (Exception e) {
+                    cellButton.setText("Erro");
+                }
 
                 int finalX = x;
                 int finalY = y;
 
                 cellButton.setOnAction(event -> {
-                    messageLabel.setText("Selecionaste a posição: " + finalX + ", " + finalY);
+                    Stage popupStage = new Stage();
+
+                    MapCellScreen mapCellScreen = new MapCellScreen(
+                            popupStage,
+                            session,
+                            finalX,
+                            finalY,
+                            () -> {
+                                MainGameScreen updatedScreen = new MainGameScreen(stage, session);
+                                stage.setScene(updatedScreen.createScene());
+                            }
+                    );
+
+                    popupStage.setTitle("Ações na posição " + finalX + ", " + finalY);
+                    popupStage.setScene(mapCellScreen.createScene());
+                    popupStage.show();
                 });
 
                 mapGrid.add(cellButton, y, x);

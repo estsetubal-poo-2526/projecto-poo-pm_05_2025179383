@@ -14,7 +14,7 @@ public class Mine extends Structures {
     }
     public static int getApNeeded() { return 5; }
 
-    public static int getExpense() {
+    public int getExpense() {
         return EXPENSE;
     }
 

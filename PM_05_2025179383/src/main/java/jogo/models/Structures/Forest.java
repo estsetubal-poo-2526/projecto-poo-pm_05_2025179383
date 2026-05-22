@@ -15,7 +15,7 @@ public class Forest extends Structures {
     }
     public static int getApNeeded() { return 2; }
 
-    public static int getExpense() {
+    public int getExpense() {
         return expense;
     }
 

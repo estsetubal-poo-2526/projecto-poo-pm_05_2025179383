@@ -102,7 +102,7 @@ public class GameEngine {
                     upgradeStructureMenu(map, actualPlayer, scoreModifier);
                     break;
                 case 7:
-                    searchResources(actualPlayer);
+                    searchResources(actualPlayer,ResourceType.NONE);
                     break;
                 case 8:
                     saveGame(isPlayerOne, map, actualPlayer, opponent);
@@ -161,20 +161,17 @@ public class GameEngine {
         }
     }
 
-    private static void searchResources(Player player) {
-        int res = consoleUI.showSearchResourcesMenu(1, 3);
+    public static String searchResources(Player player, ResourceType type) {
 
         if (player.getActionPoints() >= 4) {
 
             player.removeResource(ResourceType.ACTION_POINTS, 4);
             int gathered = new java.util.Random().nextInt(3) + 2;
 
-            ResourceType type = (res == 1) ? ResourceType.WOOD : (res == 2) ? ResourceType.STONE : ResourceType.FOOD;
-
             player.addResource(type, gathered);
-            consoleUI.showMsg("Encontraste " + gathered + " unidades.");
+            return "Encontraste " + gathered + " unidades.";
 
-        } else consoleUI.showMsg("AP insuficiente.");
+        } else return "AP insuficiente.";
     }
 
     public static void createStructure(WorldMap map, Player player, StructuresType structure, int x, int y, int scoreModifier) {

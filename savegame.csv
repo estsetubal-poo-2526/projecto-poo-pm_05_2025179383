@@ -1,4 +1,20 @@
 #PLAYERS
-Ana,0,10,10,10,10
-Ana,0,10,10,10,10
+Fabio Cruz,208,55,69,13,22
+Paulo Simao,0,10,10,10,10
 #STRUCTURES
+FOREST,0,0,1,Fabio Cruz
+CITY,0,6,1,Fabio Cruz
+FOREST,1,1,1,Fabio Cruz
+CITY,1,5,1,Fabio Cruz
+MINE,2,2,1,Fabio Cruz
+RANCH,2,4,1,Fabio Cruz
+CITY,3,0,1,Fabio Cruz
+CITY,3,1,1,Fabio Cruz
+RANCH,3,2,1,Fabio Cruz
+MINE,3,3,1,Fabio Cruz
+RANCH,4,2,1,Fabio Cruz
+MINE,4,4,1,Fabio Cruz
+RANCH,5,1,1,Fabio Cruz
+FOREST,5,5,1,Fabio Cruz
+RANCH,6,0,1,Fabio Cruz
+MINE,6,6,1,Fabio Cruz

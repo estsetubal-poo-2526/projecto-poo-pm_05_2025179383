@@ -10,12 +10,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jogo.engine.GameEngine;
 import jogo.engine.GameSession;
+import jogo.exceptions.GameException;
 import jogo.models.ResourceType;
 
 public class SearchResourcesScreen {
 
-    private Stage stage;
-    private GameSession session;
+    private final Stage stage;
+    private final GameSession session;
 
     private Label resourceFoundLabel;
     private Label actionPointsLabel;
@@ -46,19 +47,19 @@ public class SearchResourcesScreen {
     }
 
     private BorderPane center() {
-        Button food = new Button("FOOD");
-        Button stone = new Button("STONE");
-        Button wood = new Button("WOOD");
+        Button foodButton = new Button("FOOD");
+        Button stoneButton = new Button("STONE");
+        Button woodButton = new Button("WOOD");
 
         resourceFoundLabel = new Label();
 
-        food.setOnAction(event -> searchResource(ResourceType.FOOD));
-        stone.setOnAction(event -> searchResource(ResourceType.STONE));
-        wood.setOnAction(event -> searchResource(ResourceType.WOOD));
+        foodButton.setOnAction(event -> handleSearchResource(ResourceType.FOOD));
+        stoneButton.setOnAction(event -> handleSearchResource(ResourceType.STONE));
+        woodButton.setOnAction(event -> handleSearchResource(ResourceType.WOOD));
 
         HBox buttonsBox = new HBox(15);
         buttonsBox.setAlignment(Pos.CENTER);
-        buttonsBox.getChildren().addAll(wood, stone, food);
+        buttonsBox.getChildren().addAll(woodButton, stoneButton, foodButton);
 
         BorderPane borderPane = new BorderPane();
         borderPane.setCenter(buttonsBox);
@@ -69,7 +70,7 @@ public class SearchResourcesScreen {
     }
 
     public VBox down() {
-        actionPointsLabel = new Label("AP Atual: " + updateInfo());
+        actionPointsLabel = new Label("AP Atual: " + getCurrentActionPoints());
 
         Button backButton = new Button("Voltar");
 
@@ -85,18 +86,27 @@ public class SearchResourcesScreen {
         return vBox;
     }
 
-    private void searchResource(ResourceType type) {
-        String result = obtainResources(type);
+    private void handleSearchResource(ResourceType type) {
+        try {
+            String result = GameEngine.searchResources(
+                    session.getActualPlayer(),
+                    type
+            );
 
-        resourceFoundLabel.setText(result);
-        actionPointsLabel.setText("AP Atual: " + updateInfo());
+            resourceFoundLabel.setText(result);
+
+        } catch (GameException e) {
+            resourceFoundLabel.setText("Erro: " + e.getMessage());
+        }
+
+        updateActionPointsLabel();
     }
 
-    private String obtainResources(ResourceType type) {
-        return GameEngine.searchResources(session.getActualPlayer(), type);
+    private void updateActionPointsLabel() {
+        actionPointsLabel.setText("AP Atual: " + getCurrentActionPoints());
     }
 
-    private int updateInfo() {
+    private int getCurrentActionPoints() {
         return session.getActualPlayer().getActionPoints();
     }
 }

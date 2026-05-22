@@ -82,7 +82,8 @@ public class MainGameScreen {
                 FileHandler.saveFullGame(
                         session.getMap(),
                         session.getPlayer1(),
-                        session.getPlayer2()
+                        session.getPlayer2(),
+                        session.getDay()
                 );
 
                 messageLabel.setText("Jogo guardado com sucesso!");

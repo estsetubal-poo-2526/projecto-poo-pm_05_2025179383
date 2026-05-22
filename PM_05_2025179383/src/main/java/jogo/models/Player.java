@@ -5,47 +5,47 @@ import java.util.Map;
 
 public class Player {
 
+    private static final int INITIAL_ITEMS = 10;
+    private static final int INITIAL_ACTION_POINTS = 10;
+
     private final String name;
     private int score;
+    private int baseActionPoints;
     private final Map<ResourceType, Integer> inventory;
-    private Integer BASE_AP = 10;
 
     public Player(String name) {
-        final Integer BASE_ITENS = 10;
-
         this.name = name;
         this.score = 0;
+        this.baseActionPoints = INITIAL_ACTION_POINTS;
         this.inventory = new HashMap<>();
-        inventory.put(ResourceType.ACTION_POINTS, BASE_AP);
-        inventory.put(ResourceType.WOOD,BASE_ITENS);
-        inventory.put(ResourceType.STONE, BASE_ITENS);
-        inventory.put(ResourceType.FOOD, BASE_ITENS);
 
+        inventory.put(ResourceType.ACTION_POINTS, baseActionPoints);
+        inventory.put(ResourceType.WOOD, INITIAL_ITEMS);
+        inventory.put(ResourceType.STONE, INITIAL_ITEMS);
+        inventory.put(ResourceType.FOOD, INITIAL_ITEMS);
     }
 
-    public Player(String name,int score,Integer wood, Integer stone, Integer food, Integer action_points ){
+    public Player(String name, int score, int wood, int stone, int food, int actionPoints) {
         this.name = name;
         this.score = score;
+        this.baseActionPoints = actionPoints;
+        this.inventory = new HashMap<>();
 
-        this.inventory = new HashMap();
-        inventory.put(ResourceType.WOOD,wood);
-        inventory.put(ResourceType.STONE,stone);
-        inventory.put(ResourceType.FOOD,food);
-        inventory.put(ResourceType.ACTION_POINTS,action_points);
+        inventory.put(ResourceType.WOOD, wood);
+        inventory.put(ResourceType.STONE, stone);
+        inventory.put(ResourceType.FOOD, food);
+        inventory.put(ResourceType.ACTION_POINTS, actionPoints);
     }
 
     public String getName() {
-
         return name;
     }
 
-    public Integer getActionPoints() {
-
+    public int getActionPoints() {
         return inventory.get(ResourceType.ACTION_POINTS);
     }
 
     public Map<ResourceType, Integer> getInventory() {
-
         return Map.copyOf(inventory);
     }
 
@@ -53,64 +53,53 @@ public class Player {
         return score;
     }
 
-    /**
-     * Restaura o valor de AP do jogador
-     */
-    public void resetAC(){
-        inventory.put(ResourceType.ACTION_POINTS, BASE_AP   );
+    public int getBaseActionPoints() {
+        return baseActionPoints;
     }
 
-    /**
-     * Aumenta o valor de AP máximo e adiciona ao inventario
-     * @param value valor em que deve ser aumentado
-     */
-    public void addActionPoints(Integer value){
+    public void resetAC() {
+        inventory.put(ResourceType.ACTION_POINTS, baseActionPoints);
+    }
+
+    public void addActionPoints(int value) {
         addResource(ResourceType.ACTION_POINTS, value);
-        BASE_AP += value;
+        baseActionPoints += value;
     }
 
     public void addScore(int value) {
         score += value;
     }
 
-    public Integer getResourceQuantity(ResourceType resource){
-
-        if ((inventory.containsKey(resource))) {
-            return inventory.get(resource);
-        }
-
-        return 0;
+    public int getResourceQuantity(ResourceType resource) {
+        return inventory.getOrDefault(resource, 0);
     }
 
-    public void addResource(ResourceType resource, int quantity){
-
-        inventory.merge(resource,quantity,Integer::sum);
+    public void addResource(ResourceType resource, int quantity) {
+        inventory.merge(resource, quantity, Integer::sum);
     }
 
     public boolean removeResource(ResourceType resource, int quantity) {
-        if (!inventory.containsKey(resource)){
-            return false;
-        } else if (inventory.get(resource) >= quantity){
-            inventory.put(resource,getResourceQuantity(resource) - quantity);
-            return true;
-        } else {
+        if (getResourceQuantity(resource) < quantity) {
             return false;
         }
-    }
 
-    @Override
-    public String toString() {
-        return String.format("jogo.models.Player %s[Score: %d]\n" +
-                "Current Inventory: %s", name,score,inventory);
-    }
-
-    public Integer getBaseAp() {
-        return BASE_AP;
+        inventory.put(resource, getResourceQuantity(resource) - quantity);
+        return true;
     }
 
     public void clearInventory() {
         for (ResourceType type : ResourceType.values()) {
             inventory.put(type, 0);
         }
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "Player %s [Score: %d]%nCurrent Inventory: %s",
+                name,
+                score,
+                inventory
+        );
     }
 }

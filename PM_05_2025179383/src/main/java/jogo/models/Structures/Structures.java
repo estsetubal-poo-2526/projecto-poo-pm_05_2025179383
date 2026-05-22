@@ -1,92 +1,90 @@
 package jogo.models.Structures;
 
+import jogo.exceptions.InsufficientResourcesException;
 import jogo.models.Player;
 import jogo.models.ResourceType;
-import jogo.exceptions.*;
 
 public abstract class Structures {
-    protected final StructuresType structureType;
-    protected final ResourceType production;
-    protected final ResourceType costType; // Recurso necessário para manutenção
-    protected final ResourceType upgradeMaterial;
+
+    protected final StructuresType STRUCTURE_TYPE;
+    protected final ResourceType PRODUCTION;
+    protected final ResourceType MAINTENANCE_MATERIAL;
+    protected final ResourceType UPGRADE_MATERIAL;
 
     protected int expense;
     protected int profit;
     protected int level;
+
     protected final Player owner;
 
-    public Structures(StructuresType structureType,
-                      ResourceType production,
-                      ResourceType costType,
-                      int expense,
-                      int profit,
-                      Player owner,
-                      ResourceType upgradeMaterial,
-                      int scoreValue,
-                      int scoreModifier) {
+    public Structures(
+            StructuresType structureType,
+            ResourceType production,
+            ResourceType maintenanceMaterial,
+            int expense,
+            int profit,
+            Player owner,
+            ResourceType upgradeMaterial,
+            int level,
+            int scoreValue,
+            int scoreModifier
+    ) {
+        this.STRUCTURE_TYPE = structureType;
+        this.PRODUCTION = production;
+        this.MAINTENANCE_MATERIAL = maintenanceMaterial;
+        this.UPGRADE_MATERIAL = upgradeMaterial;
 
-        this.structureType = structureType;
-        this.production = production;
-        this.costType = costType;
         this.expense = expense;
         this.profit = profit;
+        this.level = level;
+
         this.owner = owner;
-        this.level = 1;
-        this.upgradeMaterial = upgradeMaterial;
-        this.owner.addScore(scoreValue* scoreModifier);
+
+        this.owner.addScore(scoreValue * scoreModifier);
     }
 
     public void generateResource(int resourcesModifier) {
-        if (production != ResourceType.NONE) {
-            owner.addResource(production, level * 2 * resourcesModifier);
+        if (PRODUCTION != ResourceType.NONE) {
+            owner.addResource(PRODUCTION, level * 2 * resourcesModifier);
         }
     }
 
     public String consumeResources() {
         int totalCost = expense * level;
 
-        // Se o dono conseguir pagar, o fluxo segue feliz
-        if (owner.removeResource(costType, totalCost)) {
-            return String.format("%s (%s): Manutenção paga (%d %s).",
-                    structureType, owner.getName(), totalCost, costType);
+        if (owner.removeResource(MAINTENANCE_MATERIAL, totalCost)) {
+            return String.format(
+                    "%s (%s): Manutenção paga (%d %s).",
+                    STRUCTURE_TYPE,
+                    owner.getName(),
+                    totalCost,
+                    MAINTENANCE_MATERIAL
+            );
         }
-
 
         level--;
+
         if (level > 0) {
-            this.expense = 3 + 6 * (level - 1);
-            this.profit = 5 + 5 * (level - 1);
-            return String.format("%s de %s falhou a manutenção! Degradou-se para Nível %d.",
-                    structureType, owner.getName(), level);
-        } else {
-            return String.format("A estrutura %s de %s foi destruída por falta de pagamento!",
-                    structureType, owner.getName());
+            setLevel(level);
+
+            return String.format(
+                    "%s de %s falhou a manutenção! Degradou-se para Nível %d.",
+                    STRUCTURE_TYPE,
+                    owner.getName(),
+                    level
+            );
         }
+
+        return String.format(
+                "A estrutura %s de %s foi destruída por falta de pagamento!",
+                STRUCTURE_TYPE,
+                owner.getName()
+        );
     }
 
-    /**
-     * Melhora a Estrutura se o jogador possuir os recursos necessarios
-     * @return true, se foi possivel melhorar, false caso contrario
-     */
-    public boolean upgradeStructure(int scoreModifier) throws InsufficientResourcesException {
-        int cost = level * 5;
+    public abstract boolean upgradeStructure(int scoreModifier) throws InsufficientResourcesException;
 
-        if (owner.removeResource(upgradeMaterial, cost)) {
-            level++;
-            profit += 5;
-            expense += 6;
-            owner.addScore(level * 5 * scoreModifier);
-
-            return true;
-        } else {
-            throw new InsufficientResourcesException();
-        }
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(structureType) + level;
-    }
+    public abstract void setLevel(int level);
 
     public Player getOwner() {
         return owner;
@@ -96,33 +94,32 @@ public abstract class Structures {
         return level;
     }
 
-    public void setLevel(int level) {
-        this.level = level;
-        this.expense = 3 + 6 *( level - 1);
-        this.profit = 5 + 5 * ( level - 1);
-    }
-
-    public String getName(){
-        return String.valueOf(structureType);
+    public String getName() {
+        return String.valueOf(STRUCTURE_TYPE);
     }
 
     public int getExpense() {
         return expense;
     }
 
-    public String getUpgradeMaterial() {
-        return String.valueOf(upgradeMaterial);
-    }
-
-    public String getCostType() {
-        return String.valueOf(costType);
-    }
-
-    public String getProduction() {
-        return String.valueOf(production);
-    }
-
     public int getProfit() {
         return profit;
+    }
+
+    public ResourceType getProduction() {
+        return PRODUCTION;
+    }
+
+    public ResourceType getCostType() {
+        return MAINTENANCE_MATERIAL;
+    }
+
+    public ResourceType getUpgradeMaterial() {
+        return UPGRADE_MATERIAL;
+    }
+
+    @Override
+    public String toString() {
+        return STRUCTURE_TYPE + " nível " + level;
     }
 }

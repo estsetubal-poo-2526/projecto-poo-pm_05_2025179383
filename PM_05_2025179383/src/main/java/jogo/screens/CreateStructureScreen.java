@@ -36,10 +36,10 @@ public class CreateStructureScreen {
         Button cityButton = new Button("Cidade");
         Button backButton = new Button("Voltar");
 
-        forestButton.setOnAction(event -> buildStructure(StructuresType.FOREST));
-        mineButton.setOnAction(event -> buildStructure(StructuresType.MINE));
-        ranchButton.setOnAction(event -> buildStructure(StructuresType.RANCH));
-        cityButton.setOnAction(event -> buildStructure(StructuresType.CITY));
+        forestButton.setOnAction(event -> showStructureInfo(StructuresType.FOREST));
+        mineButton.setOnAction(event -> showStructureInfo(StructuresType.MINE));
+        ranchButton.setOnAction(event -> showStructureInfo(StructuresType.RANCH));
+        cityButton.setOnAction(event -> showStructureInfo(StructuresType.CITY));
 
         backButton.setOnAction(event -> {
             MapCellScreen screen = new MapCellScreen(
@@ -73,17 +73,13 @@ public class CreateStructureScreen {
         return new Scene(vbox, 600, 400);
     }
 
-    private void buildStructure(StructuresType type) {
-        GameEngine.createStructure(
-                session.getMap(),
-                session.getActualPlayer(),
-                type,
-                x,
-                y,
-                session.getScoreModifier()
+    private void showStructureInfo(StructuresType type) {
+        StructuresInfoScreen structuresInfoScreen = new StructuresInfoScreen(
+                session,
+                popupStage,
+                onUpdateMap
         );
 
-        onUpdateMap.run();
-        popupStage.close();
+        popupStage.setScene(structuresInfoScreen.createScreen(type, x, y));
     }
 }

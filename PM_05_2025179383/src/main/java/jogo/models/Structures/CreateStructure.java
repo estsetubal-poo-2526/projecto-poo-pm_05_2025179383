@@ -6,19 +6,12 @@ import jogo.exceptions.*;
 
 public class CreateStructure {
 
-    /**
-     *
-     * Metodo para obter a quantidade de recursos que a estrutura custa
-     *
-     * @param structure estrutura em que se quer saber
-     * @return valor do custo
-     */
     public static int getMaterialCost(StructuresType structure) {
         switch (structure) {
             case FOREST:
-                return Forest.getExpense();
+                return Forest.getEXPENSE();
             case MINE:
-                return Mine.getExpense();
+                return Mine.getEXPENSE();
             case RANCH:
                 return Ranch.getEXPENSE();
             case CITY:
@@ -27,15 +20,6 @@ public class CreateStructure {
                 return 0;
         }
     }
-
-    /**
-     *
-     * Metodo para saber o tipo de material que a estrutura precisa para ser construida
-     *
-     * @param structure estrutura em que se quer saber
-     * @return tipo de recurso
-     */
-
 
     public static ResourceType getMaterialType(StructuresType structure) {
         switch (structure) {
@@ -46,12 +30,6 @@ public class CreateStructure {
         }
     }
 
-    /**
-     * Cria a estrutura
-     * @param structure estrutura a ser criada
-     * @param owner dono da estrutura
-     * @return a estrutura criada
-     */
     public static Structures create(StructuresType structure, Player owner, int scoreModifier) throws GameException {
 
         switch (structure) {
@@ -74,11 +52,6 @@ public class CreateStructure {
     }
 
 
-    /**
-     * Devolve a quantidade de AP necessarios para criar a estrutura
-     * @param structure estrutura de que se quer saber
-     * @return valor necessario para construir
-     */
     public static int getApCost(StructuresType structure) {
         switch (structure) {
             case FOREST:

@@ -1,10 +1,15 @@
+#GAME
+4
 #PLAYERS
-Fabio Cruz,208,55,69,13,22
+Fabio Cruz,519,2,93,55,56
 Paulo Simao,0,10,10,10,10
 #STRUCTURES
 FOREST,0,0,1,Fabio Cruz
+MINE,0,1,1,Fabio Cruz
 CITY,0,6,1,Fabio Cruz
+FOREST,1,0,1,Fabio Cruz
 FOREST,1,1,1,Fabio Cruz
+RANCH,1,2,1,Fabio Cruz
 CITY,1,5,1,Fabio Cruz
 MINE,2,2,1,Fabio Cruz
 RANCH,2,4,1,Fabio Cruz

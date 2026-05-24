@@ -34,7 +34,7 @@ public class Events {
                 case 0:
                     resourceModifier = DOUBLE_PRODUCTION;
                     scoreModifier = DOUBLE_PRODUCTION;
-                    return "------- Evento: Estruturas Produzem o dobro de Recursos e de Pontuação!!! -------";
+                    return "Estruturas Produzem o dobro de Recursos e de Pontuação!!!";
 
                 case 1:
                 case 2:
@@ -42,29 +42,29 @@ public class Events {
                 case 4:
                 case 5:
                     resourceModifier = ZERO_PRODUCTION;
-                    return "------- Evento: Estruturas não produzem Recursos!!! -------";
+                    return "Estruturas não produzem Recursos!!!";
 
                 case 6:
 
                     resourceModifier = DOUBLE_PRODUCTION;
-                    return "------- Evento: Estruturas Produzem o dobro de Recursos -------";
+                    return "Estruturas Produzem o dobro de Recursos";
 
                 case 7:
                 case 8:
                 case 9:
                 case 10:
                     scoreModifier = ZERO_PRODUCTION;
-                    return "------- Evento: Estruturas não dão Pontuação!!! -------";
+                    return "Estruturas não dão Pontuação!!!";
 
                 case 11:
 
                     scoreModifier = DOUBLE_PRODUCTION;
-                    return "------- Evento: Estruturas dão o dobro de Pontuação!!! -------";
+                    return "Estruturas dão o dobro de Pontuação!!!";
 
                 case 12:
                 scoreModifier = ZERO_PRODUCTION;
                 resourceModifier = DOUBLE_PRODUCTION;
-                return "------ Evento: Greve Geral -------";
+                return "Greve Geral";
 
 
             }

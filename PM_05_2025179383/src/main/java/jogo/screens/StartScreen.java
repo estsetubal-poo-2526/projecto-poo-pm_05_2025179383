@@ -13,16 +13,16 @@ import jogo.io.FileHandler;
 
 public class StartScreen {
 
-    private final Stage stage;
-    private final GameSession session;
+    private final Stage STAGE;
+    private final GameSession SESSION;
 
     private TextField player1NameField;
     private TextField player2NameField;
     private Label messageLabel;
 
     public StartScreen(Stage stage, GameSession session) {
-        this.stage = stage;
-        this.session = session;
+        this.STAGE = stage;
+        this.SESSION = session;
     }
 
     public Scene createScene() {
@@ -44,7 +44,7 @@ public class StartScreen {
 
         newGameButton.setOnAction(event -> startNewGame());
         loadGameButton.setOnAction(event -> loadSavedGame());
-        exitButton.setOnAction(event -> stage.close());
+        exitButton.setOnAction(event -> STAGE.close());
 
         VBox vBox = new VBox(15);
         vBox.setAlignment(Pos.CENTER);
@@ -75,28 +75,29 @@ public class StartScreen {
             return;
         }
 
-        session.startNewGame(player1Name, player2Name);
+        SESSION.startNewGame(player1Name, player2Name);
+        String eventText = SESSION.startDayEvent();
 
-        MainGameScreen mainGameScreen = new MainGameScreen(stage, session);
-        stage.setScene(mainGameScreen.createScene());
+        MainGameScreen mainGameScreen = new MainGameScreen(STAGE, SESSION, eventText);
+        STAGE.setScene(mainGameScreen.createScene());
     }
 
     private void loadSavedGame() {
         try {
             FileHandler.SaveData data = FileHandler.loadGame();
 
-            session.loadGame(
+            SESSION.loadGame(
                     data.getMap(),
                     data.getP1(),
                     data.getP2(),
                     data.getDay()
             );
 
-            MainGameScreen mainGameScreen = new MainGameScreen(stage, session);
-            stage.setScene(mainGameScreen.createScene());
+            MainGameScreen mainGameScreen = new MainGameScreen(STAGE, SESSION);
+            STAGE.setScene(mainGameScreen.createScene());
 
         } catch (GameException e) {
-            messageLabel.setText("Erro ao carregar jogo: " + e.getMessage());
+            ErrorPopUp.show(e.getMessage());
         }
     }
 }

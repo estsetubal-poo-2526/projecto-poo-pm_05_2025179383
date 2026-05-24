@@ -72,14 +72,15 @@ public class GameSession {
         return eventMessage;
     }
 
-    public void endTurn() {
+    public String endTurn() {
         actualPlayer.resetAC();
 
         if (playerOneTurn) {
             actualPlayer = player2;
             opponent = player1;
             playerOneTurn = false;
-            return;
+
+            return null;
         }
 
         map.generateResources(resourceModifier);
@@ -90,6 +91,28 @@ public class GameSession {
         actualPlayer = player1;
         opponent = player2;
         playerOneTurn = true;
+
+        if (!isGameOver()) {
+            return startDayEvent();
+        }
+
+        return null;
+    }
+
+    public Player getWinner() {
+        if (!isGameOver()) {
+            return null;
+        }
+
+        if (player1.getScore() > player2.getScore()) {
+            return player1;
+        }
+
+        if (player2.getScore() > player1.getScore()) {
+            return player2;
+        }
+
+        return null;
     }
 
     public boolean isGameOver() {
@@ -135,5 +158,7 @@ public class GameSession {
     public boolean isPlayerOneTurn() {
         return playerOneTurn;
     }
+
+
 
 }

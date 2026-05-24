@@ -11,12 +11,12 @@ import jogo.engine.GameSession;
 
 public class SelectPlayersName {
 
-    private Stage stage;
-    private GameSession session;
+    private final Stage STAGE;
+    private final GameSession SESSION;
 
     public SelectPlayersName(Stage stage, GameSession session) {
-        this.stage = stage;
-        this.session = session;
+        this.STAGE = stage;
+        this.SESSION = session;
     }
 
     public Scene createScene() {
@@ -40,10 +40,10 @@ public class SelectPlayersName {
                 return;
             }
 
-            session.startNewGame(player1, player2);
+            SESSION.startNewGame(player1, player2);
 
-            MainGameScreen mainGameScreen = new MainGameScreen(stage, session);
-            stage.setScene(mainGameScreen.createScene());
+            MainGameScreen mainGameScreen = new MainGameScreen(STAGE, SESSION);
+            STAGE.setScene(mainGameScreen.createScene());
         });
 
         VBox vbox = new VBox(15);

@@ -39,7 +39,7 @@ public class Forest extends Structures {
 
     @Override
     public boolean upgradeStructure(int scoreModifier) throws InsufficientResourcesException {
-        int upgradeCost = level * UPGRADE_COST_MULTIPLIER;
+        int upgradeCost = getUpgradeCost();
 
         if (!owner.removeResource(UPGRADE_MATERIAL, upgradeCost)) {
             throw new InsufficientResourcesException();
@@ -57,7 +57,7 @@ public class Forest extends Structures {
     @Override
     public void generateResource(int resourcesModifier) {
         if (PRODUCTION != ResourceType.NONE) {
-            owner.addResource(PRODUCTION, (5 + level * 2) * resourcesModifier);
+            owner.addResource(PRODUCTION, (profit) * resourcesModifier);
         }
     }
 
@@ -66,6 +66,21 @@ public class Forest extends Structures {
         this.level = level;
         expense = BASE_EXPENSE + EXPENSE_BY_LEVEL * (level - 1);
         this.profit = BASE_PROFIT + PROFIT_BY_LEVEL * (level - 1);
+    }
+
+    @Override
+    public int getFutureExpense() {
+        return expense + EXPENSE_BY_LEVEL;
+    }
+
+    @Override
+    public int getFutureProfit() {
+        return profit + PROFIT_BY_LEVEL;
+    }
+
+    @Override
+    public int getUpgradeCost() {
+        return level * UPGRADE_COST_MULTIPLIER;
     }
 
     public static int getApNeeded() {

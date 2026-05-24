@@ -13,16 +13,16 @@ import jogo.exceptions.GameException;
 import jogo.models.ResourceType;
 import jogo.models.Structures.*;
 
-public class StructuresInfoScreen {
+public class StructuresBuildingInfoScreen {
 
-    private final GameSession session;
-    private final Stage stage;
-    private final Runnable onUpdateMap;
+    private final GameSession SESSION;
+    private final Stage STAGE;
+    private final Runnable ON_UPDATE_MAP;
 
-    public StructuresInfoScreen(GameSession session, Stage stage, Runnable onUpdateMap) {
-        this.session = session;
-        this.stage = stage;
-        this.onUpdateMap = onUpdateMap;
+    public StructuresBuildingInfoScreen(GameSession session, Stage stage, Runnable onUpdateMap) {
+        this.SESSION = session;
+        this.STAGE = stage;
+        this.ON_UPDATE_MAP = onUpdateMap;
     }
 
     public Scene createScreen(StructuresType type, int x, int y) {
@@ -42,25 +42,17 @@ public class StructuresInfoScreen {
 
         backButton.setOnAction(event -> {
             CreateStructureScreen createStructureScreen = new CreateStructureScreen(
-                    stage,
-                    session,
+                    STAGE,
+                    SESSION,
                     x,
                     y,
-                    onUpdateMap
+                    ON_UPDATE_MAP
             );
 
-            stage.setScene(createStructureScreen.createScene());
+            STAGE.setScene(createStructureScreen.createScene());
         });
 
-        constructButton.setOnAction(event -> {
-            try {
-                buildStructure(type, x, y);
-            } catch (GameException e) {
-                System.out.println(e.getMessage());
-            }
-            onUpdateMap.run();
-            stage.close();
-        });
+        constructButton.setOnAction(event -> buildStructure(type, x, y));
 
         VBox vBox = new VBox(10);
         vBox.setAlignment(Pos.CENTER);
@@ -183,19 +175,22 @@ public class StructuresInfoScreen {
         }
     }
 
-    private void buildStructure(StructuresType type, int x, int y) throws GameException {
-
+    private void buildStructure(StructuresType type, int x, int y) {
         try {
             GameEngine.createStructure(
-                    session.getMap(),
-                    session.getActualPlayer(),
+                    SESSION.getMap(),
+                    SESSION.getActualPlayer(),
                     type,
                     x,
                     y,
-                    session.getScoreModifier()
+                    SESSION.getScoreModifier()
             );
+
+            ON_UPDATE_MAP.run();
+            STAGE.close();
+
         } catch (GameException e) {
-            System.out.println(e.getMessage());
+            ErrorPopUp.show(e.getMessage());
         }
     }
 }

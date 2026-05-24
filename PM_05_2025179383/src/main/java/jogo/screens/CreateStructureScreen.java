@@ -7,28 +7,27 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import jogo.engine.GameEngine;
 import jogo.engine.GameSession;
 import jogo.models.Structures.StructuresType;
 
 public class CreateStructureScreen {
 
-    private final Stage popupStage;
-    private final GameSession session;
-    private final int x;
-    private final int y;
-    private final Runnable onUpdateMap;
+    private final Stage POPUP_STAGE;
+    private final GameSession SESSION;
+    private final int X;
+    private final int Y;
+    private final Runnable ON_UPDATE_MAP;
 
     public CreateStructureScreen(Stage popupStage, GameSession session, int x, int y, Runnable onUpdateMap) {
-        this.popupStage = popupStage;
-        this.session = session;
-        this.x = x;
-        this.y = y;
-        this.onUpdateMap = onUpdateMap;
+        this.POPUP_STAGE = popupStage;
+        this.SESSION = session;
+        this.X = x;
+        this.Y = y;
+        this.ON_UPDATE_MAP = onUpdateMap;
     }
 
     public Scene createScene() {
-        Label title = new Label("Criar estrutura em " + x + ", " + y);
+        Label title = new Label("Criar estrutura em " + X + ", " + Y);
 
         Button forestButton = new Button("Floresta");
         Button mineButton = new Button("Mina");
@@ -43,14 +42,14 @@ public class CreateStructureScreen {
 
         backButton.setOnAction(event -> {
             MapCellScreen screen = new MapCellScreen(
-                    popupStage,
-                    session,
-                    x,
-                    y,
-                    onUpdateMap
+                    POPUP_STAGE,
+                    SESSION,
+                    X,
+                    Y,
+                    ON_UPDATE_MAP
             );
 
-            popupStage.setScene(screen.createScene());
+            POPUP_STAGE.setScene(screen.createScene());
         });
 
         HBox structuresBox = new HBox(15);
@@ -74,12 +73,12 @@ public class CreateStructureScreen {
     }
 
     private void showStructureInfo(StructuresType type) {
-        StructuresInfoScreen structuresInfoScreen = new StructuresInfoScreen(
-                session,
-                popupStage,
-                onUpdateMap
+        StructuresBuildingInfoScreen structuresInfoScreen = new StructuresBuildingInfoScreen(
+                SESSION,
+                POPUP_STAGE,
+                ON_UPDATE_MAP
         );
 
-        popupStage.setScene(structuresInfoScreen.createScreen(type, x, y));
+        POPUP_STAGE.setScene(structuresInfoScreen.createScreen(type, X, Y));
     }
 }

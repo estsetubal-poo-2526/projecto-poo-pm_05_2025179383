@@ -1,8 +1,8 @@
 #GAME
-4
+5
 #PLAYERS
-Fabio Cruz,519,2,93,55,56
-Paulo Simao,0,10,10,10,10
+Fabio Cruz,609,0,152,51,0
+Paulo Simao,2,4,10,16,10
 #STRUCTURES
 FOREST,0,0,1,Fabio Cruz
 MINE,0,1,1,Fabio Cruz
@@ -16,10 +16,6 @@ RANCH,2,4,1,Fabio Cruz
 CITY,3,0,1,Fabio Cruz
 CITY,3,1,1,Fabio Cruz
 RANCH,3,2,1,Fabio Cruz
-MINE,3,3,1,Fabio Cruz
+RANCH,3,6,1,Paulo Simao
 RANCH,4,2,1,Fabio Cruz
-MINE,4,4,1,Fabio Cruz
-RANCH,5,1,1,Fabio Cruz
 FOREST,5,5,1,Fabio Cruz
-RANCH,6,0,1,Fabio Cruz
-MINE,6,6,1,Fabio Cruz

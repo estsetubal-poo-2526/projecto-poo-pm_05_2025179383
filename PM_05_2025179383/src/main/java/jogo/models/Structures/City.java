@@ -4,6 +4,8 @@ import jogo.exceptions.InsufficientResourcesException;
 import jogo.models.Player;
 import jogo.models.ResourceType;
 
+import java.util.logging.Level;
+
 public class City extends Structures {
 
 
@@ -42,7 +44,7 @@ public class City extends Structures {
 
     @Override
     public boolean upgradeStructure(int scoreModifier) throws InsufficientResourcesException {
-        int upgradeCost = level * UPGRADE_COST_MULTIPLIER;
+        int upgradeCost = getUpgradeCost();
 
         if (!owner.removeResource(UPGRADE_MATERIAL, upgradeCost)) {
             throw new InsufficientResourcesException();
@@ -61,6 +63,21 @@ public class City extends Structures {
     public void setLevel(int level) {
         this.level = level;
         expense = BASE_EXPENSE + EXPENSE_BY_LEVEL * (level - 1);
+    }
+
+    @Override
+    public int getFutureExpense() {
+        return expense + EXPENSE_BY_LEVEL;
+    }
+
+    @Override
+    public int getUpgradeCost() {
+        return level * UPGRADE_COST_MULTIPLIER;
+    }
+
+    @Override
+    public int getFutureProfit() {
+        return 0;
     }
 
     public static int getApNeeded() {

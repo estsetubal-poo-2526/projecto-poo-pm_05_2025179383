@@ -15,15 +15,15 @@ import jogo.models.ResourceType;
 
 public class SearchResourcesScreen {
 
-    private final Stage stage;
-    private final GameSession session;
+    private final Stage STAGE;
+    private final GameSession SESSION;
 
     private Label resourceFoundLabel;
     private Label actionPointsLabel;
 
     public SearchResourcesScreen(Stage stage, GameSession session) {
-        this.stage = stage;
-        this.session = session;
+        this.STAGE = stage;
+        this.SESSION = session;
     }
 
     public Scene searchResourcesMenu() {
@@ -75,8 +75,8 @@ public class SearchResourcesScreen {
         Button backButton = new Button("Voltar");
 
         backButton.setOnAction(event -> {
-            MainGameScreen gameMenuScreen = new MainGameScreen(stage, session);
-            stage.setScene(gameMenuScreen.createScene());
+            MainGameScreen gameMenuScreen = new MainGameScreen(STAGE, SESSION);
+            STAGE.setScene(gameMenuScreen.createScene());
         });
 
         VBox vBox = new VBox(20);
@@ -89,14 +89,14 @@ public class SearchResourcesScreen {
     private void handleSearchResource(ResourceType type) {
         try {
             String result = GameEngine.searchResources(
-                    session.getActualPlayer(),
+                    SESSION.getActualPlayer(),
                     type
             );
 
             resourceFoundLabel.setText(result);
 
         } catch (GameException e) {
-            resourceFoundLabel.setText("Erro: " + e.getMessage());
+            ErrorPopUp.show(e.getMessage());
         }
 
         updateActionPointsLabel();
@@ -107,6 +107,6 @@ public class SearchResourcesScreen {
     }
 
     private int getCurrentActionPoints() {
-        return session.getActualPlayer().getActionPoints();
+        return SESSION.getActualPlayer().getActionPoints();
     }
 }

@@ -86,6 +86,12 @@ public abstract class Structures {
 
     public abstract void setLevel(int level);
 
+    public abstract int getFutureProfit();
+
+    public abstract int getFutureExpense();
+
+    public abstract int getUpgradeCost();
+
     public Player getOwner() {
         return owner;
     }

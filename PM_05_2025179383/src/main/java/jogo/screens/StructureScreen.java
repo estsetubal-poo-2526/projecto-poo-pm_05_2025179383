@@ -12,26 +12,26 @@ import jogo.models.Structures.Structures;
 
 public class StructureScreen {
 
-    private final Stage popupStage;
-    private final GameSession session;
-    private final int x;
-    private final int y;
-    private final Runnable onUpdateMap;
+    private final Stage POPUP_STAGE;
+    private final GameSession SESSION;
+    private final int X;
+    private final int Y;
+    private final Runnable ON_UPDATE_MAP;
 
     public StructureScreen(Stage popupStage, GameSession session, int x, int y, Runnable onUpdateMap) {
-        this.popupStage = popupStage;
-        this.session = session;
-        this.x = x;
-        this.y = y;
-        this.onUpdateMap = onUpdateMap;
+        this.POPUP_STAGE = popupStage;
+        this.SESSION = session;
+        this.X = x;
+        this.Y = y;
+        this.ON_UPDATE_MAP = onUpdateMap;
     }
 
     public Scene createScene() {
-        Label title = new Label("Informação da posição " + x + ", " + y);
+        Label title = new Label("Informação da posição " + X + ", " + Y);
         Label infoLabel = new Label();
 
         try {
-            Structures structure = session.getMap().getStructure(x, y);
+            Structures structure = SESSION.getMap().getStructure(X, Y);
 
             if (structure == null) {
                 infoLabel.setText("Não existe estrutura nesta posição.");
@@ -44,7 +44,7 @@ public class StructureScreen {
             }
 
         } catch (GameException e) {
-            infoLabel.setText("Erro: " + e.getMessage());
+            ErrorPopUp.show(e.getMessage());
         }
 
         Button backButton = new Button("Voltar");
@@ -52,18 +52,18 @@ public class StructureScreen {
 
         backButton.setOnAction(event -> {
             MapCellScreen screen = new MapCellScreen(
-                    popupStage,
-                    session,
-                    x,
-                    y,
-                    onUpdateMap
+                    POPUP_STAGE,
+                    SESSION,
+                    X,
+                    Y,
+                    ON_UPDATE_MAP
             );
 
-            popupStage.setScene(screen.createScene());
+            POPUP_STAGE.setScene(screen.createScene());
         });
 
         closeButton.setOnAction(event -> {
-            popupStage.close();
+            POPUP_STAGE.close();
         });
 
         VBox vbox = new VBox(15);

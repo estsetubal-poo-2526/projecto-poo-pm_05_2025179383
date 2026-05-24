@@ -14,16 +14,28 @@ import jogo.io.FileHandler;
 
 public class MainGameScreen {
 
-    private Stage stage;
-    private GameSession session;
+    private final Stage STAGE;
+    private final GameSession SESSION;
+
+    private Stage currentPopupStage;
 
     private Label topInfoLabel;
+    private Label eventLabel;
     private Label inventoryLabel;
     private Label messageLabel;
 
+    private String eventMessage;
+
     public MainGameScreen(Stage stage, GameSession session) {
-        this.stage = stage;
-        this.session = session;
+        this.STAGE = stage;
+        this.SESSION = session;
+        this.eventMessage = "";
+    }
+
+    public MainGameScreen(Stage stage, GameSession session, String eventMessage) {
+        this.STAGE = stage;
+        this.SESSION = session;
+        this.eventMessage = eventMessage;
     }
 
     public Scene createScene() {
@@ -32,7 +44,6 @@ public class MainGameScreen {
         root.setTop(createTopArea());
         root.setLeft(createLeftMenu());
         root.setCenter(createMapArea());
-        root.setBottom(createBottomArea());
 
         messageLabel = new Label();
 
@@ -48,13 +59,15 @@ public class MainGameScreen {
         return new Scene(root, 900, 650);
     }
 
-    private HBox createTopArea() {
+    private VBox createTopArea() {
         topInfoLabel = new Label();
+        eventLabel = new Label();
 
-        HBox topBox = new HBox();
+        VBox topBox = new VBox(8);
         topBox.setAlignment(Pos.CENTER);
         topBox.setPadding(new Insets(15));
-        topBox.getChildren().add(topInfoLabel);
+
+        topBox.getChildren().addAll(topInfoLabel, eventLabel);
 
         return topBox;
     }
@@ -71,43 +84,33 @@ public class MainGameScreen {
         endTurnButton.setMaxWidth(Double.MAX_VALUE);
 
         searchResourceButton.setOnAction(event -> {
-            SearchResourcesScreen searchResourcesScreen = new SearchResourcesScreen(stage,session);
-
-            stage.setScene(searchResourcesScreen.searchResourcesMenu());
-
+            SearchResourcesScreen searchResourcesScreen = new SearchResourcesScreen(STAGE, SESSION);
+            STAGE.setScene(searchResourcesScreen.searchResourcesMenu());
         });
 
-        saveButton.setOnAction(event -> {
-            try {
-                FileHandler.saveFullGame(
-                        session.getMap(),
-                        session.getPlayer1(),
-                        session.getPlayer2(),
-                        session.getDay()
-                );
-
-                messageLabel.setText("Jogo guardado com sucesso!");
-
-            } catch (Exception e) {
-                messageLabel.setText("Erro ao guardar jogo: " + e.getMessage());
-            }
-        });
+        saveButton.setOnAction(event -> saveGame());
 
         endTurnButton.setOnAction(event -> {
-            session.endTurn();
+            String newEventMessage = SESSION.endTurn();
 
-            if (session.isGameOver()) {
-                messageLabel.setText("Fim de jogo!");
+            if (SESSION.isGameOver()) {
+                EndScreen endScreen = new EndScreen(SESSION);
+                STAGE.setScene(endScreen.createScene());
                 return;
             }
 
-            MainGameScreen updatedScreen = new MainGameScreen(stage, session);
-            stage.setScene(updatedScreen.createScene());
+            MainGameScreen updatedScreen = new MainGameScreen(
+                    STAGE,
+                    SESSION,
+                    newEventMessage
+            );
+
+            STAGE.setScene(updatedScreen.createScene());
         });
 
         exitButton.setOnAction(event -> {
-            StartScreen startScreen = new StartScreen(stage, session);
-            stage.setScene(startScreen.createScene());
+            StartScreen startScreen = new StartScreen(STAGE, SESSION);
+            STAGE.setScene(startScreen.createScene());
         });
 
         VBox menu = new VBox(15);
@@ -131,17 +134,16 @@ public class MainGameScreen {
         mapGrid.setHgap(5);
         mapGrid.setVgap(5);
 
-        int columns = session.getMap().getCOLUMN_SIZE();
-        int rows = session.getMap().getLINE_SIZE();
+        int columns = SESSION.getMap().getCOLUMN_SIZE();
+        int rows = SESSION.getMap().getLINE_SIZE();
 
         for (int x = 0; x < columns; x++) {
             for (int y = 0; y < rows; y++) {
                 Button cellButton = new Button();
-
                 cellButton.setPrefSize(70, 70);
 
                 try {
-                    Structures structure = session.getMap().getStructure(x, y);
+                    Structures structure = SESSION.getMap().getStructure(x, y);
 
                     if (structure == null) {
                         cellButton.setText("");
@@ -157,22 +159,31 @@ public class MainGameScreen {
                 int finalY = y;
 
                 cellButton.setOnAction(event -> {
-                    Stage popupStage = new Stage();
+                    if (currentPopupStage != null && currentPopupStage.isShowing()) {
+                        currentPopupStage.close();
+                    }
+
+                    currentPopupStage = new Stage();
 
                     MapCellScreen mapCellScreen = new MapCellScreen(
-                            popupStage,
-                            session,
+                            currentPopupStage,
+                            SESSION,
                             finalX,
                             finalY,
                             () -> {
-                                MainGameScreen updatedScreen = new MainGameScreen(stage, session);
-                                stage.setScene(updatedScreen.createScene());
+                                MainGameScreen updatedScreen = new MainGameScreen(
+                                        STAGE,
+                                        SESSION,
+                                        eventMessage
+                                );
+
+                                STAGE.setScene(updatedScreen.createScene());
                             }
                     );
 
-                    popupStage.setTitle("Ações na posição " + finalX + ", " + finalY);
-                    popupStage.setScene(mapCellScreen.createScene());
-                    popupStage.show();
+                    currentPopupStage.setTitle("Ações na posição " + finalX + ", " + finalY);
+                    currentPopupStage.setScene(mapCellScreen.createScene());
+                    currentPopupStage.show();
                 });
 
                 mapGrid.add(cellButton, y, x);
@@ -195,13 +206,35 @@ public class MainGameScreen {
 
     private void updateInfo() {
         topInfoLabel.setText(
-                "Dia: " + session.getDay()
-                        + " | Jogador atual: " + session.getActualPlayer().getName()
-                        + " | AP: " + session.getActualPlayer().getActionPoints()
+                "Dia: " + SESSION.getDay()
+                        + " | Jogador atual: " + SESSION.getActualPlayer().getName()
+                        + " | AP: " + SESSION.getActualPlayer().getActionPoints()
         );
 
+        if (eventMessage == null || eventMessage.isBlank()) {
+            eventLabel.setText("");
+        } else {
+            eventLabel.setText("Evento: " + eventMessage);
+        }
+
         inventoryLabel.setText(
-                "Inventário: " + session.getActualPlayer().getInventory()
+                "Inventário: " + SESSION.getActualPlayer().getInventory()
         );
+    }
+
+    private void saveGame() {
+        try {
+            FileHandler.saveFullGame(
+                    SESSION.getMap(),
+                    SESSION.getPlayer1(),
+                    SESSION.getPlayer2(),
+                    SESSION.getDay()
+            );
+
+            messageLabel.setText("Jogo guardado com sucesso!");
+
+        } catch (Exception e) {
+            ErrorPopUp.show(e.getMessage());
+        }
     }
 }

@@ -10,53 +10,59 @@ import jogo.engine.GameSession;
 
 public class MapCellScreen {
 
-    private final Stage popupStage;
-    private final GameSession session;
-    private final int x;
-    private final int y;
-    private final Runnable onUpdateMap;
+    private final Stage POPUP_STAGE;
+    private final GameSession SESSION;
+    private final int X;
+    private final int Y;
+    private final Runnable ON_UPDATE_MAP;
 
     public MapCellScreen(Stage popupStage, GameSession session, int x, int y, Runnable onUpdateMap) {
-        this.popupStage = popupStage;
-        this.session = session;
-        this.x = x;
-        this.y = y;
-        this.onUpdateMap = onUpdateMap;
+        this.POPUP_STAGE = popupStage;
+        this.SESSION = session;
+        this.X = x;
+        this.Y = y;
+        this.ON_UPDATE_MAP = onUpdateMap;
     }
 
     public Scene createScene() {
-        Label title = new Label("Ações na posição " + x + ", " + y);
+        Label title = new Label("Ações na posição " + X + ", " + Y);
 
         Button constructStructure = new Button("Construir Estrutura");
+        Button upgradeStructure = new Button("Melhorar Estrutura");
         Button getInfoStructure = new Button("Obter Informações da Estrutura");
         Button closeButton = new Button("Fechar");
 
         constructStructure.setOnAction(event -> {
             CreateStructureScreen screen = new CreateStructureScreen(
-                    popupStage,
-                    session,
-                    x,
-                    y,
-                    onUpdateMap
+                    POPUP_STAGE,
+                    SESSION,
+                    X,
+                    Y,
+                    ON_UPDATE_MAP
             );
 
-            popupStage.setScene(screen.createScene());
+            POPUP_STAGE.setScene(screen.createScene());
+        });
+
+        upgradeStructure.setOnAction(event -> {
+            UpgradeStructureScreen upgradeStructureScreen = new UpgradeStructureScreen(POPUP_STAGE, SESSION);
+            POPUP_STAGE.setScene(upgradeStructureScreen.createScene(X, Y));
         });
 
         getInfoStructure.setOnAction(event -> {
             StructureScreen screen = new StructureScreen(
-                    popupStage,
-                    session,
-                    x,
-                    y,
-                    onUpdateMap
+                    POPUP_STAGE,
+                    SESSION,
+                    X,
+                    Y,
+                    ON_UPDATE_MAP
             );
 
-            popupStage.setScene(screen.createScene());
+            POPUP_STAGE.setScene(screen.createScene());
         });
 
         closeButton.setOnAction(event -> {
-            popupStage.close();
+            POPUP_STAGE.close();
         });
 
         VBox vbox = new VBox(15);
@@ -64,6 +70,7 @@ public class MapCellScreen {
         vbox.getChildren().addAll(
                 title,
                 constructStructure,
+                upgradeStructure,
                 getInfoStructure,
                 closeButton
         );

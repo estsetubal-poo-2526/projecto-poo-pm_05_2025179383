@@ -4,8 +4,6 @@ import jogo.exceptions.InsufficientResourcesException;
 import jogo.models.Player;
 import jogo.models.ResourceType;
 
-import java.util.logging.Level;
-
 public class City extends Structures {
 
 
@@ -39,7 +37,11 @@ public class City extends Structures {
                 scoreModifier
         );
 
-        owner.addActionPoints(AP_BY_LEVEL);
+        owner.addBaseActionPoints(AP_BY_LEVEL);
+    }
+
+    @Override
+    public void generateResource(int resourcesModifier) {
     }
 
     @Override
@@ -54,7 +56,7 @@ public class City extends Structures {
         expense += EXPENSE_BY_LEVEL;
 
         owner.addScore(level * SCORE_BY_LEVEL_MULTIPLIER * scoreModifier);
-        owner.addActionPoints(AP_BY_LEVEL * 2);
+        owner.addBaseActionPoints(AP_BY_LEVEL * 2);
 
         return true;
     }

@@ -12,6 +12,9 @@ import java.util.Random;
 public class GameEngine {
 
     private static final Random random = new Random();
+    private static final int BASE_SEARCH_VALUE = 3;
+    private static final int BONUS_SEARCH_VALUE = 2;
+    private static final int AP_COST_SEARCH = 4;
 
     private GameEngine() {
     }
@@ -81,9 +84,8 @@ public class GameEngine {
     }
 
     public static int searchResources(Player player, ResourceType type) throws GameException {
-        int apCost = 4;
 
-        if (player.getActionPoints() < apCost) {
+        if (player.getActionPoints() < AP_COST_SEARCH) {
             throw new InsufficientAPException();
         }
 
@@ -91,9 +93,9 @@ public class GameEngine {
             throw new GameException("Tipo de recurso inválido.");
         }
 
-        player.removeResource(ResourceType.ACTION_POINTS, apCost);
+        player.removeResource(ResourceType.ACTION_POINTS, AP_COST_SEARCH);
 
-        int gathered = random.nextInt(3) + 2;
+        int gathered = random.nextInt(BASE_SEARCH_VALUE) + BONUS_SEARCH_VALUE   ;
 
         player.addResource(type, gathered);
 
@@ -114,4 +116,17 @@ public class GameEngine {
 
         return structure;
     }
+
+    public static int getApCostSearch() {
+        return AP_COST_SEARCH;
+    }
+
+    public static int getBaseSearchValue() {
+        return BASE_SEARCH_VALUE;
+    }
+
+    public static int getBonusSearchValue() {
+        return BONUS_SEARCH_VALUE;
+    }
+
 }

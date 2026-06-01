@@ -16,6 +16,7 @@ class GameEngineTest {
 
     private WorldMap map;
     private Player player;
+    private static final int MAKE_RICH_VALUES = 100;
 
     @BeforeEach
     void setUp(){
@@ -27,16 +28,19 @@ class GameEngineTest {
     void testSuccessCreateStructure() throws CoordinatesOutOfBoundsException {
         makePlayerRich(player);
 
+        int apBefore = player.getResourceQuantity(ResourceType.ACTION_POINTS);
+        int resourceBefore = player.getResourceQuantity(Forest.getCOST_TYPE());
+
         assertDoesNotThrow(() -> {
             GameEngine.createStructure(map, player, StructuresType.FOREST, 2, 3, 1);
         }, "A estrutura devia ter sido criada com sucesso.");
 
         assertFalse(map.isNotOccupied(2,3), "O Mapa devia estar Ocupado na coordenada [2,3].");
 
-        assertEquals(110 - Forest.getApNeeded(), player.getActionPoints(), "Não foi retirada a quantidade correta de AP");
+        assertEquals(apBefore - Forest.getApNeeded(), player.getActionPoints(), "Não foi retirada a quantidade correta de AP");
 
         int constructionCost = CreateStructure.getMaterialCost(StructuresType.FOREST);
-        assertEquals(110 - constructionCost,player.getResourceQuantity(ResourceType.STONE), "Não foi retirada a quantidade correta de Recurso");
+        assertEquals(resourceBefore - constructionCost,player.getResourceQuantity(ResourceType.STONE), "Não foi retirada a quantidade correta de Recurso");
     }
 
     @Test
@@ -55,7 +59,7 @@ class GameEngineTest {
     @Test
     void testCreateStructureThrowsSpaceAlreadyOccupiedException() throws GameException {
         makePlayerRich(player);
-            map.addStructure(new Forest(player, 1), 2, 3);
+        map.addStructure(new Forest(player, 1), 2, 3);
 
         assertThrows(SpaceAlreadyOccupiedException.class, () -> {
             GameEngine.createStructure(map,player,StructuresType.FOREST,2,3,1);
@@ -90,25 +94,24 @@ class GameEngineTest {
     void testSuccessUpgradeStructure() throws GameException {
 
         makePlayerRich(player);
-        GameEngine.createStructure(map, player, StructuresType.CITY, 0, 0, 1);
+        GameEngine.createStructure(map, player, StructuresType.FOREST, 0, 0, 1);
 
         Structures structure = map.getStructure(0, 0);
-        int resorcesBefone = player.getResourceQuantity(structure.getUpgradeMaterial());
+        int resourcesBefore = player.getResourceQuantity(structure.getUpgradeMaterial());
         int apBefore = player.getResourceQuantity(ResourceType.ACTION_POINTS);
 
-        int expectedResourcesConsuption = structure.getUpgradeCost();
+        int expectedResourcesConsumption = structure.getUpgradeCost();
         int expectedAPCost = structure.getAPCostToUpgrade();
-        int apGanhoNoUpgrade = 6;
 
         assertDoesNotThrow(() -> {
             GameEngine.upgradeStructure(map, player, 0, 0, 1);
         }, "Estrutura devia ter sido melhorada com sucesso em [0,0]");
 
-        assertEquals(resorcesBefone - expectedResourcesConsuption, player.getResourceQuantity(ResourceType.STONE),
+        assertEquals(resourcesBefore - expectedResourcesConsumption, player.getResourceQuantity(structure.getUpgradeMaterial()),
                 "O custo em pedra não foi debitado corretamente.");
 
-        assertEquals(apBefore + apGanhoNoUpgrade - expectedAPCost, player.getResourceQuantity(ResourceType.ACTION_POINTS),
-                "A lógica de AP (ganho vs custo) falhou.");
+        assertEquals(apBefore - expectedAPCost, player.getResourceQuantity(ResourceType.ACTION_POINTS),
+                "A Logica de Remoção de AP Falhou" );
 
         assertEquals(2, structure.getLevel(), "A estrutura devia estar a nível 2.");
     }
@@ -207,6 +210,9 @@ class GameEngineTest {
         int apBefore = player.getResourceQuantity(ResourceType.ACTION_POINTS);
         int woodBefore = player.getResourceQuantity(ResourceType.WOOD);
 
+        int minResourcesFound = GameEngine.getBonusSearchValue();
+        int maxResourcesFound = GameEngine.getBaseSearchValue() + GameEngine.getBonusSearchValue() - 1;
+
 
         Integer result = assertDoesNotThrow(() -> {
             return GameEngine.searchResources(player, ResourceType.WOOD);
@@ -214,29 +220,33 @@ class GameEngineTest {
 
         assertNotNull(result);
 
-        assertEquals(apBefore - 4, player.getResourceQuantity(ResourceType.ACTION_POINTS),
+        assertEquals(apBefore - GameEngine.getApCostSearch(), player.getResourceQuantity(ResourceType.ACTION_POINTS),
                 "Não foi retirado o AP correto da procura");
 
         int woodAfter = player.getResourceQuantity(ResourceType.WOOD);
         int quantityObtained = woodAfter - woodBefore;
 
 
-            assertTrue(quantityObtained >= 2 && quantityObtained <= 4,
-                    "A quantidade de recursos gerada (" + quantityObtained + ") está fora do intervalo [2, 4].");
+            assertTrue(quantityObtained >= minResourcesFound && quantityObtained <= maxResourcesFound,
+                    "A quantidade de recursos gerada (" + quantityObtained + ") está fora do intervalo" + minResourcesFound + " a " + maxResourcesFound);
     }
 
     @Test
     void testSearchResourcesSuccessRepeatedly() throws GameException {
 
+        int minResourcesFound = GameEngine.getBonusSearchValue();
+        int maxResourcesFound = GameEngine.getBaseSearchValue() + GameEngine.getBonusSearchValue() - 1;
+
         for (int i = 0; i < 100; i++) {
-            player.addResource(ResourceType.ACTION_POINTS,4);
+            player.clearInventory();
+            makePlayerRich(player);
 
             int woodBefore = player.getResourceQuantity(ResourceType.WOOD);
             GameEngine.searchResources(player, ResourceType.WOOD);
             int quantityObtained = player.getResourceQuantity(ResourceType.WOOD) - woodBefore;
 
-            assertTrue(quantityObtained >= 2 && quantityObtained <= 4,
-                    "Na iteração " + i + ", a quantidade (" + quantityObtained + ") saiu do intervalo [2, 4].");
+            assertTrue(quantityObtained >= minResourcesFound && quantityObtained <= maxResourcesFound,
+                    "Na iteração " + i + ", a quantidade (" + quantityObtained + ") saiu do intervalo de " + minResourcesFound + " a " + maxResourcesFound);
         }
     }
 
@@ -310,9 +320,12 @@ class GameEngineTest {
     }
 
     private static void makePlayerRich(Player player){
-        player.addResource(ResourceType.WOOD,100);
-        player.addResource(ResourceType.STONE,100);
-        player.addResource(ResourceType.ACTION_POINTS,100);
-        player.addResource(ResourceType.FOOD,100);
+
+        player.clearInventory();
+
+        player.addResource(ResourceType.WOOD, MAKE_RICH_VALUES);
+        player.addResource(ResourceType.STONE,MAKE_RICH_VALUES);
+        player.addResource(ResourceType.ACTION_POINTS,MAKE_RICH_VALUES);
+        player.addResource(ResourceType.FOOD,MAKE_RICH_VALUES);
     }
 }

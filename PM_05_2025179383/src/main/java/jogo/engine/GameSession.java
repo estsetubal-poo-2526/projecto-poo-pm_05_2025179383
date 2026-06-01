@@ -73,7 +73,7 @@ public class GameSession {
     }
 
     public String endTurn() {
-        actualPlayer.resetAC();
+        actualPlayer.resetAP();
 
         if (playerOneTurn) {
             actualPlayer = player2;

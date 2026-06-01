@@ -43,11 +43,7 @@ public abstract class Structures {
         this.owner.addScore(scoreValue * scoreModifier);
     }
 
-    public void generateResource(int resourcesModifier) {
-        if (PRODUCTION != ResourceType.NONE) {
-            owner.addResource(PRODUCTION, level * 2 * resourcesModifier);
-        }
-    }
+    public  abstract void generateResource(int resourcesModifier);
 
     public String consumeResources() {
         int totalCost = expense * level;

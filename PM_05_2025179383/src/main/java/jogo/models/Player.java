@@ -7,6 +7,7 @@ public class Player {
 
     private static final int INITIAL_ITEMS = 10;
     private static final int INITIAL_ACTION_POINTS = 10;
+    private static final int INITIAL_SCORE = 0;
 
     private final String name;
     private int score;
@@ -14,8 +15,13 @@ public class Player {
     private final Map<ResourceType, Integer> inventory;
 
     public Player(String name) {
+
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("Nome Invalido");
+        }
+
         this.name = name;
-        this.score = 0;
+        this.score = INITIAL_SCORE;
         this.baseActionPoints = INITIAL_ACTION_POINTS;
         this.inventory = new HashMap<>();
 
@@ -26,6 +32,11 @@ public class Player {
     }
 
     public Player(String name, int score, int wood, int stone, int food, int actionPoints) {
+
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+
         this.name = name;
         this.score = score;
         this.baseActionPoints = actionPoints;
@@ -57,11 +68,11 @@ public class Player {
         return baseActionPoints;
     }
 
-    public void resetAC() {
+    public void resetAP() {
         inventory.put(ResourceType.ACTION_POINTS, baseActionPoints);
     }
 
-    public void addActionPoints(int value) {
+    public void addBaseActionPoints(int value) {
         addResource(ResourceType.ACTION_POINTS, value);
         baseActionPoints += value;
     }
@@ -89,7 +100,9 @@ public class Player {
 
     public void clearInventory() {
         for (ResourceType type : ResourceType.values()) {
-            inventory.put(type, 0);
+            if (type != ResourceType.NONE) {
+                inventory.put(type, 0);
+            }
         }
     }
 
@@ -101,5 +114,17 @@ public class Player {
                 score,
                 inventory
         );
+    }
+
+    public static int getInitialActionPoints() {
+        return INITIAL_ACTION_POINTS;
+    }
+
+    public static int getInitialItems() {
+        return INITIAL_ITEMS;
+    }
+
+    public static int getInitialScore() {
+        return INITIAL_SCORE;
     }
 }

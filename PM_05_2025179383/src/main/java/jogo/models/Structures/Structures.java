@@ -92,6 +92,8 @@ public abstract class Structures {
 
     public abstract int getUpgradeCost();
 
+    public abstract int getAPCostToUpgrade();
+
     public Player getOwner() {
         return owner;
     }

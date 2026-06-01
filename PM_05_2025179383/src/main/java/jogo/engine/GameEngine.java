@@ -1,9 +1,6 @@
 package jogo.engine;
 
-import jogo.exceptions.GameException;
-import jogo.exceptions.InsufficientAPException;
-import jogo.exceptions.InsufficientResourcesException;
-import jogo.exceptions.SpaceAlreadyOccupiedException;
+import jogo.exceptions.*;
 import jogo.models.Player;
 import jogo.models.ResourceType;
 import jogo.models.Structures.CreateStructure;
@@ -69,10 +66,10 @@ public class GameEngine {
         Structures structure = map.getStructure(x, y);
 
         if (structure == null) {
-            throw new GameException("Não existe nenhuma estrutura nessa posição.");
+            throw new StructureDontExistException();
         }
 
-        int apCost = 10;
+        int apCost = structure.getAPCostToUpgrade();
 
         if (player.getActionPoints() < apCost) {
             throw new InsufficientAPException();
@@ -83,7 +80,7 @@ public class GameEngine {
         player.removeResource(ResourceType.ACTION_POINTS, apCost);
     }
 
-    public static String searchResources(Player player, ResourceType type) throws GameException {
+    public static int searchResources(Player player, ResourceType type) throws GameException {
         int apCost = 4;
 
         if (player.getActionPoints() < apCost) {
@@ -100,7 +97,7 @@ public class GameEngine {
 
         player.addResource(type, gathered);
 
-        return "Encontraste " + gathered + " unidades de " + type + ".";
+        return gathered;
     }
 
     public static Structures getStructureInfo(

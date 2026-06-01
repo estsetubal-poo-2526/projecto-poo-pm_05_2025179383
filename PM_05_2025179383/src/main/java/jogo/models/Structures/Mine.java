@@ -110,4 +110,9 @@ public class Mine extends Structures {
     public static ResourceType getMATERIAL_TO_UPGRADE() {
         return MATERIAL_TO_UPGRADE;
     }
+
+    @Override
+    public int getAPCostToUpgrade() {
+        return BASE_AP_NEEDED * (level + 1);
+    }
 }

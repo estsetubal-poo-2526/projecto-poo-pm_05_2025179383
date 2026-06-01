@@ -110,4 +110,17 @@ public class Forest extends Structures {
     public static ResourceType getMATERIAL_TO_UPGRADE() {
         return MATERIAL_TO_UPGRADE;
     }
+
+    @Override
+    public int getAPCostToUpgrade() {
+        return BASE_AP_NEEDED * (level + 1);
+    }
+
+    public static int getExpenseByLevel() {
+        return EXPENSE_BY_LEVEL;
+    }
+
+    public static int getProfitByLevel() {
+        return PROFIT_BY_LEVEL;
+    }
 }

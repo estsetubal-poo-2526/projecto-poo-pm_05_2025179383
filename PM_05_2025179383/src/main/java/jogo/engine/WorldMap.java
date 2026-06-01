@@ -33,9 +33,9 @@ public class WorldMap {
     }
 
     public void addStructure(Structures structure, int coordinateX, int coordinateY) throws GameException {
-        if (coordinateX < 0 || coordinateX >= COLUMN_SIZE || coordinateY < 0 || coordinateY >= LINE_SIZE) {
-            throw new CoordinatesOutOfBoundsException(coordinateX,coordinateY);
-        }
+
+
+        validateCoordinates(coordinateX,coordinateY);
 
         if (!isNotOccupied(coordinateX, coordinateY)) {
             throw new SpaceAlreadyOccupiedException();
@@ -55,13 +55,16 @@ public class WorldMap {
     }
 
     public Structures getStructure(int coordinateX, int coordinateY) throws GameException {
-        if (coordinateX < 0 || coordinateX >= COLUMN_SIZE || coordinateY < 0 || coordinateY >= LINE_SIZE) {
-            throw new CoordinatesOutOfBoundsException(coordinateX, coordinateY);
-        }
+
+        validateCoordinates(coordinateX,coordinateY);
+
         return map[coordinateX][coordinateY];
     }
 
-    public boolean isNotOccupied(int coordinateX, int coordinateY) {
+    public boolean isNotOccupied(int coordinateX, int coordinateY) throws CoordinatesOutOfBoundsException {
+
+        validateCoordinates(coordinateX,coordinateY);
+
         return map[coordinateX][coordinateY] == null;
     }
 
@@ -92,9 +95,9 @@ public class WorldMap {
     }
 
     public void canInteract(int coordinateX, int coordinateY, Player player) throws GameException {
-        if (coordinateX < 0 || coordinateX >= getCOLUMN_SIZE() || coordinateY < 0 || coordinateY >= getLINE_SIZE()) {
-            throw new CoordinatesOutOfBoundsException(coordinateX,coordinateY);
-        }
+
+
+        validateCoordinates(coordinateX,coordinateY);
         if (isNotOccupied(coordinateX, coordinateY)) {
             throw new StructureDontExistException();
         }
@@ -109,5 +112,11 @@ public class WorldMap {
         }
 
         return map[coordinateX][coordinateY].getOwner().getName();
+    }
+
+    public void validateCoordinates(int coordinateX, int coordinateY) throws CoordinatesOutOfBoundsException {
+        if (coordinateX < 0 || coordinateX >= COLUMN_SIZE || coordinateY < 0 || coordinateY >= LINE_SIZE) {
+            throw new CoordinatesOutOfBoundsException(coordinateX, coordinateY);
+        }
     }
 }

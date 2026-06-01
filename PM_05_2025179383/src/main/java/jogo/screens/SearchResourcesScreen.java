@@ -88,12 +88,12 @@ public class SearchResourcesScreen {
 
     private void handleSearchResource(ResourceType type) {
         try {
-            String result = GameEngine.searchResources(
+            int result = GameEngine.searchResources(
                     SESSION.getActualPlayer(),
                     type
             );
 
-            resourceFoundLabel.setText(result);
+            resourceFoundLabel.setText("Encontraste " + result + " de " + type.name());
 
         } catch (GameException e) {
             ErrorPopUp.show(e.getMessage());

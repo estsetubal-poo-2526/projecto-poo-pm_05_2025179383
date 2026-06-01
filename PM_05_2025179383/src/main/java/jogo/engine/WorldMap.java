@@ -15,15 +15,6 @@ public class WorldMap {
         this.map = new Structures[COLUMN_SIZE][LINE_SIZE];
     }
 
-    public void printMap(){
-        for (int i = 0; i < COLUMN_SIZE; i++){
-            for (int j = 0; j < LINE_SIZE; j++){
-                System.out.print(map[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
-
     public int getCOLUMN_SIZE() {
         return COLUMN_SIZE;
     }
@@ -33,8 +24,6 @@ public class WorldMap {
     }
 
     public void addStructure(Structures structure, int coordinateX, int coordinateY) throws GameException {
-
-
         validateCoordinates(coordinateX,coordinateY);
 
         if (!isNotOccupied(coordinateX, coordinateY)) {
@@ -42,16 +31,6 @@ public class WorldMap {
         }
 
         map[coordinateX][coordinateY] = structure;
-    }
-
-
-    public void clearMap() {
-        for (int i = 0; i < COLUMN_SIZE; i++) {
-            for (int j = 0; j < LINE_SIZE; j++) {
-                map[i][j] = null;
-            }
-        }
-
     }
 
     public Structures getStructure(int coordinateX, int coordinateY) throws GameException {
@@ -104,14 +83,6 @@ public class WorldMap {
         if (!map[coordinateX][coordinateY].getOwner().equals(player)) {
             throw new UnauthorizedActionException();
         }
-    }
-
-    public String getStructureOwnerName(int coordinateX, int coordinateY) throws GameException {
-        if (getStructure(coordinateX,coordinateY) == null) {
-            return null;
-        }
-
-        return map[coordinateX][coordinateY].getOwner().getName();
     }
 
     public void validateCoordinates(int coordinateX, int coordinateY) throws CoordinatesOutOfBoundsException {

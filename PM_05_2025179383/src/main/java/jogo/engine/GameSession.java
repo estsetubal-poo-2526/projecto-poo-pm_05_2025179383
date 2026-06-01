@@ -13,7 +13,7 @@ public class GameSession {
     private Events events;
 
     private int day;
-    private final int totalDays = 10;
+    private final int TOTAL_DAYS = 10;
 
     private int scoreModifier;
     private int resourceModifier;
@@ -116,7 +116,7 @@ public class GameSession {
     }
 
     public boolean isGameOver() {
-        return day > totalDays;
+        return day > TOTAL_DAYS;
     }
 
     public WorldMap getMap() {
@@ -143,8 +143,8 @@ public class GameSession {
         return day;
     }
 
-    public int getTotalDays() {
-        return totalDays;
+    public int getTOTAL_DAYS() {
+        return TOTAL_DAYS;
     }
 
     public int getScoreModifier() {

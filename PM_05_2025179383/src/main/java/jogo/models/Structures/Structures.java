@@ -122,6 +122,10 @@ public abstract class Structures {
         return UPGRADE_MATERIAL;
     }
 
+    public StructuresType getStructureType() {
+        return STRUCTURE_TYPE;
+    }
+
     @Override
     public String toString() {
         return STRUCTURE_TYPE + " nível " + level;

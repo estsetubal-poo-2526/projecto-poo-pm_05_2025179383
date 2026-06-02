@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,10 +28,11 @@ public class FileHandlerTest {
     private int day;
 
     @BeforeEach
-    void setUp() throws GameException {
-        if (realFile.exists()) {
-            realFile.renameTo(backupFile);
-        }
+    void setUp() throws Exception {
+        // TRUQUE DE MAGIA: Altera a constante FILE_NAME do FileHandler apenas durante o teste
+        Field field = FileHandler.class.getDeclaredField("FILE_NAME");
+        field.setAccessible(true);
+        field.set(null, "savegame_test.csv"); // O teste passa a usar este ficheiro temporário
 
         map = new WorldMap();
         p1 = new Player("Fabio");
@@ -45,14 +47,17 @@ public class FileHandlerTest {
     }
 
     @AfterEach
-    void tearDown() {
-        if (realFile.exists()) {
-            realFile.delete();
+    void tearDown() throws Exception {
+        // Limpa o ficheiro de teste do disco
+        File testFile = new File("savegame_test.csv");
+        if (testFile.exists()) {
+            testFile.delete();
         }
 
-        if (backupFile.exists()) {
-            backupFile.renameTo(realFile);
-        }
+        // Restaura o nome original para não estragar o jogo real fora dos testes
+        Field field = FileHandler.class.getDeclaredField("FILE_NAME");
+        field.setAccessible(true);
+        field.set(null, "savegame.csv");
     }
 
     @Test

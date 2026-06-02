@@ -58,10 +58,8 @@ public class FileHandler {
 
     public static SaveData loadGame() throws GameException {
         WorldMap map = new WorldMap();
-
         Player p1 = null;
         Player p2 = null;
-
         int day = 1;
 
         String line;
@@ -69,10 +67,7 @@ public class FileHandler {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
             while ((line = reader.readLine()) != null) {
-
-                if (line.isEmpty()) {
-                    continue;
-                }
+                if (line.isEmpty()) continue;
 
                 if (line.startsWith("#")) {
                     section = line;
@@ -85,14 +80,18 @@ public class FileHandler {
                     day = Integer.parseInt(data[0]);
 
                 } else if (section.equals("#PLAYERS")) {
-                    Player p = new Player(
-                            data[0],
-                            Integer.parseInt(data[1]),
-                            Integer.parseInt(data[2]),
-                            Integer.parseInt(data[3]),
-                            Integer.parseInt(data[4]),
-                            Integer.parseInt(data[5])
-                    );
+                    // Extrai explicitamente na ordem em que foi guardado no CSV:
+                    // Name, Score, Wood, Stone, Food, AP
+                    String name = data[0];
+                    int score = Integer.parseInt(data[1]);
+                    int wood = Integer.parseInt(data[2]);
+                    int stone = Integer.parseInt(data[3]);
+                    int food = Integer.parseInt(data[4]);
+                    int ap = Integer.parseInt(data[5]);
+
+                    // Garante que passas os argumentos exatamente na ordem do construtor do Player:
+                    // Construtor: (name, score, wood, stone, food, actionPoints)
+                    Player p = new Player(name, score, wood, stone, food, ap);
 
                     if (p1 == null) {
                         p1 = p;
@@ -102,13 +101,11 @@ public class FileHandler {
 
                 } else if (section.equals("#STRUCTURES")) {
                     StructuresType type = StructuresType.valueOf(data[0]);
-
                     int x = Integer.parseInt(data[1]);
                     int y = Integer.parseInt(data[2]);
                     int level = Integer.parseInt(data[3]);
 
                     Player owner = getOwnerByName(data[4], p1, p2);
-
                     Structures s = CreateStructure.create(type, owner, 1);
 
                     if (s != null) {

@@ -114,4 +114,24 @@ public class City extends Structures {
     public int getAPCostToUpgrade() {
         return BASE_AP_NEEDED * (level + 1);
     }
+
+    public static StructuresType getSTRUCTURE_TYPE() {
+        return STRUCTURE_TYPE;
+    }
+
+    public static int getAP_BY_LEVEL(){
+        return AP_BY_LEVEL;
+    }
+
+    public static int getBASE_SCORE_VALUE() {
+        return BASE_SCORE_VALUE;
+    }
+
+    public static int getEXPENSE_BY_LEVEL(){
+        return EXPENSE_BY_LEVEL;
+    }
+
+    public static int getScoreByLevelMultiplier() {
+        return SCORE_BY_LEVEL_MULTIPLIER;
+    }
 }

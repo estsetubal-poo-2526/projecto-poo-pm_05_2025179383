@@ -23,8 +23,16 @@ public class CreateStructure {
 
     public static ResourceType getMaterialType(StructuresType structure) {
         switch (structure) {
-            case FOREST: case CITY: return ResourceType.STONE;
-            case MINE:    case RANCH: return ResourceType.WOOD;
+            case FOREST:
+                return Forest.getCOST_TYPE();
+
+                case CITY:
+                    return City.getCOST_TYPE();
+
+            case MINE:
+                return Mine.getCOST_TYPE();
+                case RANCH:
+                    return Ranch.getCOST_TYPE();
 
             default: return ResourceType.NONE;
         }
@@ -45,10 +53,8 @@ public class CreateStructure {
             case CITY:
                 return new City(owner, scoreModifier);
 
-            default:
-                throw new StructureDontExistException();
-
         }
+        return null;
     }
 
 

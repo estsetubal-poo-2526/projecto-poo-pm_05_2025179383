@@ -37,6 +37,10 @@ public class Forest extends Structures {
         );
     }
 
+    public static StructuresType getSTRUCTURE_TYPE() {
+        return STRUCTURE_TYPE;
+    }
+
     @Override
     public boolean upgradeStructure(int scoreModifier) throws InsufficientResourcesException {
         int upgradeCost = getUpgradeCost();

@@ -1,6 +1,5 @@
 package models.Structures;
 
-import jogo.exceptions.InsufficientAPException;
 import jogo.exceptions.InsufficientResourcesException;
 import jogo.models.Player;
 import jogo.models.ResourceType;

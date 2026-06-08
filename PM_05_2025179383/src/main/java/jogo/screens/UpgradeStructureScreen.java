@@ -21,13 +21,12 @@ public class UpgradeStructureScreen {
 
     private final Stage STAGE;
     private final GameSession SESSION;
-    private final Runnable ON_UPDATE_MAP; // Linha vital para a sobrevivência da tua RAM
+    private final Runnable ON_UPDATE_MAP; // Salvadora da pátria contra fugas de memória
 
     private Label messageLabel;
     private HBox successNotificationBar;
     private VBox bottomLayout;
 
-    // Construtor corrigido para aceitar o callback de atualização
     public UpgradeStructureScreen(Stage stage, GameSession session, Runnable onUpdateMap) {
         this.SESSION = session;
         this.STAGE = stage;
@@ -45,14 +44,14 @@ public class UpgradeStructureScreen {
             borderPane.setCenter(center(x, y));
             borderPane.setBottom(bottom(x, y));
         } catch (GameException e) {
+            // Mostra o teu pop-up de erro com a mensagem da exceção
             ErrorPopUp.show(e.getMessage());
-            Button goBack = new Button("Voltar");
-            goBack.getStyleClass().add("btn-back");
-            goBack.setOnAction(event -> fecharEAtualizar());
 
-            BorderPane errorPane = new BorderPane(goBack);
-            errorPane.setPadding(new Insets(50));
-            return new Scene(errorPane, 400, 300);
+            // Fecha esta janela imediatamente para não abrir ecrãs anões aberrantes
+            fecharEAtualizar();
+
+            // Retorna uma cena fake e minúscula só para o JavaFX não estoirar antes de fechar a Stage
+            return new Scene(new BorderPane(), 1, 1);
         }
 
         Scene scene = new Scene(borderPane, 1200, 800);
@@ -167,8 +166,6 @@ public class UpgradeStructureScreen {
         goBack.getStyleClass().add("btn-back");
 
         upgrade.setOnAction(event -> upgradeStructure(x, y));
-
-        // AQUI: Agora fecha a janela em vez de criar um universo paralelo de MainGameScreens
         goBack.setOnAction(event -> fecharEAtualizar());
 
         HBox buttonsBox = new HBox(20);
@@ -206,14 +203,12 @@ public class UpgradeStructureScreen {
                     SESSION.getScoreModifier()
             );
 
-            // Mantém o fluxo passando o ON_UPDATE_MAP para o ecrã atualizado
             UpgradeStructureScreen nextScreen = new UpgradeStructureScreen(STAGE, SESSION, ON_UPDATE_MAP);
             Scene nextScene = nextScreen.createScene(x, y);
             nextScreen.messageLabel.setText("Pronto para melhorar a estrutura!");
 
             STAGE.setScene(nextScene);
 
-            // Força a tela de trás (o jogo principal) a atualizar os dados em tempo real
             if (ON_UPDATE_MAP != null) {
                 ON_UPDATE_MAP.run();
             }
@@ -223,7 +218,6 @@ public class UpgradeStructureScreen {
         }
     }
 
-    // Método auxiliar para fechar isto decentemente
     private void fecharEAtualizar() {
         if (ON_UPDATE_MAP != null) {
             ON_UPDATE_MAP.run();

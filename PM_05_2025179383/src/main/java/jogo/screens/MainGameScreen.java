@@ -279,15 +279,31 @@ public class MainGameScreen {
         cellButton.setMinSize(60, 60);
         cellButton.setMaxSize(60, 60);
 
+        // 1. Aplica a classe CSS para herdar as bordas, o hover e os dropshadows
         cellButton.getStyleClass().add("map-cell");
+
+        // 2. Tenta injetar o caminho da imagem dinamicamente com validação explícita
+        try {
+            var resource = getClass().getResource("/icons/grassland.png");
+
+            if (resource != null) {
+                // Injeta o URL direto no estilo do botão, limpando a cor cinzenta padrão
+                cellButton.setStyle(
+                        "-fx-background-image: url('" + resource.toExternalForm() + "'); " +
+                                "-fx-background-color: transparent;"
+                );
+            } else {
+                System.err.println("❌ ERRO CRÍTICO: O ficheiro '/images/grama_textura.png' não foi encontrado nas resources!");
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao aplicar imagem de fundo: " + e.getMessage());
+        }
 
         try {
             Structures structure = SESSION.getMap().getStructure(x, y);
-
             if (structure != null) {
                 addStructureToCell(cellButton, structure);
             }
-
         } catch (Exception ignored) {
         }
 

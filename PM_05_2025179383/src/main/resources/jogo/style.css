@@ -51,7 +51,7 @@
 /* --- MAP CELL POPUP --- */
 
 .map-cell-root {
-    -fx-background-image: url("/images/fundo_paisagem.jpg");
+    -fx-background-color: #EEE;
     -fx-background-size: cover;
     -fx-background-position: center;
 }
@@ -736,21 +736,20 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 3);
 }
 
-/* Célula quadrada com imagem de fundo */
-.map-cell {
-    -fx-background-image: url("/images/grama_textura.png");
-    -fx-background-size: cover;
-    -fx-background-position: center;
-    -fx-background-repeat: no-repeat;
+//* Célula quadrada com imagem de fundo configurada no Java */
+ .map-cell {
+     -fx-background-size: cover;
+     -fx-background-position: center;
+     -fx-background-repeat: no-repeat;
 
-    -fx-background-radius: 7;
-    -fx-border-color: #aeb98f;
-    -fx-border-radius: 7;
-    -fx-border-width: 1.5;
+     -fx-background-radius: 7;
+     -fx-border-color: #aeb98f;
+     -fx-border-radius: 7;
+     -fx-border-width: 1.5;
 
-    -fx-cursor: hand;
-    -fx-padding: 0;
-}
+     -fx-cursor: hand;
+     -fx-padding: 0;
+ }
 
 .map-cell:hover {
     -fx-border-color: #7f915e;

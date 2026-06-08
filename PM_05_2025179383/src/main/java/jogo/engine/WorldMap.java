@@ -63,8 +63,7 @@ public class WorldMap {
         for (int i = 0; i < COLUMN_SIZE; i++) {
             for (int j = 0; j < LINE_SIZE; j++) {
                 if (map[i][j] != null) {
-                    String status = map[i][j].consumeResources();
-                    System.out.println("[Jogo]: " + status);
+                    map[i][j].consumeResources();
                     if (map[i][j].getLevel() <= 0) {
                         map[i][j] = null;
                     }

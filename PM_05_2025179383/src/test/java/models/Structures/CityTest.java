@@ -64,6 +64,6 @@ public class CityTest {
     void testSetLevelCalculatesExpenseCorrectly() {
         city.setLevel(3);
         assertEquals(3, city.getLevel());
-        assertEquals(22, city.getExpense(), "A despesa para o nível 3 foi mal calculada.");
+        assertEquals(City.getEXPENSE() + City.getEXPENSE_BY_LEVEL() * (city.getLevel() - 1), city.getExpense(), "A despesa para o nível 3 foi mal calculada.");
     }
 }

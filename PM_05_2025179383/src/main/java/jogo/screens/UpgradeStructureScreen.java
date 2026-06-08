@@ -21,14 +21,17 @@ public class UpgradeStructureScreen {
 
     private final Stage STAGE;
     private final GameSession SESSION;
+    private final Runnable ON_UPDATE_MAP; // Linha vital para a sobrevivência da tua RAM
 
     private Label messageLabel;
     private HBox successNotificationBar;
     private VBox bottomLayout;
 
-    public UpgradeStructureScreen(Stage stage, GameSession session) {
+    // Construtor corrigido para aceitar o callback de atualização
+    public UpgradeStructureScreen(Stage stage, GameSession session, Runnable onUpdateMap) {
         this.SESSION = session;
         this.STAGE = stage;
+        this.ON_UPDATE_MAP = onUpdateMap;
     }
 
     public Scene createScene(int x, int y) {
@@ -38,7 +41,6 @@ public class UpgradeStructureScreen {
         messageLabel = new Label();
 
         try {
-            // Desenha os componentes principais
             borderPane.setLeft(left(x, y));
             borderPane.setCenter(center(x, y));
             borderPane.setBottom(bottom(x, y));
@@ -46,7 +48,7 @@ public class UpgradeStructureScreen {
             ErrorPopUp.show(e.getMessage());
             Button goBack = new Button("Voltar");
             goBack.getStyleClass().add("btn-back");
-            goBack.setOnAction(event -> goBackToMainGameScreen());
+            goBack.setOnAction(event -> fecharEAtualizar());
 
             BorderPane errorPane = new BorderPane(goBack);
             errorPane.setPadding(new Insets(50));
@@ -67,7 +69,6 @@ public class UpgradeStructureScreen {
         vBox.setAlignment(Pos.CENTER);
         vBox.setPadding(new Insets(0, 40, 0, 10));
 
-        // Tenta carregar a imagem dinamicamente baseada no nome da estrutura
         try {
             String structureName = getStructureMap(x, y).getClass().getSimpleName().toLowerCase();
             Image buildingImg = new Image(getClass().getResourceAsStream("/icons/" + structureName + ".png"));
@@ -76,12 +77,10 @@ public class UpgradeStructureScreen {
             iv.setFitHeight(320);
             iv.setPreserveRatio(true);
 
-            // Container para dar a borda arredondada à imagem
             VBox imgWrapper = new VBox(iv);
             imgWrapper.getStyleClass().add("building-preview");
             vBox.getChildren().add(imgWrapper);
         } catch (Exception e) {
-            // Imagem genérica se falhar
             Label label = new Label("[Imagem da Estrutura]");
             vBox.getChildren().add(label);
         }
@@ -93,26 +92,21 @@ public class UpgradeStructureScreen {
         Label title = new Label("Melhorar Estrutura");
         title.getStyleClass().add("upgrade-title");
 
-        // Criar a tabela de atributos usando um GridPane
         GridPane grid = new GridPane();
         grid.setHgap(20);
         grid.setVgap(25);
         grid.setAlignment(Pos.CENTER_LEFT);
         grid.setPadding(new Insets(30, 0, 30, 0));
 
-        // Linha 1: Nível
         adicionarLinhaGrid(grid, 0, "/icons/star.png", "Nível atual:",
                 String.valueOf(getLevelStructure(x, y)), String.valueOf(getLevelStructure(x, y) + 1), false, false);
 
-        // Linha 2: Despesa
         adicionarLinhaGrid(grid, 1, "/icons/dollar.png", "Despesa atual:",
                 getActualExpense(x, y), getFutureExpense(x, y), false, false);
 
-        // Linha 3: Produção
         adicionarLinhaGrid(grid, 2, "/icons/forest.png", "Produção atual:",
                 getActualProduction(x, y), getFutureProduction(x, y), false, false);
 
-        // Linha 4: Custo de Melhoria (Aqui passamos como custo/vermelho)
         adicionarLinhaGrid(grid, 3, "/icons/tool.png", "Custo de melhoria:",
                 getCostToUpgrade(x, y), "", true, true);
 
@@ -125,19 +119,16 @@ public class UpgradeStructureScreen {
     }
 
     private void adicionarLinhaGrid(GridPane grid, int row, String iconPath, String labelText, String oldVal, String newVal, boolean isCost, boolean isSingleValue) {
-        // Coluna 0: Ícone do atributo
         try {
             ImageView iv = new ImageView(new Image(getClass().getResourceAsStream(iconPath)));
             iv.setFitWidth(24); iv.setFitHeight(24); iv.setPreserveRatio(true);
             grid.add(iv, 0, row);
         } catch (Exception e) {}
 
-        // Coluna 1: Nome do Atributo
         Label lbl = new Label(labelText);
         lbl.getStyleClass().add("attr-label");
         grid.add(lbl, 1, row);
 
-        // Coluna 2: Valor Antigo / Atual
         Label lblOld = new Label(oldVal);
         if (isCost) {
             lblOld.getStyleClass().add("value-cost");
@@ -146,15 +137,12 @@ public class UpgradeStructureScreen {
         }
         grid.add(lblOld, 2, row);
 
-        // Se for uma linha com "Antes -> Depois", adiciona a seta e o valor novo
         if (!isSingleValue) {
-            // Coluna 3: Seta
             Label arrow = new Label("→");
             arrow.getStyleClass().add("value-old");
             arrow.setStyle("-fx-text-fill: #94a3b8;");
             grid.add(arrow, 3, row);
 
-            // Coluna 4: Valor Novo
             Label lblNew = new Label(newVal);
             lblNew.getStyleClass().add("value-new");
             grid.add(lblNew, 4, row);
@@ -179,7 +167,9 @@ public class UpgradeStructureScreen {
         goBack.getStyleClass().add("btn-back");
 
         upgrade.setOnAction(event -> upgradeStructure(x, y));
-        goBack.setOnAction(event -> goBackToMainGameScreen());
+
+        // AQUI: Agora fecha a janela em vez de criar um universo paralelo de MainGameScreens
+        goBack.setOnAction(event -> fecharEAtualizar());
 
         HBox buttonsBox = new HBox(20);
         buttonsBox.setAlignment(Pos.CENTER);
@@ -187,7 +177,6 @@ public class UpgradeStructureScreen {
 
         bottomLayout.getChildren().add(buttonsBox);
 
-        // Preparar a barra de notificação de sucesso oculta
         successNotificationBar = new HBox(10);
         successNotificationBar.getStyleClass().add("success-bar");
         successNotificationBar.setAlignment(Pos.CENTER);
@@ -200,7 +189,6 @@ public class UpgradeStructureScreen {
         messageLabel.getStyleClass().add("success-text");
         successNotificationBar.getChildren().add(messageLabel);
 
-        // Se a mensagem já tiver conteúdo (devido ao refresh), exibe a barra
         if (messageLabel.getText() != null && !messageLabel.getText().isEmpty()) {
             bottomLayout.getChildren().add(successNotificationBar);
         }
@@ -218,21 +206,29 @@ public class UpgradeStructureScreen {
                     SESSION.getScoreModifier()
             );
 
-            // Recarrega o ecrã, mas injeta a mensagem de sucesso
-            UpgradeStructureScreen nextScreen = new UpgradeStructureScreen(STAGE, SESSION);
+            // Mantém o fluxo passando o ON_UPDATE_MAP para o ecrã atualizado
+            UpgradeStructureScreen nextScreen = new UpgradeStructureScreen(STAGE, SESSION, ON_UPDATE_MAP);
             Scene nextScene = nextScreen.createScene(x, y);
             nextScreen.messageLabel.setText("Pronto para melhorar a estrutura!");
 
             STAGE.setScene(nextScene);
+
+            // Força a tela de trás (o jogo principal) a atualizar os dados em tempo real
+            if (ON_UPDATE_MAP != null) {
+                ON_UPDATE_MAP.run();
+            }
 
         } catch (GameException e) {
             ErrorPopUp.show(e.getMessage());
         }
     }
 
-    private void goBackToMainGameScreen() {
-        MainGameScreen mainGameScreen = new MainGameScreen(STAGE, SESSION);
-        STAGE.setScene(mainGameScreen.createScene());
+    // Método auxiliar para fechar isto decentemente
+    private void fecharEAtualizar() {
+        if (ON_UPDATE_MAP != null) {
+            ON_UPDATE_MAP.run();
+        }
+        STAGE.close();
     }
 
     private Structures getStructureMap(int x, int y) throws GameException {

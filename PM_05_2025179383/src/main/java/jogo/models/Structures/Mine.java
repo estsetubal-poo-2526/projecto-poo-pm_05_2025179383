@@ -115,4 +115,12 @@ public class Mine extends Structures {
     public int getAPCostToUpgrade() {
         return BASE_AP_NEEDED * (level + 1);
     }
+
+    public static int getScoreByLevelMultiplier() {
+        return SCORE_BY_LEVEL_MULTIPLIER;
+    }
+
+    public static int getProfitByLevel() {
+        return PROFIT_BY_LEVEL;
+    }
 }

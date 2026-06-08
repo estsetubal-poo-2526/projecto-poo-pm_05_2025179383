@@ -29,16 +29,13 @@ public class MapCellScreen {
         this.ON_UPDATE_MAP = onUpdateMap;
     }
 
-    // Método mágico para estruturar o botão exatamente como na imagem
     private Button criarBotaoMenu(String texto, String caminhoIcone, boolean isFechar) {
         Button btn = new Button();
         btn.getStyleClass().add("cell-action-btn");
 
-        // Criar o esqueleto de dentro do botão (Esquerda: Ícone, Centro: Texto, Direita: Seta)
         BorderPane conteudoInner = new BorderPane();
-        conteudoInner.setMouseTransparent(true); // Evita que cliques nos labels quebrem o botão
+        conteudoInner.setMouseTransparent(true);
 
-        // 1. Ícone da esquerda
         try {
             Image img = new Image(getClass().getResourceAsStream(caminhoIcone));
             ImageView iv = new ImageView(img);
@@ -52,7 +49,6 @@ public class MapCellScreen {
             System.out.println("Ícone em falta: " + caminhoIcone);
         }
 
-        // 2. Texto do meio
         Label labelTexto = new Label(texto);
         if (isFechar) {
             labelTexto.getStyleClass().add("cell-close-text");
@@ -62,26 +58,22 @@ public class MapCellScreen {
         BorderPane.setAlignment(labelTexto, Pos.CENTER_LEFT);
         conteudoInner.setCenter(labelTexto);
 
-        // 3. Seta da direita (só se não for o botão de fechar)
         if (!isFechar) {
             Label labelSeta = new Label(">");
             labelSeta.getStyleClass().add("cell-action-text");
-            labelSeta.setStyle("-fx-text-fill: #9c9284;"); // Seta num tom mais claro cinzento
+            labelSeta.setStyle("-fx-text-fill: #9c9284;");
             BorderPane.setAlignment(labelSeta, Pos.CENTER_RIGHT);
             conteudoInner.setRight(labelSeta);
         }
 
-        // Encaixar o BorderPane todo dentro do botão
         btn.setGraphic(conteudoInner);
         return btn;
     }
 
     public Scene createScene() {
-        // Layout Root em StackPane para aguentar a imagem de fundo atrás de tudo
         StackPane root = new StackPane();
         root.getStyleClass().add("map-cell-root");
 
-        // Ícone de Localização do Topo (aquele pin verde com terra)
         ImageView pinIcon = new ImageView();
         try {
             pinIcon.setImage(new Image(getClass().getResourceAsStream("/icons/circle.png")));
@@ -95,20 +87,19 @@ public class MapCellScreen {
         Label title = new Label("Ações na posição (" + X + ", " + Y + ")");
         title.getStyleClass().add("menu-title");
 
-        // Criar os botões com o novo método artolas
         Button constructStructure = criarBotaoMenu("Construir Estrutura", "/icons/tool.png", false);
         Button upgradeStructure = criarBotaoMenu("Melhorar Estrutura", "/icons/up-arrow.png", false);
         Button getInfoStructure = criarBotaoMenu("Obter Informações da Estrutura", "/icons/information.png", false);
         Button closeButton = criarBotaoMenu("Fechar", "/icons/close.png", true);
 
-        // Ações dos botões (inalteradas para não estragar a tua lógica)
         constructStructure.setOnAction(event -> {
             CreateStructureScreen screen = new CreateStructureScreen(POPUP_STAGE, SESSION, X, Y, ON_UPDATE_MAP);
             POPUP_STAGE.setScene(screen.createScene());
         });
 
+        // AQUI: Agora passamos convenientemente o ON_UPDATE_MAP para o ecrã de upgrade
         upgradeStructure.setOnAction(event -> {
-            UpgradeStructureScreen upgradeStructureScreen = new UpgradeStructureScreen(POPUP_STAGE, SESSION);
+            UpgradeStructureScreen upgradeStructureScreen = new UpgradeStructureScreen(POPUP_STAGE, SESSION, ON_UPDATE_MAP);
             POPUP_STAGE.setScene(upgradeStructureScreen.createScene(X, Y));
         });
 
@@ -119,11 +110,10 @@ public class MapCellScreen {
 
         closeButton.setOnAction(event -> POPUP_STAGE.close());
 
-        // Alinhamento vertical de tudo
         VBox menuBox = new VBox(15);
         menuBox.setAlignment(Pos.CENTER);
         menuBox.setPadding(new Insets(40));
-        menuBox.getStyleClass().add("menu-container"); // Aplica o painel semi-transparente se quiseres
+        menuBox.getStyleClass().add("menu-container");
 
         menuBox.getChildren().addAll(
                 pinIcon,
@@ -136,7 +126,7 @@ public class MapCellScreen {
 
         root.getChildren().add(menuBox);
 
-        Scene scene = new Scene(root, 1000, 650); // Ajustei ligeiramente para bater melhor com a proporção da imagem
+        Scene scene = new Scene(root, 1000, 650);
 
         try {
             scene.getStylesheets().add(getClass().getResource("/jogo/style.css").toExternalForm());

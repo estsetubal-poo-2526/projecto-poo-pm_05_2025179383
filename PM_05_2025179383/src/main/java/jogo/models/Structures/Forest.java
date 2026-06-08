@@ -127,4 +127,8 @@ public class Forest extends Structures {
     public static int getProfitByLevel() {
         return PROFIT_BY_LEVEL;
     }
+
+    public static int getScoreByLevelMultiplier() {
+        return SCORE_BY_LEVEL_MULTIPLIER;
+    }
 }

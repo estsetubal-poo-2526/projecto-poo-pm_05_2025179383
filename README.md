@@ -52,7 +52,7 @@ src/
 └── test/                          # Pacote contendo os testes unitários da lógica do jogo
 ```
 
-   #Autores
+# Autores
 
    Fabio Cruz - https://github.com/FabioCruz2005
    Tiago Silva - https://github.com/Notosant-IPS

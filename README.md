@@ -39,7 +39,7 @@ Jogo
 src/
 ├── main/
 │   ├── java/
-│   │   └── (pacote base)/
+│   │   └── jogo/
 │   │       ├── Main.java          # Ponto de entrada da aplicação
 │   │       ├── engine/            # Motores e controladores do ciclo de jogo
 │   │       ├── exceptions/        # Exceções personalizadas para controlo de erros

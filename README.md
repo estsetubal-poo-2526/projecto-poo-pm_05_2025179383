@@ -35,10 +35,11 @@ Jogo
 
 # Estrutura do Projeto
 
+```text
 src/
 ├── main/
 │   ├── java/
-│   │   └── jogo/
+│   │   └── (pacote base)/
 │   │       ├── Main.java          # Ponto de entrada da aplicação
 │   │       ├── engine/            # Motores e controladores do ciclo de jogo
 │   │       ├── exceptions/        # Exceções personalizadas para controlo de erros
@@ -49,6 +50,7 @@ src/
 │       ├── icons/                 # Imagens e ícones utilizados na interface
 │       └── style/                 # Ficheiros CSS para estilização da UI
 └── test/                          # Pacote contendo os testes unitários da lógica do jogo
+```
 
    #Autores
 

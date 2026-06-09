@@ -4,6 +4,14 @@ import jogo.exceptions.InsufficientResourcesException;
 import jogo.models.Player;
 import jogo.models.ResourceType;
 
+/**
+ * Abstract baseline class for all architectural structures within the game world.
+ * Defines the core state machine for lifecycle management, including daily resource
+ * consumption, maintenance degradation, production yields, and evolutionary upgrades.
+ *
+ * @author Fabio Cruz
+ * @author Tiago Silva
+ */
 public abstract class Structures {
 
     protected final StructuresType STRUCTURE_TYPE;
@@ -17,6 +25,21 @@ public abstract class Structures {
 
     protected final Player owner;
 
+    /**
+     * Constructs the structural foundations, binds it to an owner, and injects
+     * the initial architectural score value into the player's records.
+     *
+     * @param structureType       The specific type categorizing this structure.
+     * @param production          The type of resource this building yields.
+     * @param maintenanceMaterial The resource required to sustain daily operational costs.
+     * @param expense             The initial maintenance expense value.
+     * @param profit              The initial baseline resource production profit value.
+     * @param owner               The Player instances who holds title to this building.
+     * @param upgradeMaterial     The resource required to process evolutionary upgrades.
+     * @param level               The starting developmental level.
+     * @param scoreValue          The baseline victory points value assigned by this structure.
+     * @param scoreModifier       The active multiplier applied to the baseline score.
+     */
     public Structures(
             StructuresType structureType,
             ResourceType production,
@@ -43,10 +66,25 @@ public abstract class Structures {
         this.owner.addScore(scoreValue * scoreModifier);
     }
 
-    public  abstract void generateResource(int resourcesModifier);
+    /**
+     * Triggers the daily resource acquisition routine, forcing concrete implementations
+     * to resolve and append materials directly to the owning player's inventory.
+     *
+     * @param resourcesModifier The current active global production multiplier.
+     */
+    public abstract void generateResource(int resourcesModifier);
 
+    /**
+     * Deducts the current maintenance fees from the owner's inventory.
+     * If the asset balance is deficient, the structure enters a degradation cycle,
+     * reducing its developmental level, or faces complete destruction if the level hits zero.
+     *
+     * @return A formatted status string detailing the success, degradation, or destruction outcome.
+     */
     public String consumeResources() {
-        int totalCost = expense * level;
+        // CORRIGIDO: Removida a multiplicação absurda por level.
+        // O atributo expense já acompanha o crescimento do nível da estrutura.
+        int totalCost = expense;
 
         if (owner.removeResource(MAINTENANCE_MATERIAL, totalCost)) {
             return String.format(

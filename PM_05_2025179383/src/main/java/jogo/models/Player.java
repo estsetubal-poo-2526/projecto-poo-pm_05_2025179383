@@ -1,8 +1,17 @@
 package jogo.models;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents a player within the game session.
+ * Manages the player's unique identity, score tracking, Action Points (AP),
+ * and an inventory of various material resources.
+ *
+ * @author Fabio Cruz
+ * @author Tiago Silva
+ */
 public class Player {
 
     private static final int INITIAL_ITEMS = 10;
@@ -14,10 +23,15 @@ public class Player {
     private int baseActionPoints;
     private final Map<ResourceType, Integer> inventory;
 
+    /**
+     * Constructs a new Player with default starting resources, score, and Action Points.
+     *
+     * @param name The unique name of the player.
+     * @throws IllegalArgumentException If the provided name is empty or null.
+     */
     public Player(String name) {
-
-        if (name.isEmpty()) {
-            throw new IllegalArgumentException("Nome Invalido");
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome Inválido");
         }
 
         this.name = name;
@@ -31,10 +45,21 @@ public class Player {
         inventory.put(ResourceType.FOOD, INITIAL_ITEMS);
     }
 
+    /**
+     * Constructs a Player instance with explicit values for all attributes.
+     * Primarily utilized by the data persistence layer when restoring a saved game state.
+     *
+     * @param name         The name of the player.
+     * @param score        The player's accumulated score.
+     * @param wood         The initial amount of wood resource.
+     * @param stone        The initial amount of stone resource.
+     * @param food         The initial amount of food resource.
+     * @param actionPoints The current available Action Points.
+     * @throws IllegalArgumentException If the provided name is empty or null.
+     */
     public Player(String name, int score, int wood, int stone, int food, int actionPoints) {
-
-        if (name.isEmpty()) {
-            throw new IllegalArgumentException();
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome Inválido");
         }
 
         this.name = name;
@@ -53,11 +78,16 @@ public class Player {
     }
 
     public int getActionPoints() {
-        return inventory.get(ResourceType.ACTION_POINTS);
+        return inventory.getOrDefault(ResourceType.ACTION_POINTS, 0);
     }
 
+    /**
+     * Returns an unmodifiable view of the player's current resource inventory.
+     *
+     * @return A read-only Map containing the resource types and their quantities.
+     */
     public Map<ResourceType, Integer> getInventory() {
-        return Map.copyOf(inventory);
+        return Collections.unmodifiableMap(inventory);
     }
 
     public int getScore() {
@@ -68,27 +98,62 @@ public class Player {
         return baseActionPoints;
     }
 
+    /**
+     * Resets the player's current Action Points in the inventory back to their baseline value.
+     * Typically triggered at the start of a new game turn.
+     */
     public void resetAP() {
         inventory.put(ResourceType.ACTION_POINTS, baseActionPoints);
     }
 
+    /**
+     * Permanently increases the player's maximum baseline Action Points and updates
+     * the current available pool.
+     *
+     * @param value The amount of baseline points to add.
+     */
     public void addBaseActionPoints(int value) {
         addResource(ResourceType.ACTION_POINTS, value);
         baseActionPoints += value;
     }
 
+    /**
+     * Increments the player's total victory score.
+     *
+     * @param value The points to be added to the score.
+     */
     public void addScore(int value) {
         score += value;
     }
 
+    /**
+     * Retrieves the current quantity of a specific resource stored in the inventory.
+     *
+     * @param resource The ResourceType to query.
+     * @return The integer amount of the resource, or 0 if it is not present.
+     */
     public int getResourceQuantity(ResourceType resource) {
         return inventory.getOrDefault(resource, 0);
     }
 
+    /**
+     * Adds a specified quantity of a resource to the player's inventory.
+     *
+     * @param resource The ResourceType to accumulate.
+     * @param quantity The positive amount to add.
+     */
     public void addResource(ResourceType resource, int quantity) {
         inventory.merge(resource, quantity, Integer::sum);
     }
 
+    /**
+     * Attempts to deduct a specified quantity of a resource from the inventory.
+     * Fails if the player possesses insufficient quantities.
+     *
+     * @param resource The ResourceType to consume.
+     * @param quantity The amount required for the operation.
+     * @return true if the consumption succeeded; false if resources were insufficient.
+     */
     public boolean removeResource(ResourceType resource, int quantity) {
         if (getResourceQuantity(resource) < quantity) {
             return false;
@@ -98,6 +163,9 @@ public class Player {
         return true;
     }
 
+    /**
+     * Sets the quantity of all valid in-game resources to zero.
+     */
     public void clearInventory() {
         for (ResourceType type : ResourceType.values()) {
             if (type != ResourceType.NONE) {

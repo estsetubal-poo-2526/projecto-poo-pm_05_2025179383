@@ -4,6 +4,14 @@ import jogo.exceptions.InsufficientResourcesException;
 import jogo.models.Player;
 import jogo.models.ResourceType;
 
+/**
+ * Represents a Mine structure in the game world.
+ * Mines act as industrial production sites that extract stone resources for the owner
+ * while requiring wood for initial stabilization and construction costs.
+ *
+ * @author Fabio Cruz
+ * @author Tiago Silva
+ */
 public class Mine extends Structures {
 
     private static final int BASE_EXPENSE = 5;
@@ -22,6 +30,13 @@ public class Mine extends Structures {
     private static final ResourceType COST_MATERIAL = ResourceType.WOOD;
     private static final ResourceType MATERIAL_TO_UPGRADE = ResourceType.STONE;
 
+    /**
+     * Constructs a new Mine structure, initializing its base operating yields,
+     * building prerequisites, and assigning it to the purchasing player.
+     *
+     * @param owner         The Player who will own and operate this mine.
+     * @param scoreModifier The global score multiplier currently active.
+     */
     public Mine(Player owner, int scoreModifier) {
         super(
                 STRUCTURE_TYPE,
@@ -54,6 +69,12 @@ public class Mine extends Structures {
         return true;
     }
 
+    /**
+     * Executes the daily stone extraction, appending the modified yield quantity
+     * directly into the owning player's inventory asset map.
+     *
+     * @param resourcesModifier The current active multiplier for resource production.
+     */
     @Override
     public void generateResource(int resourcesModifier) {
         if (PRODUCTION != ResourceType.NONE) {

@@ -4,62 +4,82 @@ import jogo.exceptions.InsufficientResourcesException;
 import jogo.models.Player;
 import jogo.models.ResourceType;
 
+/**
+ * Represents a City structure in the game world.
+ * Cities do not generate material resources but act as administrative hubs that
+ * expand the owner's baseline Action Points (AP) pool and generate substantial score points.
+ *
+ * @author Fabio Cruz
+ * @author Tiago Silva
+ */
 public class City extends Structures {
 
+        private static final int BASE_EXPENSE = 10;
+        private static final int BASE_PROFIT = 0;
+        private static final int BASE_SCORE_VALUE = 15;
+        private static final int BASE_AP_NEEDED = 5;
+        private static final int INITIAL_LEVEL = 1;
 
-    private static final int BASE_EXPENSE = 10;
-    private static final int BASE_PROFIT = 0;
-    private static final int BASE_SCORE_VALUE = 15;
-    private static final int BASE_AP_NEEDED = 5;
-    private static final int INITIAL_LEVEL = 1;
+        private static final int EXPENSE_BY_LEVEL = 6;
+        private static final int AP_BY_LEVEL = 3;
+        private static final int UPGRADE_COST_MULTIPLIER = 5;
+        private static final int SCORE_BY_LEVEL_MULTIPLIER = 5;
 
-    private static final int EXPENSE_BY_LEVEL = 6;
-    private static final int AP_BY_LEVEL = 3;
-    private static final int UPGRADE_COST_MULTIPLIER = 5;
-    private static final int SCORE_BY_LEVEL_MULTIPLIER = 5;
+        private static final StructuresType STRUCTURE_TYPE = StructuresType.CITY;
+        private static final ResourceType PRODUCTION = ResourceType.NONE;
+        private static final ResourceType COST_MATERIAL = ResourceType.FOOD;
+        private static final ResourceType MATERIAL_TO_UPGRADE = ResourceType.STONE;
 
-    private static final StructuresType STRUCTURE_TYPE = StructuresType.CITY;
-    private static final ResourceType PRODUCTION = ResourceType.NONE;
-    private static final ResourceType COST_MATERIAL = ResourceType.FOOD;
-    private static final ResourceType MATERIAL_TO_UPGRADE = ResourceType.STONE;
+        /**
+         * Constructs a new City structure, initializing its base stats and expanding
+         * the owning player's maximum Action Points.
+         *
+         * @param owner         The Player who constructs and owns this city.
+         * @param scoreModifier The modifier applied to the base score calculation.
+         */
+        public City(Player owner, int scoreModifier) {
+            super(
+                    STRUCTURE_TYPE,
+                    PRODUCTION,
+                    COST_MATERIAL,
+                    BASE_EXPENSE,
+                    BASE_PROFIT,
+                    owner,
+                    MATERIAL_TO_UPGRADE,
+                    INITIAL_LEVEL,
+                    BASE_SCORE_VALUE,
+                    scoreModifier
+            );
 
-    public City(Player owner, int scoreModifier) {
-        super(
-                STRUCTURE_TYPE,
-                PRODUCTION,
-                COST_MATERIAL,
-                BASE_EXPENSE,
-                BASE_PROFIT,
-                owner,
-                MATERIAL_TO_UPGRADE,
-                INITIAL_LEVEL,
-                BASE_SCORE_VALUE,
-                scoreModifier
-        );
-
-        owner.addBaseActionPoints(AP_BY_LEVEL);
-    }
-
-    @Override
-    public void generateResource(int resourcesModifier) {
-    }
-
-    @Override
-    public boolean upgradeStructure(int scoreModifier) throws InsufficientResourcesException {
-        int upgradeCost = getUpgradeCost();
-
-        if (!owner.removeResource(UPGRADE_MATERIAL, upgradeCost)) {
-            throw new InsufficientResourcesException();
+            owner.addBaseActionPoints(AP_BY_LEVEL);
         }
 
-        level++;
-        expense += EXPENSE_BY_LEVEL;
+        /**
+         * Overridden to bypass resource generation, as cities do not yield physical materials.
+         *
+         * @param resourcesModifier The current active multiplier for resource production.
+         */
+        @Override
+        public void generateResource(int resourcesModifier) {
+            // Cities do not generate material resources
+        }
 
-        owner.addScore(level * SCORE_BY_LEVEL_MULTIPLIER * scoreModifier);
-        owner.addBaseActionPoints(AP_BY_LEVEL * 2);
+        @Override
+        public boolean upgradeStructure(int scoreModifier) throws InsufficientResourcesException {
+            int upgradeCost = getUpgradeCost();
 
-        return true;
-    }
+            if (!owner.removeResource(UPGRADE_MATERIAL, upgradeCost)) {
+                throw new InsufficientResourcesException();
+            }
+
+            level++;
+            expense += EXPENSE_BY_LEVEL;
+
+            owner.addScore(level * SCORE_BY_LEVEL_MULTIPLIER * scoreModifier);
+            owner.addBaseActionPoints(AP_BY_LEVEL * 2);
+
+            return true;
+        }
 
     @Override
     public void setLevel(int level) {

@@ -4,6 +4,14 @@ import jogo.exceptions.InsufficientResourcesException;
 import jogo.models.Player;
 import jogo.models.ResourceType;
 
+/**
+ * Represents a Ranch structure in the game world.
+ * Ranches act as agricultural production sites that generate food resources for the owner
+ * while requiring wood for initial placement and stone for enhancements.
+ *
+ * @author Fabio Cruz
+ * @author Tiago Silva
+ */
 public class Ranch extends Structures {
 
     private static final int BASE_EXPENSE = 3;
@@ -22,6 +30,13 @@ public class Ranch extends Structures {
     private static final ResourceType COST_MATERIAL = ResourceType.WOOD;
     private static final ResourceType MATERIAL_TO_UPGRADE = ResourceType.STONE;
 
+    /**
+     * Constructs a new Ranch structure, initializing its base farming yields,
+     * building prerequisites, and assigning its ownership to the specified player.
+     *
+     * @param owner         The Player who will own and maintain this ranch.
+     * @param scoreModifier The global score multiplier currently active.
+     */
     public Ranch(Player owner, int scoreModifier) {
         super(
                 STRUCTURE_TYPE,
@@ -54,6 +69,12 @@ public class Ranch extends Structures {
         return true;
     }
 
+    /**
+     * Executes the daily harvest, multiplying the baseline food yield by the active
+     * modifier and adding it directly to the owner's inventory map.
+     *
+     * @param resourcesModifier The current active multiplier for resource production.
+     */
     @Override
     public void generateResource(int resourcesModifier) {
         if (PRODUCTION != ResourceType.NONE) {

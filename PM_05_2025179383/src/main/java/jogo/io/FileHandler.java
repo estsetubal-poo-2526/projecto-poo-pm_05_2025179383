@@ -7,10 +7,27 @@ import jogo.exceptions.*;
 
 import java.io.*;
 
+/**
+ * Handles all file input and output operations for saving and loading game sessions.
+ * Serializes and deserializes the game state into a structured CSV format.
+ *
+ * @author Fabio Cruz
+ * @author Tiago Silva
+ */
 public class FileHandler {
 
     private static final String FILE_NAME = "savegame.csv";
 
+    /**
+     * Serializes the current game state, including active players, world map structures,
+     * and the current day progression, into a CSV file.
+     *
+     * @param map The WorldMap containing all active structures.
+     * @param p1 The first Player instance.
+     * @param p2 The second Player instance.
+     * @param day The current day counter of the game session.
+     * @throws IOException If an I/O error occurs while writing to the save file.
+     */
     public static void saveFullGame(WorldMap map, Player p1, Player p2, int day) throws IOException {
         try (PrintWriter writer = new PrintWriter(new FileWriter(FILE_NAME))) {
 
@@ -37,14 +54,20 @@ public class FileHandler {
                                             s.getOwner().getName()
                             );
                         }
-
                     } catch (GameException ignored) {
+                        // Safely ignore bounds exceptions during map iteration
                     }
                 }
             }
         }
     }
 
+    /**
+     * Helper method to write a single player's attributes and resources to the save file.
+     *
+     * @param writer The PrintWriter instance bound to the save file.
+     * @param p The Player instance to be saved.
+     */
     private static void savePlayer(PrintWriter writer, Player p) {
         writer.println(
                 p.getName() + "," +
@@ -56,6 +79,12 @@ public class FileHandler {
         );
     }
 
+    /**
+     * Reads and parses the save file to reconstruct the complete prior game state.
+     *
+     * @return A SaveData container wrapping the restored map, players, and day counter.
+     * @throws GameException If the file contains corrupt data, unrecognized structures, or missing owners.
+     */
     public static SaveData loadGame() throws GameException {
         WorldMap map = new WorldMap();
         Player p1 = null;
@@ -67,7 +96,9 @@ public class FileHandler {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
             while ((line = reader.readLine()) != null) {
-                if (line.isEmpty()) continue;
+                if (line.isEmpty()) {
+                    continue;
+                }
 
                 if (line.startsWith("#")) {
                     section = line;
@@ -80,8 +111,6 @@ public class FileHandler {
                     day = Integer.parseInt(data[0]);
 
                 } else if (section.equals("#PLAYERS")) {
-                    
-                    
                     String name = data[0];
                     int score = Integer.parseInt(data[1]);
                     int wood = Integer.parseInt(data[2]);
@@ -89,8 +118,6 @@ public class FileHandler {
                     int food = Integer.parseInt(data[4]);
                     int ap = Integer.parseInt(data[5]);
 
-                    
-                    
                     Player p = new Player(name, score, wood, stone, food, ap);
 
                     if (p1 == null) {
@@ -122,6 +149,15 @@ public class FileHandler {
         }
     }
 
+    /**
+     * Resolves the correct Player object reference by matching the provided name string.
+     *
+     * @param name The name of the player to look up.
+     * @param p1 The first player initialized during load.
+     * @param p2 The second player initialized during load.
+     * @return The matching Player reference.
+     * @throws GameException If the name does not match any loaded player.
+     */
     private static Player getOwnerByName(String name, Player p1, Player p2) throws GameException {
         if (p1 != null && p1.getName().equals(name)) {
             return p1;
@@ -134,6 +170,10 @@ public class FileHandler {
         throw new GameException("Dono da estrutura não encontrado: " + name);
     }
 
+    /**
+     * Container class used to securely encapsulate and return the parsed game data
+     * upon a successful load operation.
+     */
     public static class SaveData {
 
         private final WorldMap map;

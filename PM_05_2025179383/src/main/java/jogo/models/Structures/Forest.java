@@ -4,6 +4,14 @@ import jogo.exceptions.InsufficientResourcesException;
 import jogo.models.Player;
 import jogo.models.ResourceType;
 
+/**
+ * Represents a Forest structure in the game world.
+ * Forests act as production sites that generate wood resources for the owner
+ * while requiring stone for initial placement and maintenance expenses.
+ *
+ * @author Fabio Cruz
+ * @author Tiago Silva
+ */
 public class Forest extends Structures {
 
     private static final int BASE_EXPENSE = 4;
@@ -22,6 +30,13 @@ public class Forest extends Structures {
     private static final ResourceType COST_MATERIAL = ResourceType.STONE;
     private static final ResourceType MATERIAL_TO_UPGRADE = ResourceType.WOOD;
 
+    /**
+     * Constructs a new Forest structure, initializing its base resource yields,
+     * cost constraints, and placing it under the specified player's ownership.
+     *
+     * @param owner         The Player who will own and maintain this forest.
+     * @param scoreModifier The global score multiplier currently active.
+     */
     public Forest(Player owner, int scoreModifier) {
         super(
                 STRUCTURE_TYPE,
@@ -58,6 +73,12 @@ public class Forest extends Structures {
         return true;
     }
 
+    /**
+     * Executes the daily resource generation, adding the calculated amount of
+     * wood into the owner's inventory based on current profit and modifiers.
+     *
+     * @param resourcesModifier The current active multiplier for resource production.
+     */
     @Override
     public void generateResource(int resourcesModifier) {
         if (PRODUCTION != ResourceType.NONE) {

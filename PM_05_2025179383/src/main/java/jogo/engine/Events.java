@@ -28,7 +28,8 @@ public class Events {
     /**
      * Modifies the game modifiers based on pre-established random events
      * that have a base probability of occurring.
-     * * There is a 45% base chance for an event to trigger.
+     *
+     * There is a 45% base chance for an event to trigger.
      * If triggered, the event is selected based on the following distribution:
      * - 1/13: Resource production and score generation are doubled.
      * - 1/13: Resource production is doubled.
@@ -44,8 +45,8 @@ public class Events {
         resourceModifier = 1;
 
         final int BASE_CHANCE = 45;
-        final int DOUBLE_PRODUCTION = 2;
-        final int ZERO_PRODUCTION = 0;
+        final int DOUBLE_VALUE = 2;
+        final int ZERO_VALUE = 0;
 
 
         if (random.nextInt(100) < BASE_CHANCE) {
@@ -53,32 +54,32 @@ public class Events {
 
             switch (event) {
                 case 0:
-                    resourceModifier = DOUBLE_PRODUCTION;
-                    scoreModifier = DOUBLE_PRODUCTION;
+                    resourceModifier = DOUBLE_VALUE;
+                    scoreModifier = DOUBLE_VALUE;
                     return "Estruturas Produzem o dobro de Recursos e de Pontuação!!!";
 
                 case 1:
-                    resourceModifier = ZERO_PRODUCTION;
+                    resourceModifier = ZERO_VALUE;
                     return "Estruturas não produzem Recursos!!!";
 
                 case 2:
-                    resourceModifier = DOUBLE_PRODUCTION;
+                    resourceModifier = DOUBLE_VALUE;
                     return "Estruturas Produzem o dobro de Recursos";
 
                 case 3:
-                    scoreModifier = ZERO_PRODUCTION;
-                    resourceModifier = ZERO_PRODUCTION;
+                    scoreModifier = ZERO_VALUE;
+                    resourceModifier = ZERO_VALUE;
                     return "Greve Geral";
 
                 case 4:
                 case 5:
                 case 6:
                 case 7:
-                    scoreModifier = DOUBLE_PRODUCTION;
+                    scoreModifier = DOUBLE_VALUE;
                     return "Estruturas dão o dobro de Pontuação!!!";
 
                 default:
-                    scoreModifier = ZERO_PRODUCTION;
+                    scoreModifier = ZERO_VALUE;
                     return "Estruturas não dão Pontuação!!!";
 
 

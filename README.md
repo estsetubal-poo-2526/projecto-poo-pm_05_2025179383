@@ -54,5 +54,5 @@ src/
 
 # Autores
 
-   Fabio Cruz - https://github.com/FabioCruz2005
-   Tiago Silva - https://github.com/Notosant-IPS
+    - Fabio Cruz - https://github.com/FabioCruz2005
+    - Tiago Silva - https://github.com/Notosant-IPS

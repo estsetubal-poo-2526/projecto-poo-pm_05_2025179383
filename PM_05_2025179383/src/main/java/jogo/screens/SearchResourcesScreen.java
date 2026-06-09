@@ -17,6 +17,16 @@ import jogo.engine.GameSession;
 import jogo.exceptions.GameException;
 import jogo.models.ResourceType;
 
+import java.util.Objects;
+
+/**
+ * Controller and view class responsible for rendering the resource gathering interface.
+ * Provides interactive cards for players to extract basic materials from the environment
+ * while dynamically updating their active action potential limits.
+ *
+ * @author Fabio Cruz
+ * @author Tiago Silva
+ */
 public class SearchResourcesScreen {
 
     private final Stage STAGE;
@@ -25,11 +35,23 @@ public class SearchResourcesScreen {
     private Label resourceFoundLabel;
     private Label actionPointsLabel;
 
+    /**
+     * Constructs a new SearchResourcesScreen viewport context.
+     *
+     * @param stage   The primary Stage window architecture container.
+     * @param session The current active {@link GameSession} core engine instance.
+     */
     public SearchResourcesScreen(Stage stage, GameSession session) {
         this.STAGE = stage;
         this.SESSION = session;
     }
 
+    /**
+     * Instantiates the core layout nodes, maps structural subsections,
+     * appends styles, and wraps the gathering catalog inside a definitive Scene.
+     *
+     * @return A fully compiled JavaFX Scene instance ready for stage rendering.
+     */
     public Scene searchResourcesMenu() {
         StackPane root = new StackPane();
         root.getStyleClass().add("search-root");
@@ -39,28 +61,34 @@ public class SearchResourcesScreen {
 
         container.setTop(top());
         container.setCenter(center());
-        container.setBottom(down());
+        container.setBottom(bottom());
 
         root.getChildren().add(container);
 
         Scene scene = new Scene(root, 1200, 800);
         try {
-            scene.getStylesheets().add(getClass().getResource("/jogo/style.css").toExternalForm());
-        } catch (Exception e) {
-            System.out.println("Erro ao carregar o CSS.");
+            scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/jogo/style.css")).toExternalForm());
+        } catch (Exception ignore) {
         }
 
         return scene;
     }
 
+    /**
+     * Assembles the top header layout banner displaying the section's instructive header title and icons.
+     *
+     * @return A VBox container node forming the upper boundary layer.
+     */
     public VBox top() {
         ImageView searchIcon = new ImageView();
         try {
-            searchIcon.setImage(new Image(getClass().getResourceAsStream("/icons/magnifying-glass.png")));
+            searchIcon.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/magnifying-glass.png"))));
             searchIcon.setFitWidth(50);
             searchIcon.setFitHeight(50);
             searchIcon.setPreserveRatio(true);
-        } catch (Exception e) { /* Fail-safe */ }
+        } catch (Exception ignore) {
+
+        }
 
         Label label = new Label("Qual recurso deseja procurar?");
         label.getStyleClass().add("search-title");
@@ -73,28 +101,29 @@ public class SearchResourcesScreen {
         return topBox;
     }
 
+    /**
+     * Assembles the central interactive catalog layer hosting selection cards and live gathering result text boxes.
+     */
     private BorderPane center() {
-        
-        Button woodButton = criarCardRecurso("MADEIRA", "/icons/log.png", "card-wood", "label-wood", ResourceType.WOOD);
-        Button stoneButton = criarCardRecurso("PEDRA", "/icons/granite.png", "card-stone", "label-stone", ResourceType.STONE);
-        Button foodButton = criarCardRecurso("COMIDA", "/icons/beef.png", "card-food", "label-food", ResourceType.FOOD);
+        Button woodButton = createResourceCard("MADEIRA", "/icons/log.png", "card-wood", "label-wood", ResourceType.WOOD);
+        Button stoneButton = createResourceCard("PEDRA", "/icons/granite.png", "card-stone", "label-stone", ResourceType.STONE);
+        Button foodButton = createResourceCard("COMIDA", "/icons/beef.png", "card-food", "label-food", ResourceType.FOOD);
 
         HBox buttonsBox = new HBox(30);
         buttonsBox.setAlignment(Pos.CENTER);
         buttonsBox.getChildren().addAll(woodButton, stoneButton, foodButton);
 
-        
         HBox resultBar = new HBox(10);
         resultBar.getStyleClass().add("result-bar");
         resultBar.setAlignment(Pos.CENTER_LEFT);
         resultBar.setMaxWidth(860);
 
         try {
-            ImageView chestIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/treasure-chest.png")));
+            ImageView chestIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/treasure-chest.png"))));
             chestIcon.setFitWidth(30);
             chestIcon.setFitHeight(30);
             resultBar.getChildren().add(chestIcon);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {}
 
         Label prefixLabel = new Label("Resultado: ");
         prefixLabel.getStyleClass().add("result-prefix");
@@ -113,7 +142,17 @@ public class SearchResourcesScreen {
         return centerPane;
     }
 
-    private Button criarCardRecurso(String texto, String imgPath, String cardStyle, String labelStyle, ResourceType type) {
+    /**
+     * Helper factory method that compiles a stylized JavaFX Button acting as an individual resource selection card.
+     *
+     * @param text      The descriptive text label for the resource asset.
+     * @param imgPath   The package path pointing toward the graphic asset location.
+     * @param cardStyle The custom CSS class styling the button wrapper element.
+     * @param lblStyle  The custom CSS class styling the layout inner text labels.
+     * @param type      The structural {@link ResourceType} associated with the action trigger card.
+     * @return A configured JavaFX Button node styled as a choice card.
+     */
+    private Button createResourceCard(String text, String imgPath, String cardStyle, String lblStyle, ResourceType type) {
         Button btn = new Button();
         btn.getStyleClass().addAll("resource-card", cardStyle);
 
@@ -122,17 +161,16 @@ public class SearchResourcesScreen {
         content.setMouseTransparent(true);
 
         try {
-            ImageView iv = new ImageView(new Image(getClass().getResourceAsStream(imgPath)));
+            ImageView iv = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(imgPath))));
             iv.setFitWidth(80);
             iv.setFitHeight(80);
             iv.setPreserveRatio(true);
             content.getChildren().add(iv);
-        } catch (Exception e) {
-            System.out.println("Falta imagem: " + imgPath);
+        } catch (Exception ignore) {
         }
 
-        Label lbl = new Label(texto);
-        lbl.getStyleClass().add(labelStyle);
+        Label lbl = new Label(text);
+        lbl.getStyleClass().add(lblStyle);
         content.getChildren().add(lbl);
 
         btn.setGraphic(content);
@@ -141,8 +179,12 @@ public class SearchResourcesScreen {
         return btn;
     }
 
-    public BorderPane down() {
-        
+    /**
+     * Assembles the lower dashboard action bar containing return pathways and current turn action point metrics.
+     *
+     * @return A BorderPane container node forming the bottom layer boundary.
+     */
+    public BorderPane bottom() {
         Button backButton = new Button("←  Voltar");
         backButton.getStyleClass().add("btn-back");
         backButton.setOnAction(event -> {
@@ -150,17 +192,16 @@ public class SearchResourcesScreen {
             STAGE.setScene(gameMenuScreen.createScene());
         });
 
-        
         HBox apBox = new HBox(5);
         apBox.getStyleClass().add("ap-box");
         apBox.setAlignment(Pos.CENTER);
 
         try {
-            ImageView rayIcon = new ImageView(new Image(getClass().getResourceAsStream("/images/lighting.png")));
+            ImageView rayIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/lighting.png"))));
             rayIcon.setFitWidth(20);
             rayIcon.setFitHeight(20);
             apBox.getChildren().add(rayIcon);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {}
 
         Label apText = new Label("AP Atual: ");
         apText.getStyleClass().add("ap-text");
@@ -178,6 +219,12 @@ public class SearchResourcesScreen {
         return bottomPane;
     }
 
+    /**
+     * Delegates the extraction logic query directly toward the core {@link GameEngine} layer,
+     * trapping action violations or updating visual metrics accordingly.
+     *
+     * @param type The targeted type of environmental resource to query for extraction.
+     */
     private void handleSearchResource(ResourceType type) {
         try {
             int result = GameEngine.searchResources(SESSION.getActualPlayer(), type);
@@ -188,10 +235,18 @@ public class SearchResourcesScreen {
         updateActionPointsLabel();
     }
 
+    /**
+     * Synchronizes the lower textual indicators with the player's remaining action points count.
+     */
     private void updateActionPointsLabel() {
         actionPointsLabel.setText(String.valueOf(getCurrentActionPoints()));
     }
 
+    /**
+     * Accesses the active session's participant to extract their current action potential balance.
+     *
+     * @return The integer amount of action points remaining for the current active player.
+     */
     private int getCurrentActionPoints() {
         return SESSION.getActualPlayer().getActionPoints();
     }

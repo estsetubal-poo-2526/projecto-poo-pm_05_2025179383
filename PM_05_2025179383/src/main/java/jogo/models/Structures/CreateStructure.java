@@ -101,4 +101,43 @@ public class CreateStructure {
                 return 9999;
         }
     }
+
+    /**
+     * Resolves the localized display name matching a structural type.
+     * Centralizes domain dictionary lookups to keep interface nodes decoupled from raw enums.
+     *
+     * @param type The active structural {@link StructuresType} identifier.
+     * @return A localized String representing the building context.
+     */
+    public static String getStructureName(StructuresType type) {
+        switch (type) {
+            case FOREST: return "Floresta";
+            case MINE: return "Mina";
+            case CITY: return "Cidade";
+            case RANCH: return "Rancho";
+            default: return "Desconhecida";
+        }
+    }
+
+    /**
+     * Evaluates domain structural properties to build a comprehensive description
+     * of daily material and profit production metrics.
+     *
+     * @param type The structural {@link StructuresType} to evaluate.
+     * @return A formatted String mapping the dynamic yield properties of the target asset.
+     */
+    public static String getProductionInfo(StructuresType type) {
+        switch (type) {
+            case FOREST:
+                return Forest.getPROFIT() + " " + Forest.getPRODUCTION_TYPE();
+            case MINE:
+                return Mine.getPROFIT() + " " + Mine.getPRODUCTION_TYPE();
+            case CITY:
+                return City.getPROFIT() + " NONE"; // Cities provide gold/score profit without raw resource blocks
+            case RANCH:
+                return Ranch.getPROFIT() + " " + Ranch.getPRODUCTION_TYPE();
+            default:
+                return "0 NONE";
+        }
+    }
 }

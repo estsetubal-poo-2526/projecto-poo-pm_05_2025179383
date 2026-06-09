@@ -15,23 +15,46 @@ import javafx.stage.Stage;
 import jogo.engine.GameEngine;
 import jogo.engine.GameSession;
 import jogo.exceptions.GameException;
-import jogo.models.ResourceType;
 import jogo.models.Structures.*;
 
+import java.util.Objects;
+
+/**
+ * Controller and view class responsible for rendering structural construction blueprint specifications.
+ * Delegates data mapping to the domain factory layer, decoupling user interface components
+ * from baseline simulation rules.
+ *
+ * @author Fabio Cruz
+ * @author Tiago Silva
+ */
 public class StructuresBuildingInfoScreen {
 
     private final GameSession SESSION;
     private final Stage STAGE;
     private final Runnable ON_UPDATE_MAP;
 
-    public java.util.Properties styleProps;
-
+    /**
+     * Constructs an operational blueprint information context.
+     *
+     * @param session     The current active {@link GameSession} model state tracker.
+     * @param stage       The auxiliary Stage popup window container architecture.
+     * @param onUpdateMap A callback task used to refresh the active world grid upon deployment.
+     */
     public StructuresBuildingInfoScreen(GameSession session, Stage stage, Runnable onUpdateMap) {
         this.SESSION = session;
         this.STAGE = stage;
         this.ON_UPDATE_MAP = onUpdateMap;
     }
 
+    /**
+     * Compiles sub-panels layout layers, binds building parameters dynamically,
+     * and maps boundaries inside a dedicated container Scene.
+     *
+     * @param type The targeted structural {@link StructuresType} to evaluate.
+     * @param x    The target horizontal index location coordinate on the map.
+     * @param y    The target vertical index location coordinate on the map.
+     * @return A fully populated JavaFX Scene instance ready for viewport presentation.
+     */
     public Scene createScreen(StructuresType type, int x, int y) {
         BorderPane borderPane = new BorderPane();
         borderPane.getStyleClass().add("building-info-container");
@@ -45,15 +68,17 @@ public class StructuresBuildingInfoScreen {
         return scene;
     }
 
+    /**
+     * Assembles the left side panel containing a stylized preview box of the chosen structure asset.
+     */
     private VBox left(StructuresType type) {
         VBox vBox = new VBox();
         vBox.setAlignment(Pos.CENTER);
         vBox.setPadding(new Insets(0, 40, 0, 10));
 
         try {
-            
             String structureName = type.name().toLowerCase();
-            Image buildingImg = new Image(getClass().getResourceAsStream("/icons/" + structureName + ".png"));
+            Image buildingImg = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/" + structureName + ".png")));
             ImageView iv = new ImageView(buildingImg);
             iv.setFitWidth(320);
             iv.setFitHeight(320);
@@ -70,6 +95,9 @@ public class StructuresBuildingInfoScreen {
         return vBox;
     }
 
+    /**
+     * Compiles the central details specifications panel using tabular matrix rows fed by the factory.
+     */
     public VBox center(StructuresType type) {
         Label title = new Label("Detalhes da Estrutura");
         title.getStyleClass().add("building-info-title");
@@ -80,16 +108,14 @@ public class StructuresBuildingInfoScreen {
         grid.setAlignment(Pos.CENTER_LEFT);
         grid.setPadding(new Insets(30, 0, 30, 0));
 
-        
-        adicionarLinhaGrid(grid, 0, "/icons/table-saw.png", "Estrutura:", getStructureName(type), "value-old");
+        // Consome os dados traduzidos e formatados diretamente da Factory do domínio
+        addGridRow(grid, 0, "/icons/table-saw.png", "Estrutura:", CreateStructure.getStructureName(type), "value-old");
 
-        
         String expenseText = CreateStructure.getMaterialType(type) + " " + CreateStructure.getMaterialCost(type);
-        adicionarLinhaGrid(grid, 1, "/icons/dollar.png", "Manutenção:", expenseText, "value-cost");
+        addGridRow(grid, 1, "/icons/dollar.png", "Manutenção:", expenseText, "value-cost");
 
-        
-        String productionText = getProfitStructure(type) + " " + getProductionStructure(type);
-        adicionarLinhaGrid(grid, 2, "/icons/cube.png", "Produção Diária:", productionText, "value-new");
+        String productionText = CreateStructure.getProductionInfo(type);
+        addGridRow(grid, 2, "/icons/cube.png", "Produção Diária:", productionText, "value-new");
 
         VBox centerBox = new VBox(10);
         centerBox.setAlignment(Pos.CENTER_LEFT);
@@ -99,14 +125,18 @@ public class StructuresBuildingInfoScreen {
         return centerBox;
     }
 
-    private void adicionarLinhaGrid(GridPane grid, int row, String iconPath, String labelText, String valueText, String valueStyleClass) {
+    /**
+     * Helper grid manipulation utility that injects unified graphic cells safely into layout structures.
+     */
+    private void addGridRow(GridPane grid, int row, String iconPath, String labelText, String valueText, String valueStyleClass) {
         try {
-            ImageView iv = new ImageView(new Image(getClass().getResourceAsStream(iconPath)));
+            ImageView iv = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(iconPath))));
             iv.setFitWidth(24);
             iv.setFitHeight(24);
             iv.setPreserveRatio(true);
             grid.add(iv, 0, row);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {
+        }
 
         Label lbl = new Label(labelText);
         lbl.getStyleClass().add("attr-label");
@@ -117,6 +147,9 @@ public class StructuresBuildingInfoScreen {
         grid.add(val, 2, row);
     }
 
+    /**
+     * Generates lower action configurations including return controls and construction operational triggers.
+     */
     public VBox bottom(StructuresType type, int x, int y) {
         VBox vBox = new VBox(20);
         vBox.setAlignment(Pos.CENTER);
@@ -125,30 +158,29 @@ public class StructuresBuildingInfoScreen {
         Button constructButton = new Button("Construir");
         constructButton.getStyleClass().add("btn-construct");
         try {
-            ImageView hammerIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/tool.png")));
+            ImageView hammerIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/tool.png"))));
             hammerIcon.setFitWidth(18);
             hammerIcon.setFitHeight(18);
             constructButton.setGraphic(hammerIcon);
             constructButton.setGraphicTextGap(8);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {
+        }
 
         Button backButton = new Button("Voltar");
         backButton.getStyleClass().add("btn-back");
         try {
-            ImageView backIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/back.png")));
+            ImageView backIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/back.png"))));
             backIcon.setFitWidth(16);
             backIcon.setFitHeight(16);
             backButton.setGraphic(backIcon);
             backButton.setGraphicTextGap(8);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {
+            // Suppress navigation icon faults
+        }
 
         backButton.setOnAction(event -> {
             CreateStructureScreen createStructureScreen = new CreateStructureScreen(
-                    STAGE,
-                    SESSION,
-                    x,
-                    y,
-                    ON_UPDATE_MAP
+                    STAGE, SESSION, x, y, ON_UPDATE_MAP
             );
             STAGE.setScene(createStructureScreen.createScene());
         });
@@ -163,36 +195,10 @@ public class StructuresBuildingInfoScreen {
         return vBox;
     }
 
-    private String getStructureName(StructuresType type) {
-        switch (type) {
-            case FOREST: return "Floresta";
-            case MINE: return "Mina";
-            case CITY: return "Cidade";
-            case RANCH: return "Rancho";
-            default: return "Desconhecida";
-        }
-    }
-
-    private String getProductionStructure(StructuresType type) {
-        switch (type) {
-            case FOREST: return String.valueOf(Forest.getPRODUCTION_TYPE());
-            case MINE: return String.valueOf(Mine.getPRODUCTION_TYPE());
-            case CITY: return String.valueOf(ResourceType.NONE);
-            case RANCH: return String.valueOf(Ranch.getPRODUCTION_TYPE());
-            default: return "NONE";
-        }
-    }
-
-    private int getProfitStructure(StructuresType type) {
-        switch (type) {
-            case FOREST: return Forest.getPROFIT();
-            case MINE: return Mine.getPROFIT();
-            case CITY: return City.getPROFIT();
-            case RANCH: return Ranch.getPROFIT();
-            default: return 0;
-        }
-    }
-
+    /**
+     * Contacts core processing engines to claim map coordinate properties,
+     * validating tile states before confirming execution.
+     */
     private void buildStructure(StructuresType type, int x, int y) {
         try {
             GameEngine.createStructure(
@@ -203,15 +209,16 @@ public class StructuresBuildingInfoScreen {
                     y,
                     SESSION.getScoreModifier()
             );
-
             ON_UPDATE_MAP.run();
             STAGE.close();
-
         } catch (GameException e) {
             ErrorPopUp.show(e.getMessage());
         }
     }
 
+    /**
+     * Re-initializes stylesheet allocations from root disk trees to re-inject uniform element styling.
+     */
     private void loadStyle(Scene scene) {
         try {
             scene.getStylesheets().clear();
@@ -220,11 +227,9 @@ public class StructuresBuildingInfoScreen {
 
             if (cssFile.exists()) {
                 scene.getStylesheets().add(cssFile.toURI().toString());
-            } else {
-                System.err.println("[ERRO] O ficheiro sumiu.");
             }
-        } catch (Exception e) {
-            System.err.println("Erro ao carregar CSS: " + e.getMessage());
+        } catch (Exception ignore) {
+
         }
     }
 }

@@ -14,12 +14,21 @@ import jogo.io.FileHandler;
 import jogo.models.ResourceType;
 import jogo.models.Structures.Structures;
 
+/**
+ * The primary gameplay interface controller and view dashboard.
+ * Assembles core workspace matrices including navigation sidebars, active player
+ * inventory asset monitors, and live operational updates within an in-place refresh layout.
+ *
+ * @author Fabio Cruz
+ * @author Tiago Silva
+ */
 public class MainGameScreen {
 
     private final Stage STAGE;
     private final GameSession SESSION;
 
     private Stage currentPopupStage;
+    private GridPane mapGrid;
 
     private Label dayLabel;
     private Label playerLabel;
@@ -34,16 +43,35 @@ public class MainGameScreen {
 
     private String eventMessage;
 
+    /**
+     * Constructs a baseline MainGameScreen sequence without any pending event logs.
+     *
+     * @param stage   The primary Stage window architecture container.
+     * @param session The current active {@link GameSession} core engine state tracker.
+     */
     public MainGameScreen(Stage stage, GameSession session) {
         this(stage, session, "");
     }
 
+    /**
+     * Constructs an operational MainGameScreen viewport carrying an active event notification banner.
+     *
+     * @param stage        The primary Stage window architecture container.
+     * @param session      The current active {@link GameSession} core engine state tracker.
+     * @param eventMessage A log summary text detailing structural updates or match events from the turn.
+     */
     public MainGameScreen(Stage stage, GameSession session, String eventMessage) {
         this.STAGE = stage;
         this.SESSION = session;
         this.eventMessage = eventMessage;
     }
 
+    /**
+     * Instantiates primary structural viewport nodes, binds sub-menus,
+     * triggers data population passes, and wraps everything inside the primary Scene layout.
+     *
+     * @return A compiled and fully populated JavaFX Scene instance ready for rendering.
+     */
     public Scene createScene() {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("main-game-root");
@@ -52,7 +80,7 @@ public class MainGameScreen {
         root.setCenter(createCenterArea());
         root.setBottom(createBottomArea());
 
-        updateInfo();
+        refreshDashboardState();
 
         Scene scene = new Scene(root, 1200, 800);
         loadStyle(scene);
@@ -60,6 +88,10 @@ public class MainGameScreen {
         return scene;
     }
 
+    /**
+     * Assembles the left sidebar menu layout filled with structural buttons for actions,
+     * serialization triggers, turn finalization, and scene exits.
+     */
     private VBox createLeftMenu() {
         VBox menu = new VBox(26);
         menu.getStyleClass().add("sidebar-menu");
@@ -105,7 +137,7 @@ public class MainGameScreen {
         saveButton.setOnAction(event -> saveGame());
 
         endTurnButton.setOnAction(event -> {
-            String newEventMessage = SESSION.endTurn();
+            this.eventMessage = SESSION.endTurn();
 
             if (SESSION.isGameOver()) {
                 EndScreen endScreen = new EndScreen(SESSION);
@@ -113,8 +145,8 @@ public class MainGameScreen {
                 return;
             }
 
-            MainGameScreen updatedScreen = new MainGameScreen(STAGE, SESSION, newEventMessage);
-            STAGE.setScene(updatedScreen.createScene());
+            // ATUALIZAÇÃO IN-PLACE: Nada de criar ecrãs novos! Atualizamos o que já existe.
+            refreshDashboardState();
         });
 
         exitButton.setOnAction(event -> {
@@ -134,6 +166,9 @@ public class MainGameScreen {
         return menu;
     }
 
+    /**
+     * Factory utility method to assemble structured navigation buttons fitted with custom graphic asset markers.
+     */
     private Button createMenuButton(String imagePath, String text, String extraClass) {
         ImageView iconView = createIcon(imagePath, 32, 32);
 
@@ -151,6 +186,9 @@ public class MainGameScreen {
         return button;
     }
 
+    /**
+     * Streamlines streaming input pipelines to safely extract internal icon images from application packages.
+     */
     private ImageView createIcon(String imagePath, double width, double height) {
         ImageView imageView = new ImageView();
 
@@ -175,6 +213,9 @@ public class MainGameScreen {
         return imageView;
     }
 
+    /**
+     * Compiles central layouts including header information bars and structural maps.
+     */
     private VBox createCenterArea() {
         VBox centerContainer = new VBox(20);
         centerContainer.setPadding(new Insets(30, 28, 20, 28));
@@ -192,6 +233,9 @@ public class MainGameScreen {
         return centerContainer;
     }
 
+    /**
+     * Assembles status rows mapping match progression indexes, active player identifiers, and action potential thresholds.
+     */
     private VBox createTopArea() {
         VBox topContainer = new VBox(12);
         topContainer.setAlignment(Pos.CENTER);
@@ -246,18 +290,22 @@ public class MainGameScreen {
         mapPanel.getStyleClass().add("map-panel");
         mapPanel.setPadding(new Insets(6));
 
-        GridPane mapGrid = createMapArea();
+        mapGrid = new GridPane();
+        mapGrid.setAlignment(Pos.CENTER);
+        mapGrid.setHgap(8);
+        mapGrid.setVgap(8);
+        mapGrid.setPadding(new Insets(10));
+
         mapPanel.getChildren().add(mapGrid);
 
         return mapPanel;
     }
 
-    private GridPane createMapArea() {
-        GridPane mapGrid = new GridPane();
-        mapGrid.setAlignment(Pos.CENTER);
-        mapGrid.setHgap(8);
-        mapGrid.setVgap(8);
-        mapGrid.setPadding(new Insets(10));
+    /**
+     * Parses current matrix configurations to regenerate tile vectors in-place.
+     */
+    private void populateMapGrid() {
+        mapGrid.getChildren().clear();
 
         int columns = SESSION.getMap().getCOLUMN_SIZE();
         int rows = SESSION.getMap().getLINE_SIZE();
@@ -268,63 +316,55 @@ public class MainGameScreen {
                 mapGrid.add(cellButton, y, x);
             }
         }
-
-        return mapGrid;
     }
 
+    /**
+     * Assembles interactive location controls, attaching low-opacity underlying
+     * structural images to improve background visibility.
+     */
     private Button createMapCell(int x, int y) {
         Button cellButton = new Button();
 
         cellButton.setPrefSize(60, 60);
         cellButton.setMinSize(60, 60);
         cellButton.setMaxSize(60, 60);
-
-        
         cellButton.getStyleClass().add("map-cell");
 
-        
-        try {
-            var resource = getClass().getResource("/icons/grassland.png");
+        // CAMADA DE OPACIDADE: Criamos uma StackPane interna para empilhar o terreno desbotado e o edifício por cima
+        StackPane cellStack = new StackPane();
 
-            if (resource != null) {
-                
-                cellButton.setStyle(
-                        "-fx-background-image: url('" + resource.toExternalForm() + "'); " +
-                                "-fx-background-color: transparent;"
-                );
-            } else {
-                System.err.println("❌ ERRO CRÍTICO: O ficheiro '/images/grama_textura.png' não foi encontrado nas resources!");
-            }
-        } catch (Exception e) {
-            System.err.println("Erro ao aplicar imagem de fundo: " + e.getMessage());
-        }
+        try {
+            ImageView terrainView = createIcon("/icons/grassland.png", 54, 54);
+            // AJUSTE SOLICITADO: Define a opacidade do fundo da célula para 45% para não ofuscar o resto
+            terrainView.setOpacity(0.45);
+            cellStack.getChildren().add(terrainView);
+        } catch (Exception ignore) {}
 
         try {
             Structures structure = SESSION.getMap().getStructure(x, y);
             if (structure != null) {
-                addStructureToCell(cellButton, structure);
-            }
-        } catch (Exception ignored) {
-        }
+                String typeName = structure.getClass().getSimpleName().toLowerCase();
+                ImageView structureIcon = createIcon("/icons/" + typeName + ".png", 44, 44);
 
+                cellStack.getChildren().add(structureIcon);
+
+                if (structure.getOwner().equals(SESSION.getPlayer1())) {
+                    cellButton.getStyleClass().add("cell-owner-p1");
+                } else if (structure.getOwner().equals(SESSION.getPlayer2())) {
+                    cellButton.getStyleClass().add("cell-owner-p2");
+                }
+            }
+        } catch (Exception ignored) {}
+
+        cellButton.setGraphic(cellStack);
         cellButton.setOnAction(event -> openMapCellPopup(x, y));
 
         return cellButton;
     }
 
-    private void addStructureToCell(Button cellButton, Structures structure) {
-        String typeName = structure.getClass().getSimpleName().toLowerCase();
-
-        ImageView structureIcon = createIcon("/icons/" + typeName + ".png", 44, 44);
-        cellButton.setGraphic(structureIcon);
-
-        if (structure.getOwner().equals(SESSION.getPlayer1())) {
-            cellButton.getStyleClass().add("cell-owner-p1");
-        } else if (structure.getOwner().equals(SESSION.getPlayer2())) {
-            cellButton.getStyleClass().add("cell-owner-p2");
-        }
-    }
-
+    /**
+     * Opens a modal popup window detailing contextual management choices for a targeted grid cell.
+     */
     private void openMapCellPopup(int x, int y) {
         if (currentPopupStage != null && currentPopupStage.isShowing()) {
             currentPopupStage.close();
@@ -337,10 +377,7 @@ public class MainGameScreen {
                 SESSION,
                 x,
                 y,
-                () -> {
-                    MainGameScreen updatedScreen = new MainGameScreen(STAGE, SESSION, eventMessage);
-                    STAGE.setScene(updatedScreen.createScene());
-                }
+                this::refreshDashboardState // Executa a atualização in-place mal o popup feche com ações!
         );
 
         currentPopupStage.setTitle("Ações na posição " + x + ", " + y);
@@ -348,6 +385,9 @@ public class MainGameScreen {
         currentPopupStage.show();
     }
 
+    /**
+     * Builds base interface layouts dedicated to active inventory changes.
+     */
     private VBox createBottomArea() {
         VBox bottomContainer = new VBox(14);
         bottomContainer.setPadding(new Insets(0, 28, 24, 28));
@@ -406,13 +446,18 @@ public class MainGameScreen {
         return box;
     }
 
-    private void updateInfo() {
+    /**
+     * Master synchronization workflow that updates global label matrices and reconstructs
+     * grid elements in-place without stage scene flashing.
+     */
+    private void refreshDashboardState() {
         dayLabel.setText("Dia: " + SESSION.getDay());
         playerLabel.setText("Jogador atual: " + SESSION.getActualPlayer().getName());
         apLabel.setText("AP: " + SESSION.getActualPlayer().getActionPoints());
 
         updateEventBar();
         updateInventory();
+        populateMapGrid(); // Reconstrói apenas os botões do mapa!
     }
 
     private void updateEventBar() {
@@ -427,6 +472,9 @@ public class MainGameScreen {
         eventLabel.setText("Evento: " + eventMessage);
     }
 
+    /**
+     * Extracts values from the active player's resource map to safely populate inventory indicators.
+     */
     private void updateInventory() {
         try {
             var player = SESSION.getActualPlayer();
@@ -442,6 +490,9 @@ public class MainGameScreen {
         }
     }
 
+    /**
+     * Dispatches current structural boards, player metrics, and session markers to persistent storage files.
+     */
     private void saveGame() {
         try {
             FileHandler.saveFullGame(
@@ -458,6 +509,9 @@ public class MainGameScreen {
         }
     }
 
+    /**
+     * Resolves the primary stylesheet, using absolute disk path resolution as a fallback if necessary.
+     */
     private void loadStyle(Scene scene) {
         try {
             scene.getStylesheets().clear();

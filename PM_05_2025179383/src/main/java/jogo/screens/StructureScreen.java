@@ -16,6 +16,16 @@ import jogo.engine.GameSession;
 import jogo.exceptions.GameException;
 import jogo.models.Structures.Structures;
 
+import java.util.Objects;
+
+/**
+ * Controller and view class responsible for displaying the inspection properties
+ * of an existing building structure deployed on the map grid.
+ * Presents level metrics, ownership definitions, and contextual status indicators.
+ *
+ * @author Fabio Cruz
+ * @author Tiago Silva
+ */
 public class StructureScreen {
 
     private final Stage POPUP_STAGE;
@@ -24,6 +34,15 @@ public class StructureScreen {
     private final int Y;
     private final Runnable ON_UPDATE_MAP;
 
+    /**
+     * Constructs a new StructureScreen inspection context window.
+     *
+     * @param popupStage  The auxiliary Stage popup window architecture container.
+     * @param session     The current active {@link GameSession} engine instance tracking world states.
+     * @param x           The horizontal index coordinate of the selected grid tile.
+     * @param y           The vertical index coordinate of the selected grid tile.
+     * @param onUpdateMap A callback task payload used to refresh the parent viewport grid layout upon closure.
+     */
     public StructureScreen(Stage popupStage, GameSession session, int x, int y, Runnable onUpdateMap) {
         this.POPUP_STAGE = popupStage;
         this.SESSION = session;
@@ -32,6 +51,12 @@ public class StructureScreen {
         this.ON_UPDATE_MAP = onUpdateMap;
     }
 
+    /**
+     * Queries structural data from the grid, populates descriptive layout containers,
+     * appends action handlers, and builds a comprehensive target inspection Scene.
+     *
+     * @return A compiled JavaFX Scene instance fully populated with contextual indicators.
+     */
     public Scene createScene() {
         BorderPane borderPane = new BorderPane();
         borderPane.getStyleClass().add("info-container");
@@ -43,15 +68,13 @@ public class StructureScreen {
             ErrorPopUp.show(e.getMessage());
         }
 
-        
         VBox leftBox = new VBox();
         leftBox.setAlignment(Pos.CENTER);
         leftBox.setPadding(new Insets(0, 40, 0, 10));
 
         try {
-            
             String structureName = (structure != null) ? structure.getClass().getSimpleName().toLowerCase() : "default";
-            Image buildingImg = new Image(getClass().getResourceAsStream("/images/" + structureName + ".png"));
+            Image buildingImg = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/" + structureName + ".png")));
             ImageView iv = new ImageView(buildingImg);
             iv.setFitWidth(280);
             iv.setFitHeight(280);
@@ -66,7 +89,6 @@ public class StructureScreen {
         }
         borderPane.setLeft(leftBox);
 
-        
         VBox centerBox = new VBox(15);
         centerBox.setAlignment(Pos.CENTER_LEFT);
         centerBox.setPadding(new Insets(10));
@@ -82,26 +104,23 @@ public class StructureScreen {
             noStructureLabel.getStyleClass().add("info-label-type");
             centerBox.getChildren().add(noStructureLabel);
         } else {
-            
-            adicionarLinhaInfo(grid, 0, "/images/construct.png", "Estrutura:", structure.toString());
-            
-            adicionarLinhaInfo(grid, 1, "/images/user_azul.png", "Dono:", structure.getOwner().getName());
-            
-            adicionarLinhaInfo(grid, 2, "/images/icon_estreia.png", "Nível:", String.valueOf(structure.getLevel()));
+            addInfoRow(grid, 0, "/images/construct.png", "Estrutura:", structure.toString());
+            addInfoRow(grid, 1, "/images/user_azul.png", "Dono:", structure.getOwner().getName());
+            addInfoRow(grid, 2, "/images/icon_estreia.png", "Nível:", String.valueOf(structure.getLevel()));
 
             centerBox.getChildren().add(grid);
 
-            
             HBox successBar = new HBox(12);
             successBar.setAlignment(Pos.CENTER_LEFT);
             successBar.getStyleClass().add("success-bar");
 
             try {
-                ImageView checkIcon = new ImageView(new Image(getClass().getResourceAsStream("/images/icon_check.png")));
+                ImageView checkIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/icon_check.png"))));
                 checkIcon.setFitWidth(20);
                 checkIcon.setFitHeight(20);
                 successBar.getChildren().add(checkIcon);
-            } catch (Exception e) {}
+            } catch (Exception ignore) {
+            }
 
             Label successText = new Label("Esta posição contém uma estrutura.");
             successText.getStyleClass().add("success-text");
@@ -111,16 +130,16 @@ public class StructureScreen {
         }
         borderPane.setCenter(centerBox);
 
-        
         Button backButton = new Button("Voltar");
         backButton.getStyleClass().add("btn-back");
         try {
-            ImageView backIcon = new ImageView(new Image(getClass().getResourceAsStream("/images/icon_voltar.png")));
+            ImageView backIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/icon_voltar.png"))));
             backIcon.setFitWidth(16);
             backIcon.setFitHeight(16);
             backButton.setGraphic(backIcon);
             backButton.setGraphicTextGap(8);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {
+        }
 
         backButton.setOnAction(event -> {
             MapCellScreen screen = new MapCellScreen(POPUP_STAGE, SESSION, X, Y, ON_UPDATE_MAP);
@@ -130,12 +149,13 @@ public class StructureScreen {
         Button closeButton = new Button("Fechar");
         closeButton.getStyleClass().add("btn-close");
         try {
-            ImageView closeIcon = new ImageView(new Image(getClass().getResourceAsStream("/images/x_branco.png")));
+            ImageView closeIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/x_branco.png"))));
             closeIcon.setFitWidth(14);
             closeIcon.setFitHeight(14);
             closeButton.setGraphic(closeIcon);
             closeButton.setGraphicTextGap(8);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {
+        }
 
         closeButton.setOnAction(event -> POPUP_STAGE.close());
 
@@ -150,14 +170,19 @@ public class StructureScreen {
         return scene;
     }
 
-    private void adicionarLinhaInfo(GridPane grid, int row, String iconPath, String labelText, String valueText) {
+    /**
+     * Intermediary matrix cell generator that appends graphical symbols,
+     * static headers, and descriptive structural entity properties inside an inline format.
+     */
+    private void addInfoRow(GridPane grid, int row, String iconPath, String labelText, String valueText) {
         try {
-            ImageView iv = new ImageView(new Image(getClass().getResourceAsStream(iconPath)));
+            ImageView iv = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(iconPath))));
             iv.setFitWidth(28);
             iv.setFitHeight(28);
             iv.setPreserveRatio(true);
             grid.add(iv, 0, row);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {
+        }
 
         Label lbl = new Label(labelText);
         lbl.getStyleClass().add("info-label-type");
@@ -168,6 +193,9 @@ public class StructureScreen {
         grid.add(val, 2, row);
     }
 
+    /**
+     * Resolves layout structure rules from local directory paths to apply external styling.
+     */
     private void loadStyle(Scene scene) {
         try {
             scene.getStylesheets().clear();
@@ -177,8 +205,8 @@ public class StructureScreen {
             if (cssFile.exists()) {
                 scene.getStylesheets().add(cssFile.toURI().toString());
             }
-        } catch (Exception e) {
-            System.err.println("Erro ao carregar CSS: " + e.getMessage());
+        } catch (Exception ignore) {
+
         }
     }
 }

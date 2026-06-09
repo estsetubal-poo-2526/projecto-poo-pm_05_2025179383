@@ -57,20 +57,38 @@ public class Player {
      * @param actionPoints The current available Action Points.
      * @throws IllegalArgumentException If the provided name is empty or null.
      */
+    @Deprecated
     public Player(String name, int score, int wood, int stone, int food, int actionPoints) {
+        this(name, score, wood, stone, food, actionPoints, INITIAL_ACTION_POINTS);
+    }
+
+    /**
+     * Advanced reconstruction constructor for the data persistence layer.
+     * Separates volatile current turn AP from the permanent maximum baseline AP capacity.
+     *
+     * @param name         The name of the player.
+     * @param score        The player's accumulated score.
+     * @param wood         The current amount of wood resource.
+     * @param stone        The current amount of stone resource.
+     * @param food         The current amount of food resource.
+     * @param currentAp    The current active Action Points remaining in the turn.
+     * @param maxBaseAp    The maximum baseline Action Points capacity for turn initialization.
+     * @throws IllegalArgumentException If the provided name is empty or null.
+     */
+    public Player(String name, int score, int wood, int stone, int food, int currentAp, int maxBaseAp) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome Inválido");
         }
 
         this.name = name;
         this.score = score;
-        this.baseActionPoints = actionPoints;
+        this.baseActionPoints = maxBaseAp;
         this.inventory = new HashMap<>();
 
         inventory.put(ResourceType.WOOD, wood);
         inventory.put(ResourceType.STONE, stone);
         inventory.put(ResourceType.FOOD, food);
-        inventory.put(ResourceType.ACTION_POINTS, actionPoints);
+        inventory.put(ResourceType.ACTION_POINTS, currentAp);
     }
 
     public String getName() {

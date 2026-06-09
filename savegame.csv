@@ -1,6 +1,7 @@
 #GAME
-2
+1
 #PLAYERS
-Fabio,0,10,10,10,10
-Pedro,0,10,10,10,10
+Fabio,2,10,6,10,6,10
+Pedro,0,10,10,10,10,10
 #STRUCTURES
+FOREST,2,1,1,Fabio

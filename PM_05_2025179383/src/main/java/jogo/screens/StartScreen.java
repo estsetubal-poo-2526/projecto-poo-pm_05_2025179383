@@ -1,6 +1,5 @@
 package jogo.screens;
 
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -14,16 +13,38 @@ import jogo.engine.GameSession;
 import jogo.exceptions.GameException;
 import jogo.io.FileHandler;
 
+import java.util.Objects;
+
+/**
+ * The primary entry-point viewport and main menu controller.
+ * Renders the introductory branding assets and establishes navigation routes
+ * to bootstrap brand new match sessions, deserialize local game saves, or close the stage context.
+ *
+ * @author Fabio Cruz
+ * @author Tiago Silva
+ */
 public class StartScreen {
 
     private final Stage STAGE;
     private final GameSession SESSION;
 
+    /**
+     * Constructs a baseline StartScreen container matching the main application context window.
+     *
+     * @param stage   The primary Stage window manager wrapper.
+     * @param session The persistent {@link GameSession} tracker state machine.
+     */
     public StartScreen(Stage stage, GameSession session) {
         this.STAGE = stage;
         this.SESSION = session;
     }
 
+    /**
+     * Initializes structural menu container nodes, binds selection actions, anchors
+     * decorative graphic iconography, and packs the central card within a target Scene layout.
+     *
+     * @return A fully compiled JavaFX Scene representing the main gateway menu.
+     */
     public Scene createScene() {
         VBox rootBackground = new VBox();
         rootBackground.setAlignment(Pos.CENTER);
@@ -33,9 +54,8 @@ public class StartScreen {
         menuCard.setAlignment(Pos.CENTER);
         menuCard.getStyleClass().add("menu-card-container");
 
-        
         try {
-            ImageView logoView = new ImageView(new Image(getClass().getResourceAsStream("/icons/shield.png")));
+            ImageView logoView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/shield.png"))));
             logoView.setFitWidth(180);
             logoView.setFitHeight(180);
             logoView.setPreserveRatio(true);
@@ -43,55 +63,56 @@ public class StartScreen {
             VBox logoWrapper = new VBox(logoView);
             logoWrapper.getStyleClass().add("menu-logo-view");
             menuCard.getChildren().add(logoWrapper);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {
 
-        
+        }
+
         Label title = new Label("JOGO DE ESTRATÉGIA");
         title.getStyleClass().add("menu-title");
         menuCard.getChildren().add(title);
 
-        
         Button newGameButton = new Button("NOVO JOGO");
         newGameButton.getStyleClass().add("btn-menu-primary");
         try {
-            ImageView icon = new ImageView(new Image(getClass().getResourceAsStream("/icons/swords.png")));
+            ImageView icon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/swords.png"))));
             icon.setFitWidth(22);
             icon.setFitHeight(22);
             newGameButton.setGraphic(icon);
             newGameButton.setGraphicTextGap(10);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {
+
+        }
         newGameButton.setOnAction(event -> {
             SelectPlayersNameScreen inputScreen = new SelectPlayersNameScreen(STAGE, SESSION);
             STAGE.setScene(inputScreen.createScene());
         });
 
-        
         Button loadGameButton = new Button("CARREGAR JOGO");
         loadGameButton.getStyleClass().add("btn-menu-secondary");
         try {
-            ImageView icon = new ImageView(new Image(getClass().getResourceAsStream("/icons/load.png")));
+            ImageView icon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/load.png"))));
             icon.setFitWidth(20);
             icon.setFitHeight(20);
             loadGameButton.setGraphic(icon);
             loadGameButton.setGraphicTextGap(10);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {
+        }
         loadGameButton.setOnAction(event -> loadSavedGame());
 
-        
         Button exitButton = new Button("SAIR");
         exitButton.getStyleClass().add("btn-menu-neutral");
         try {
-            ImageView icon = new ImageView(new Image(getClass().getResourceAsStream("/icons/back.png")));
+            ImageView icon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/back.png"))));
             icon.setFitWidth(20);
             icon.setFitHeight(20);
             exitButton.setGraphic(icon);
             exitButton.setGraphicTextGap(10);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {
+        }
         exitButton.setOnAction(event -> STAGE.close());
 
         menuCard.getChildren().addAll(newGameButton, loadGameButton, exitButton);
 
-        
         HBox infoBar = new HBox(10);
         infoBar.setAlignment(Pos.CENTER_LEFT);
         infoBar.getStyleClass().add("result-bar");
@@ -99,11 +120,12 @@ public class StartScreen {
         infoBar.setMaxWidth(380);
 
         try {
-            ImageView infoIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/information.png")));
+            ImageView infoIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/information.png"))));
             infoIcon.setFitWidth(20);
             infoIcon.setFitHeight(20);
             infoBar.getChildren().add(infoIcon);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {
+        }
 
         Label infoText = new Label("Escolha uma opção para começar.");
         infoText.getStyleClass().add("result-text");
@@ -116,6 +138,10 @@ public class StartScreen {
         return scene;
     }
 
+    /**
+     * Reaches persistent file directories via IO modules to reconstruct historical
+     * map data grids, player metrics, and session indices. Renders main display loops on success.
+     */
     private void loadSavedGame() {
         try {
             FileHandler.SaveData data = FileHandler.loadGame();
@@ -127,6 +153,11 @@ public class StartScreen {
         }
     }
 
+    /**
+     * Pulls cascading stylesheet metrics from root resources to style core panel controls.
+     *
+     * @param scene The operational Scene workspace receiving stylesheet injections.
+     */
     private void loadStyle(Scene scene) {
         try {
             String userDir = System.getProperty("user.dir");
@@ -134,6 +165,7 @@ public class StartScreen {
             if (cssFile.exists()) {
                 scene.getStylesheets().add(cssFile.toURI().toString());
             }
-        } catch (Exception e) {}
+        } catch (Exception ignore) {
+        }
     }
 }

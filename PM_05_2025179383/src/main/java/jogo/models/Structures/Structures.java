@@ -166,6 +166,6 @@ public abstract class Structures {
 
     @Override
     public String toString() {
-        return STRUCTURE_TYPE + " nível " + level;
+        return String.valueOf(STRUCTURE_TYPE);
     }
 }

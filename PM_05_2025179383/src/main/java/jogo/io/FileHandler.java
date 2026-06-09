@@ -64,6 +64,7 @@ public class FileHandler {
 
     /**
      * Helper method to write a single player's attributes and resources to the save file.
+     * Includes both volatile remaining Action Points and permanent baseline capacity.
      *
      * @param writer The PrintWriter instance bound to the save file.
      * @param p The Player instance to be saved.
@@ -75,7 +76,8 @@ public class FileHandler {
                         p.getResourceQuantity(ResourceType.WOOD) + "," +
                         p.getResourceQuantity(ResourceType.STONE) + "," +
                         p.getResourceQuantity(ResourceType.FOOD) + "," +
-                        p.getResourceQuantity(ResourceType.ACTION_POINTS)
+                        p.getActionPoints() + "," +
+                        p.getBaseActionPoints()
         );
     }
 
@@ -107,37 +109,30 @@ public class FileHandler {
 
                 String[] data = line.split(",");
 
-                if (section.equals("#GAME")) {
-                    day = Integer.parseInt(data[0]);
+                switch (section) {
+                    case "#GAME" -> day = Integer.parseInt(data[0]);
+                    case "#PLAYERS" -> {
+                        Player p = getPlayer(data);
 
-                } else if (section.equals("#PLAYERS")) {
-                    String name = data[0];
-                    int score = Integer.parseInt(data[1]);
-                    int wood = Integer.parseInt(data[2]);
-                    int stone = Integer.parseInt(data[3]);
-                    int food = Integer.parseInt(data[4]);
-                    int ap = Integer.parseInt(data[5]);
-
-                    Player p = new Player(name, score, wood, stone, food, ap);
-
-                    if (p1 == null) {
-                        p1 = p;
-                    } else {
-                        p2 = p;
+                        if (p1 == null) {
+                            p1 = p;
+                        } else {
+                            p2 = p;
+                        }
                     }
+                    case "#STRUCTURES" -> {
+                        StructuresType type = StructuresType.valueOf(data[0]);
+                        int x = Integer.parseInt(data[1]);
+                        int y = Integer.parseInt(data[2]);
+                        int level = Integer.parseInt(data[3]);
 
-                } else if (section.equals("#STRUCTURES")) {
-                    StructuresType type = StructuresType.valueOf(data[0]);
-                    int x = Integer.parseInt(data[1]);
-                    int y = Integer.parseInt(data[2]);
-                    int level = Integer.parseInt(data[3]);
+                        Player owner = getOwnerByName(data[4], p1, p2);
+                        Structures s = CreateStructure.create(type, owner, 1);
 
-                    Player owner = getOwnerByName(data[4], p1, p2);
-                    Structures s = CreateStructure.create(type, owner, 1);
-
-                    if (s != null) {
-                        s.setLevel(level);
-                        map.addStructure(s, x, y);
+                        if (s != null) {
+                            s.setLevel(level);
+                            map.addStructure(s, x, y);
+                        }
                     }
                 }
             }
@@ -147,6 +142,18 @@ public class FileHandler {
         } catch (IOException | IllegalArgumentException e) {
             throw new GameException("Erro ao processar ficheiro de Save: " + e.getMessage());
         }
+    }
+
+    private static Player getPlayer(String[] data) {
+        String name = data[0];
+        int score = Integer.parseInt(data[1]);
+        int wood = Integer.parseInt(data[2]);
+        int stone = Integer.parseInt(data[3]);
+        int food = Integer.parseInt(data[4]);
+        int currentAp = Integer.parseInt(data[5]);
+        int maxBaseAp = Integer.parseInt(data[6]);
+
+        return new Player(name, score, wood, stone, food, currentAp, maxBaseAp);
     }
 
     /**

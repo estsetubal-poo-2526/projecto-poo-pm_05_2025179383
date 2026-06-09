@@ -15,26 +15,53 @@ import javafx.stage.Stage;
 import jogo.engine.GameEngine;
 import jogo.engine.GameSession;
 import jogo.exceptions.GameException;
+import jogo.exceptions.StructureDontExistException;
 import jogo.models.Structures.Structures;
 
+import java.util.Objects;
+
+/**
+ * Controller and view class responsible for rendering structural upgrade paths and statistics comparisons.
+ * Displays dynamic data matrix grids comparing current properties with prospective tier outputs,
+ * and handles in-place visual updates upon successful backend engine upgrades.
+ *
+ * @author Fabio Cruz
+ * @author Tiago Silva
+ */
 public class UpgradeStructureScreen {
 
     private final Stage STAGE;
     private final GameSession SESSION;
-    private final Runnable ON_UPDATE_MAP; 
+    private final Runnable ON_UPDATE_MAP;
 
+    private BorderPane borderPane;
     private Label messageLabel;
     private HBox successNotificationBar;
     private VBox bottomLayout;
 
+    /**
+     * Constructs an operational structure upgrade panel framework view.
+     *
+     * @param stage       The auxiliary Stage context window framework.
+     * @param session     The master engine {@link GameSession} instance tracking global variables.
+     * @param onUpdateMap A callback payload layout task triggered to re-render the parent grid interface.
+     */
     public UpgradeStructureScreen(Stage stage, GameSession session, Runnable onUpdateMap) {
         this.SESSION = session;
         this.STAGE = stage;
         this.ON_UPDATE_MAP = onUpdateMap;
     }
 
+    /**
+     * Builds and structures baseline sub-panels components, handles runtime query exceptions safely,
+     * and maps node elements inside an optimized viewport Scene bounds.
+     *
+     * @param x The target horizontal matrix map tile alignment coordinate.
+     * @param y The target vertical matrix map tile alignment coordinate.
+     * @return A compiled JavaFX Scene representing the upgrade comparative terminal dashboard.
+     */
     public Scene createScene(int x, int y) {
-        BorderPane borderPane = new BorderPane();
+        borderPane = new BorderPane();
         borderPane.getStyleClass().add("upgrade-container");
 
         messageLabel = new Label();
@@ -44,25 +71,22 @@ public class UpgradeStructureScreen {
             borderPane.setCenter(center(x, y));
             borderPane.setBottom(bottom(x, y));
         } catch (GameException e) {
-            
             ErrorPopUp.show(e.getMessage());
-
-            
-            fecharEAtualizar();
-
-            
+            closeAndRefresh();
             return new Scene(new BorderPane(), 1, 1);
         }
 
         Scene scene = new Scene(borderPane, 1200, 800);
         try {
-            scene.getStylesheets().add(getClass().getResource("/jogo/style.css").toExternalForm());
-        } catch (Exception e) {
-            System.out.println("CSS não encontrado.");
+            scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/jogo/style.css")).toExternalForm());
+        } catch (Exception ignore) {
         }
         return scene;
     }
 
+    /**
+     * Assembles the left side panel housing a stylized graphical snapshot bounding the target structural building.
+     */
     private VBox left(int x, int y) {
         VBox vBox = new VBox();
         vBox.setAlignment(Pos.CENTER);
@@ -70,7 +94,7 @@ public class UpgradeStructureScreen {
 
         try {
             String structureName = getStructureMap(x, y).getClass().getSimpleName().toLowerCase();
-            Image buildingImg = new Image(getClass().getResourceAsStream("/icons/" + structureName + ".png"));
+            Image buildingImg = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/" + structureName + ".png")));
             ImageView iv = new ImageView(buildingImg);
             iv.setFitWidth(320);
             iv.setFitHeight(320);
@@ -87,6 +111,9 @@ public class UpgradeStructureScreen {
         return vBox;
     }
 
+    /**
+     * Compiles historical and future forecast statistics side-by-side using tabular matrix rows.
+     */
     private VBox center(int x, int y) throws GameException {
         Label title = new Label("Melhorar Estrutura");
         title.getStyleClass().add("upgrade-title");
@@ -97,16 +124,16 @@ public class UpgradeStructureScreen {
         grid.setAlignment(Pos.CENTER_LEFT);
         grid.setPadding(new Insets(30, 0, 30, 0));
 
-        adicionarLinhaGrid(grid, 0, "/icons/star.png", "Nível atual:",
+        addGridRow(grid, 0, "/icons/star.png", "Nível atual:",
                 String.valueOf(getLevelStructure(x, y)), String.valueOf(getLevelStructure(x, y) + 1), false, false);
 
-        adicionarLinhaGrid(grid, 1, "/icons/dollar.png", "Despesa atual:",
+        addGridRow(grid, 1, "/icons/dollar.png", "Despesa atual:",
                 getActualExpense(x, y), getFutureExpense(x, y), false, false);
 
-        adicionarLinhaGrid(grid, 2, "/icons/forest.png", "Produção atual:",
+        addGridRow(grid, 2, "/icons/forest.png", "Produção atual:",
                 getActualProduction(x, y), getFutureProduction(x, y), false, false);
 
-        adicionarLinhaGrid(grid, 3, "/icons/tool.png", "Custo de melhoria:",
+        addGridRow(grid, 3, "/icons/tool.png", "Custo de melhoria:",
                 getCostToUpgrade(x, y), "", true, true);
 
         VBox centerBox = new VBox(10);
@@ -117,12 +144,17 @@ public class UpgradeStructureScreen {
         return centerBox;
     }
 
-    private void adicionarLinhaGrid(GridPane grid, int row, String iconPath, String labelText, String oldVal, String newVal, boolean isCost, boolean isSingleValue) {
+    /**
+     * Intermediary matrix inline grid line builder that handles vector symbols,
+     * comparative indicators, and value style transformations.
+     */
+    private void addGridRow(GridPane grid, int row, String iconPath, String labelText, String oldVal, String newVal, boolean isCost, boolean isSingleValue) {
         try {
-            ImageView iv = new ImageView(new Image(getClass().getResourceAsStream(iconPath)));
+            ImageView iv = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(iconPath))));
             iv.setFitWidth(24); iv.setFitHeight(24); iv.setPreserveRatio(true);
             grid.add(iv, 0, row);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {
+        }
 
         Label lbl = new Label(labelText);
         lbl.getStyleClass().add("attr-label");
@@ -148,6 +180,9 @@ public class UpgradeStructureScreen {
         }
     }
 
+    /**
+     * Renders base configurations including functional validation controls and transactional success indicators.
+     */
     private VBox bottom(int x, int y) {
         bottomLayout = new VBox(20);
         bottomLayout.setAlignment(Pos.CENTER);
@@ -156,17 +191,18 @@ public class UpgradeStructureScreen {
         Button upgrade = new Button("Melhorar");
         upgrade.getStyleClass().add("btn-upgrade");
         try {
-            ImageView upIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/up-arrow.png")));
+            ImageView upIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/up-arrow.png"))));
             upIcon.setFitWidth(18); upIcon.setFitHeight(18);
             upgrade.setGraphic(upIcon);
             upgrade.setGraphicTextGap(8);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {
+        }
 
         Button goBack = new Button("Voltar");
         goBack.getStyleClass().add("btn-back");
 
         upgrade.setOnAction(event -> upgradeStructure(x, y));
-        goBack.setOnAction(event -> fecharEAtualizar());
+        goBack.setOnAction(event -> closeAndRefresh());
 
         HBox buttonsBox = new HBox(20);
         buttonsBox.setAlignment(Pos.CENTER);
@@ -178,10 +214,11 @@ public class UpgradeStructureScreen {
         successNotificationBar.getStyleClass().add("success-bar");
         successNotificationBar.setAlignment(Pos.CENTER);
         try {
-            ImageView checkIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/log.png")));
+            ImageView checkIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/log.png"))));
             checkIcon.setFitWidth(20); checkIcon.setFitHeight(20);
             successNotificationBar.getChildren().add(checkIcon);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {
+        }
 
         messageLabel.getStyleClass().add("success-text");
         successNotificationBar.getChildren().add(messageLabel);
@@ -193,6 +230,11 @@ public class UpgradeStructureScreen {
         return bottomLayout;
     }
 
+    /**
+     * Dispatches evolutionary data parameters onto backend calculation layers.
+     * Updates the current view layout in-place with refreshed structural specifications
+     * instead of re-instantiating structural view controllers.
+     */
     private void upgradeStructure(int x, int y) {
         try {
             GameEngine.upgradeStructure(
@@ -203,11 +245,12 @@ public class UpgradeStructureScreen {
                     SESSION.getScoreModifier()
             );
 
-            UpgradeStructureScreen nextScreen = new UpgradeStructureScreen(STAGE, SESSION, ON_UPDATE_MAP);
-            Scene nextScene = nextScreen.createScene(x, y);
-            nextScreen.messageLabel.setText("Pronto para melhorar a estrutura!");
+            borderPane.setCenter(center(x, y));
 
-            STAGE.setScene(nextScene);
+            messageLabel.setText("Estrutura melhorada com sucesso!");
+            if (!bottomLayout.getChildren().contains(successNotificationBar)) {
+                bottomLayout.getChildren().add(successNotificationBar);
+            }
 
             if (ON_UPDATE_MAP != null) {
                 ON_UPDATE_MAP.run();
@@ -218,7 +261,10 @@ public class UpgradeStructureScreen {
         }
     }
 
-    private void fecharEAtualizar() {
+    /**
+     * Executes external graphical state sync payloads before disposing of active display containers.
+     */
+    private void closeAndRefresh() {
         if (ON_UPDATE_MAP != null) {
             ON_UPDATE_MAP.run();
         }
@@ -228,7 +274,7 @@ public class UpgradeStructureScreen {
     private Structures getStructureMap(int x, int y) throws GameException {
         Structures structure = SESSION.getMap().getStructure(x, y);
         if (structure == null) {
-            throw new GameException("Não existe nenhuma estrutura nesta posição.");
+            throw new StructureDontExistException();
         }
         return structure;
     }

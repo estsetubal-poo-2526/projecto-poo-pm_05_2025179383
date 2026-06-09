@@ -7,16 +7,43 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test class for the GameSession class.
+ *
+ * This class tests the main behavior of a game session,
+ * including starting a new game, loading a saved game,
+ * triggering daily events, ending turns, changing players,
+ * progressing days and determining the winner.
+ *
+ * @author Fabio Cruz
+ * @author Tiago Silva
+ */
 public class GameSessionTest {
 
+    /**
+     * GameSession object used in the tests.
+     */
     private GameSession session;
 
+    /**
+     * Creates a new GameSession before each test.
+     *
+     * A new game is started with two test players so that each test
+     * begins with a valid and clean game state.
+     */
     @BeforeEach
     void setUp() {
         session = new GameSession();
         session.startNewGame("Fabio", "Computer");
     }
 
+    /**
+     * Tests if a new game is initialized correctly.
+     *
+     * The test verifies if the map is created, if both players are created
+     * with the correct names, if Player 1 starts the game, if the day starts
+     * at 1 and if the first turn belongs to Player 1.
+     */
     @Test
     void testStartNewGameInitializesCorrectly() {
         assertNotNull(session.getMap(), "O mapa deve ser inicializado.");
@@ -27,6 +54,13 @@ public class GameSessionTest {
         assertTrue(session.isPlayerOneTurn(), "Deve ser o turno do Player 1.");
     }
 
+    /**
+     * Tests if a saved game state is restored correctly.
+     *
+     * The test creates a custom map, two custom players and a saved day.
+     * After loading the game, it verifies if all values were correctly
+     * restored into the session.
+     */
     @Test
     void testLoadGameRestoresState() {
         WorldMap customMap = new WorldMap();
@@ -43,10 +77,18 @@ public class GameSessionTest {
         assertTrue(session.isPlayerOneTurn(), "Por defeito, o load coloca o turno no Player 1.");
     }
 
+    /**
+     * Tests if starting a day event updates the game modifiers.
+     *
+     * The test verifies if the event returns a message and if the resource
+     * and score modifiers are valid values.
+     *
+     * Valid modifier values are 0, 1 or 2.
+     */
     @Test
     void testStartDayEventUpdatesModifiers() {
-        // Dispara o evento e verifica se os modificadores internos são atualizados com valores válidos (0, 1 ou 2)
         String msg = session.startDayEvent();
+
         assertNotNull(msg, "O evento deve devolver uma mensagem informativa.");
 
         int resMod = session.getResourceModifier();
@@ -56,11 +98,18 @@ public class GameSessionTest {
         assertTrue(scoreMod == 0 || scoreMod == 1 || scoreMod == 2, "Modificador de score inválido.");
     }
 
+    /**
+     * Tests the end of Player 1's turn.
+     *
+     * The test simulates Action Point usage by Player 1 and then ends the turn.
+     * It verifies if Player 1's Action Points are restored, if the current player
+     * changes to Player 2, if no new day event is triggered and if the day
+     * remains the same.
+     */
     @Test
     void testEndTurnFromPlayerOneToPlayerTwo() {
         Player p1 = session.getActualPlayer();
 
-        // Simula gasto de AP para testar o resetAP no final do turno
         p1.removeResource(ResourceType.ACTION_POINTS, 5);
 
         String resultMessage = session.endTurn();
@@ -72,14 +121,19 @@ public class GameSessionTest {
         assertEquals(1, session.getDay(), "O dia não deve mudar enquanto o Player 2 não jogar.");
     }
 
+    /**
+     * Tests the end of Player 2's turn.
+     *
+     * The test first passes the turn from Player 1 to Player 2.
+     * Then, when Player 2 ends the turn, the day should increase,
+     * the turn should return to Player 1 and a new daily event should occur.
+     */
     @Test
     void testEndTurnFromPlayerTwoTriggersNewDay() {
-        // Passa o turno do Player 1 para o Player 2
         session.endTurn();
 
         int dayBefore = session.getDay();
 
-        // Player 2 termina o turno dele -> Fecha o dia
         String eventMessage = session.endTurn();
 
         assertEquals(dayBefore + 1, session.getDay(), "O dia deve ter incrementado.");
@@ -88,10 +142,18 @@ public class GameSessionTest {
         assertNotNull(eventMessage, "A transição de dia deve despoletar um evento diário.");
     }
 
+    /**
+     * Tests if the game ends after the maximum number of days
+     * and if the winner is determined correctly.
+     *
+     * The test advances the game by ending turns until the total number
+     * of days is exceeded. Then it verifies if the game is over.
+     *
+     * After that, the test changes the players' scores to check three cases:
+     * Player 1 wins, Player 2 wins and both players tie.
+     */
     @Test
     void testGameOverAndWinnerDetermination() {
-        // Vamos forçar o avanço dos dias completando os turnos consecutivamente
-        // Cada dia precisa de 2 chamadas ao endTurn() (p1 e p2)
         int totalTurnsToLoop = session.getTOTAL_DAYS() * 2;
 
         for (int i = 0; i < totalTurnsToLoop; i++) {
@@ -101,15 +163,17 @@ public class GameSessionTest {
         assertTrue(session.isGameOver(), "O jogo deveria estar terminado após os turnos regulamentares.");
         assertNull(session.endTurn(), "Chamar endTurn com o jogo terminado não deve processar mais dias.");
 
-        // Força pontuações para testar o cálculo do vencedor
         session.getPlayer1().addScore(50);
         session.getPlayer2().addScore(30);
+
         assertEquals(session.getPlayer1(), session.getWinner(), "O Player 1 devia ser o vencedor com mais pontos.");
 
-        session.getPlayer2().addScore(30); // Player 2 passa a ter 60
+        session.getPlayer2().addScore(30);
+
         assertEquals(session.getPlayer2(), session.getWinner(), "O Player 2 devia ser o vencedor após a ultrapassagem.");
 
-        session.getPlayer1().addScore(10); // Empate a 60
+        session.getPlayer1().addScore(10);
+
         assertNull(session.getWinner(), "Em caso de empate, o vencedor deve retornar null.");
     }
 }

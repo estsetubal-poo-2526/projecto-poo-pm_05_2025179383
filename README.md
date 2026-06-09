@@ -1,7 +1,9 @@
-Jogo
+# Jogo de Estratégia por Turnos
 
-É um jogo TBS local, focado em gestão de recursos, que consiste em construir estruturas que custam e produzem recursos e dão pontuaçoes. Ao final dos 30 dias, o jogador com mais pontuação ganha
+Este projeto é um jogo TBS local, focado na gestão de recursos.  
+Os jogadores constroem estruturas que consomem e produzem recursos, geram pontuação e podem ser melhoradas ao longo do jogo.
 
+No final dos 30 dias, vence o jogador com maior pontuação.
 
 # Funcionalidades Pricipais
 
@@ -35,21 +37,24 @@ Jogo
 
 # Estrutura do Projeto
 
-```text
+``` text
 src/
 ├── main/
 │   ├── java/
 │   │   └── jogo/
 │   │       ├── Main.java          # Ponto de entrada da aplicação
-│   │       ├── engine/            # Motores e controladores do ciclo de jogo
-│   │       ├── exceptions/        # Exceções personalizadas para controlo de erros
-│   │       ├── io/                # Lógica de salvamento e carregamento de ficheiros
-│   │       ├── models/            # Lógica base, entidades e regras do jogo
-│   │       └── screens/           # Janelas, controladores e componentes da interface gráfica
-│   └── resources/                 # Assets globais do projeto
+│   │       ├── engine/            # Lógica principal do jogo, turnos, eventos e mapa
+│   │       ├── exceptions/        # Exceções personalizadas para validação e erros do jogo
+│   │       ├── io/                # Gravação e carregamento do estado do jogo
+│   │       ├── models/            # Entidades, recursos, jogadores e estruturas
+│   │       └── screens/           # Ecrãs e componentes da interface gráfica JavaFX
+│   └── resources/
 │       ├── icons/                 # Imagens e ícones utilizados na interface
-│       └── style/                 # Ficheiros CSS para estilização da UI
-└── test/                          # Pacote contendo os testes unitários da lógica do jogo
+│       └── jogo/
+│           └── style.css          # Ficheiro CSS principal da aplicação
+└── test/
+└── java/                      # Testes unitários JUnit da lógica do jogo
+
 ```
 
 # Autores

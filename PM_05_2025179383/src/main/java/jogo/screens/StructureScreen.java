@@ -104,9 +104,9 @@ public class StructureScreen {
             noStructureLabel.getStyleClass().add("info-label-type");
             centerBox.getChildren().add(noStructureLabel);
         } else {
-            addInfoRow(grid, 0, "/images/construct.png", "Estrutura:", structure.toString());
-            addInfoRow(grid, 1, "/images/user_azul.png", "Dono:", structure.getOwner().getName());
-            addInfoRow(grid, 2, "/images/icon_estreia.png", "Nível:", String.valueOf(structure.getLevel()));
+            addInfoRow(grid, 0, "/icons/tool.png", "Estrutura:", structure.toString());
+            addInfoRow(grid, 1, "/icons/peoplegreen.png", "Dono:", structure.getOwner().getName());
+            addInfoRow(grid, 2, "/icons/star.png", "Nível:", String.valueOf(structure.getLevel()));
 
             centerBox.getChildren().add(grid);
 
@@ -115,7 +115,7 @@ public class StructureScreen {
             successBar.getStyleClass().add("success-bar");
 
             try {
-                ImageView checkIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/icon_check.png"))));
+                ImageView checkIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/check.png"))));
                 checkIcon.setFitWidth(20);
                 checkIcon.setFitHeight(20);
                 successBar.getChildren().add(checkIcon);
@@ -133,7 +133,7 @@ public class StructureScreen {
         Button backButton = new Button("Voltar");
         backButton.getStyleClass().add("btn-back");
         try {
-            ImageView backIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/icon_voltar.png"))));
+            ImageView backIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/back.png"))));
             backIcon.setFitWidth(16);
             backIcon.setFitHeight(16);
             backButton.setGraphic(backIcon);

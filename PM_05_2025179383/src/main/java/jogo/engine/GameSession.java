@@ -119,6 +119,11 @@ public class GameSession {
      */
 
     public String endTurn() {
+
+        if (isGameOver()) {
+            return null;
+        }
+
         actualPlayer.resetAP();
 
         if (playerOneTurn) {

@@ -12,6 +12,8 @@ import javafx.stage.Stage;
 import jogo.engine.GameSession;
 import jogo.models.Structures.StructuresType;
 
+import java.util.Objects;
+
 /**
  * Controller and view class responsible for rendering the structure selection menu.
  * Displays available building options as stylized cards and handles transitions
@@ -64,13 +66,13 @@ public class CreateStructureScreen {
         cardContent.setAlignment(Pos.CENTER);
 
         try {
-            ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/" + iconName)));
+            ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/" + iconName))));
             imageView.setFitWidth(80);
             imageView.setFitHeight(80);
             imageView.setPreserveRatio(true);
             cardContent.getChildren().add(imageView);
-        } catch (Exception e) {
-            System.err.println("Não foi possível carregar o ícone: " + iconName);
+        } catch (Exception ignore) {
+
         }
 
         Label label = new Label(text.toUpperCase());
@@ -114,12 +116,12 @@ public class CreateStructureScreen {
         backButton.getStyleClass().add("btn-back");
 
         try {
-            ImageView backIcon = new ImageView(new Image(getClass().getResourceAsStream("/images/back.png")));
+            ImageView backIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/back.png"))));
             backIcon.setFitWidth(16);
             backIcon.setFitHeight(16);
             backButton.setGraphic(backIcon);
             backButton.setGraphicTextGap(8);
-        } catch (Exception e) {}
+        } catch (Exception ignore) {}
 
         backButton.setOnAction(event -> {
             MapCellScreen screen = new MapCellScreen(POPUP_STAGE, SESSION, X, Y, ON_UPDATE_MAP);

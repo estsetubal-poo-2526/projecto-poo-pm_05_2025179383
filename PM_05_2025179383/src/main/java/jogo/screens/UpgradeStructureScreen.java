@@ -21,7 +21,7 @@ public class UpgradeStructureScreen {
 
     private final Stage STAGE;
     private final GameSession SESSION;
-    private final Runnable ON_UPDATE_MAP; // Salvadora da pátria contra fugas de memória
+    private final Runnable ON_UPDATE_MAP; 
 
     private Label messageLabel;
     private HBox successNotificationBar;
@@ -44,13 +44,13 @@ public class UpgradeStructureScreen {
             borderPane.setCenter(center(x, y));
             borderPane.setBottom(bottom(x, y));
         } catch (GameException e) {
-            // Mostra o teu pop-up de erro com a mensagem da exceção
+            
             ErrorPopUp.show(e.getMessage());
 
-            // Fecha esta janela imediatamente para não abrir ecrãs anões aberrantes
+            
             fecharEAtualizar();
 
-            // Retorna uma cena fake e minúscula só para o JavaFX não estoirar antes de fechar a Stage
+            
             return new Scene(new BorderPane(), 1, 1);
         }
 

@@ -25,7 +25,7 @@ class GameEngineTest {
     }
 
     @Test
-    void testSuccessCreateStructure() throws CoordinatesOutOfBoundsException {
+    void testSuccessCreateStructure() throws GameException {
         makePlayerRich(player);
 
         int apBefore = player.getResourceQuantity(ResourceType.ACTION_POINTS);
@@ -308,14 +308,14 @@ class GameEngineTest {
     }
 
     @Test
-    void testGetStructureInfoThrowsExceptionWhenEmpty() throws CoordinatesOutOfBoundsException {
+    void testGetStructureInfoThrowsExceptionWhenEmpty() throws GameException {
         assertTrue(map.isNotOccupied(4, 4), "A coordenada devia estar vazia.");
 
         GameException exception = assertThrows(GameException.class, () -> {
             GameEngine.getStructureInfo(map, 4, 4);
         }, "Devia ter lançado GameException porque a coordenada está vazia.");
 
-        assertEquals("Não existe nenhuma estrutura nessa posição.", exception.getMessage(),
+        assertEquals("Essa Estrutura não Existe!", exception.getMessage(),
                 "A mensagem de erro da exceção está errada.");
     }
 

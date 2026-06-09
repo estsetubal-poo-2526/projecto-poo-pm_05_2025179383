@@ -60,7 +60,7 @@ public class SelectPlayersNameScreen{
         root.setAlignment(Pos.CENTER);
         root.getStyleClass().add("input-screen-root");
 
-        // Ícone do Escudo Central
+        
         try {
             ImageView shieldView = new ImageView(new Image(getClass().getResourceAsStream("/icons/shield.png")));
             shieldView.setFitWidth(130);
@@ -74,12 +74,12 @@ public class SelectPlayersNameScreen{
         title.setAlignment(Pos.CENTER);
         root.getChildren().add(title);
 
-        // Contentores Customizados dos Inputs
+        
         HBox p1Box = createCustomInputField("Nome do Jogador 1", "/icons/peoplegreen.png", "input-box-p1");
         HBox p2Box = createCustomInputField("Nome do Jogador 2", "/icons/peopleblue.png", "input-box-p2");
         root.getChildren().addAll(p1Box, p2Box);
 
-        // Botão Iniciar Jogo
+        
         Button startButton = new Button("Iniciar Jogo");
         startButton.getStyleClass().add("btn-start-game");
         try {
@@ -92,7 +92,7 @@ public class SelectPlayersNameScreen{
         startButton.setOnAction(event -> validateAndStart());
         root.getChildren().add(startButton);
 
-        // Contentor da Barra de Erros (Invisível por omissão)
+        
         errorBarContainer = new VBox();
         errorBarContainer.setAlignment(Pos.CENTER);
         errorBarContainer.setManaged(false);

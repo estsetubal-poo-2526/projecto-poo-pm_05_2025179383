@@ -97,7 +97,7 @@ public class MapCellScreen {
             POPUP_STAGE.setScene(screen.createScene());
         });
 
-        // AQUI: Agora passamos convenientemente o ON_UPDATE_MAP para o ecrã de upgrade
+        
         upgradeStructure.setOnAction(event -> {
             UpgradeStructureScreen upgradeStructureScreen = new UpgradeStructureScreen(POPUP_STAGE, SESSION, ON_UPDATE_MAP);
             POPUP_STAGE.setScene(upgradeStructureScreen.createScene(X, Y));

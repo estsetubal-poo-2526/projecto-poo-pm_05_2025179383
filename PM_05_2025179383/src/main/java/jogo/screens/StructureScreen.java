@@ -43,13 +43,13 @@ public class StructureScreen {
             ErrorPopUp.show(e.getMessage());
         }
 
-        // --- LADO ESQUERDO: Pré-visualização da Imagem da Estrutura ---
+        
         VBox leftBox = new VBox();
         leftBox.setAlignment(Pos.CENTER);
         leftBox.setPadding(new Insets(0, 40, 0, 10));
 
         try {
-            // Assume o nome da classe em minúsculas (ex: "mina.png")
+            
             String structureName = (structure != null) ? structure.getClass().getSimpleName().toLowerCase() : "default";
             Image buildingImg = new Image(getClass().getResourceAsStream("/images/" + structureName + ".png"));
             ImageView iv = new ImageView(buildingImg);
@@ -66,7 +66,7 @@ public class StructureScreen {
         }
         borderPane.setLeft(leftBox);
 
-        // --- CENTRO: Detalhes textuais em formato Grid ---
+        
         VBox centerBox = new VBox(15);
         centerBox.setAlignment(Pos.CENTER_LEFT);
         centerBox.setPadding(new Insets(10));
@@ -82,16 +82,16 @@ public class StructureScreen {
             noStructureLabel.getStyleClass().add("info-label-type");
             centerBox.getChildren().add(noStructureLabel);
         } else {
-            // Linha 1: Nome da Estrutura
+            
             adicionarLinhaInfo(grid, 0, "/images/construct.png", "Estrutura:", structure.toString());
-            // Linha 2: Dono
+            
             adicionarLinhaInfo(grid, 1, "/images/user_azul.png", "Dono:", structure.getOwner().getName());
-            // Linha 3: Nível
+            
             adicionarLinhaInfo(grid, 2, "/images/icon_estreia.png", "Nível:", String.valueOf(structure.getLevel()));
 
             centerBox.getChildren().add(grid);
 
-            // Barra de Sucesso Verde/Notificação em baixo do grid
+            
             HBox successBar = new HBox(12);
             successBar.setAlignment(Pos.CENTER_LEFT);
             successBar.getStyleClass().add("success-bar");
@@ -111,7 +111,7 @@ public class StructureScreen {
         }
         borderPane.setCenter(centerBox);
 
-        // --- INFERIOR: Botões de Ação ---
+        
         Button backButton = new Button("Voltar");
         backButton.getStyleClass().add("btn-back");
         try {

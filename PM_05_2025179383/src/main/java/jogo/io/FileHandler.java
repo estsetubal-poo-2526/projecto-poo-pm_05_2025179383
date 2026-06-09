@@ -80,8 +80,8 @@ public class FileHandler {
                     day = Integer.parseInt(data[0]);
 
                 } else if (section.equals("#PLAYERS")) {
-                    // Extrai explicitamente na ordem em que foi guardado no CSV:
-                    // Name, Score, Wood, Stone, Food, AP
+                    
+                    
                     String name = data[0];
                     int score = Integer.parseInt(data[1]);
                     int wood = Integer.parseInt(data[2]);
@@ -89,8 +89,8 @@ public class FileHandler {
                     int food = Integer.parseInt(data[4]);
                     int ap = Integer.parseInt(data[5]);
 
-                    // Garante que passas os argumentos exatamente na ordem do construtor do Player:
-                    // Construtor: (name, score, wood, stone, food, actionPoints)
+                    
+                    
                     Player p = new Player(name, score, wood, stone, food, ap);
 
                     if (p1 == null) {

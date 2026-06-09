@@ -21,7 +21,7 @@ public class EndScreen {
         root.setAlignment(Pos.CENTER);
         root.getStyleClass().add("end-screen-root");
 
-        // 1. Ícone do Troféu Dourado de Vitória
+        
         try {
             ImageView trophyView = new ImageView(new Image(getClass().getResourceAsStream("/icons/throphy.png")));
             trophyView.setFitWidth(160);
@@ -32,12 +32,12 @@ public class EndScreen {
             System.err.println("Ícone do troféu não encontrado.");
         }
 
-        // 2. Título "Vencedor"
+        
         Label title = new Label("Vencedor");
         title.getStyleClass().add("end-title");
         root.getChildren().add(title);
 
-        // 3. Caixa de Destaque com o Nome do Vencedor
+        
         VBox winnerBox = new VBox();
         winnerBox.setAlignment(Pos.CENTER);
         winnerBox.getStyleClass().add("winner-box-container");
@@ -47,13 +47,13 @@ public class EndScreen {
         winnerBox.getChildren().add(winnerName);
         root.getChildren().add(winnerBox);
 
-        // 4. Caixa da Pontuação com a Estrela
+        
         HBox scoreBox = new HBox(12);
         scoreBox.setAlignment(Pos.CENTER);
         scoreBox.getStyleClass().add("score-box-container");
 
         try {
-            ImageView starIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/star.png"))); // Mantendo o teu padrão de nome
+            ImageView starIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/star.png"))); 
             starIcon.setFitWidth(26);
             starIcon.setFitHeight(26);
             starIcon.setPreserveRatio(true);
@@ -65,7 +65,7 @@ public class EndScreen {
         scoreBox.getChildren().add(score);
         root.getChildren().add(scoreBox);
 
-        // Criar a cena com o tamanho padrão que usas nos outros ecrãs do jogo
+        
         Scene scene = new Scene(root, 1200, 800);
         loadStyle(scene);
         return scene;

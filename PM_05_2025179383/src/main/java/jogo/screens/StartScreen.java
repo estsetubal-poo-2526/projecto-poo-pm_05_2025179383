@@ -33,7 +33,7 @@ public class StartScreen {
         menuCard.setAlignment(Pos.CENTER);
         menuCard.getStyleClass().add("menu-card-container");
 
-        // Logo com as Espadas e o Escudo
+        
         try {
             ImageView logoView = new ImageView(new Image(getClass().getResourceAsStream("/icons/shield.png")));
             logoView.setFitWidth(180);
@@ -45,12 +45,12 @@ public class StartScreen {
             menuCard.getChildren().add(logoWrapper);
         } catch (Exception e) {}
 
-        // Título Principal
+        
         Label title = new Label("JOGO DE ESTRATÉGIA");
         title.getStyleClass().add("menu-title");
         menuCard.getChildren().add(title);
 
-        // Botão Novo Jogo -> Encaminha para o ecrã de introdução de nomes
+        
         Button newGameButton = new Button("NOVO JOGO");
         newGameButton.getStyleClass().add("btn-menu-primary");
         try {
@@ -65,7 +65,7 @@ public class StartScreen {
             STAGE.setScene(inputScreen.createScene());
         });
 
-        // Botão Carregar Jogo
+        
         Button loadGameButton = new Button("CARREGAR JOGO");
         loadGameButton.getStyleClass().add("btn-menu-secondary");
         try {
@@ -77,7 +77,7 @@ public class StartScreen {
         } catch (Exception e) {}
         loadGameButton.setOnAction(event -> loadSavedGame());
 
-        // Botão Sair
+        
         Button exitButton = new Button("SAIR");
         exitButton.getStyleClass().add("btn-menu-neutral");
         try {
@@ -91,7 +91,7 @@ public class StartScreen {
 
         menuCard.getChildren().addAll(newGameButton, loadGameButton, exitButton);
 
-        // Barra de Dica/Informação Inferior
+        
         HBox infoBar = new HBox(10);
         infoBar.setAlignment(Pos.CENTER_LEFT);
         infoBar.getStyleClass().add("result-bar");

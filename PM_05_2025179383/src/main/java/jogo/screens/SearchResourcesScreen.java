@@ -74,7 +74,7 @@ public class SearchResourcesScreen {
     }
 
     private BorderPane center() {
-        // Criar os três cards estilizados
+        
         Button woodButton = criarCardRecurso("MADEIRA", "/icons/log.png", "card-wood", "label-wood", ResourceType.WOOD);
         Button stoneButton = criarCardRecurso("PEDRA", "/icons/granite.png", "card-stone", "label-stone", ResourceType.STONE);
         Button foodButton = criarCardRecurso("COMIDA", "/icons/beef.png", "card-food", "label-food", ResourceType.FOOD);
@@ -83,7 +83,7 @@ public class SearchResourcesScreen {
         buttonsBox.setAlignment(Pos.CENTER);
         buttonsBox.getChildren().addAll(woodButton, stoneButton, foodButton);
 
-        // Barra de Resultados (O retângulo inferior com o baú)
+        
         HBox resultBar = new HBox(10);
         resultBar.getStyleClass().add("result-bar");
         resultBar.setAlignment(Pos.CENTER_LEFT);
@@ -142,7 +142,7 @@ public class SearchResourcesScreen {
     }
 
     public BorderPane down() {
-        // Botão voltar à esquerda
+        
         Button backButton = new Button("←  Voltar");
         backButton.getStyleClass().add("btn-back");
         backButton.setOnAction(event -> {
@@ -150,7 +150,7 @@ public class SearchResourcesScreen {
             STAGE.setScene(gameMenuScreen.createScene());
         });
 
-        // Caixa de AP à direita
+        
         HBox apBox = new HBox(5);
         apBox.getStyleClass().add("ap-box");
         apBox.setAlignment(Pos.CENTER);

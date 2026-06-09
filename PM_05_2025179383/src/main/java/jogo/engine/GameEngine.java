@@ -9,6 +9,14 @@ import jogo.models.Structures.StructuresType;
 
 import java.util.Random;
 
+/**
+ * Utility class responsible for managing core game logic and validating
+ * action requests performed by the players.
+ *
+ * @author Fabio Cruz
+ * @author Tiago Silva
+ */
+
 public class GameEngine {
 
     private static final Random random = new Random();
@@ -16,9 +24,28 @@ public class GameEngine {
     private static final int BONUS_SEARCH_VALUE = 2;
     private static final int AP_COST_SEARCH = 4;
 
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     */
+
     private GameEngine() {
     }
 
+    /**
+     * Constructs and places a structure on the map at the specified coordinates.
+     * Validates space availability, player Action Points, and required resources before construction.
+     *
+     * @param map The WorldMap where the structure will be placed.
+     * @param player The Player who will own the new structure.
+     * @param structureType The type of structure to be built.
+     * @param x The X-coordinate on the map grid.
+     * @param y The Y-coordinate on the map grid.
+     * @param scoreModifier The current score multiplier affecting the points granted upon construction.
+     * @throws SpaceAlreadyOccupiedException If the target coordinates are already occupied by another structure.
+     * @throws InsufficientAPException If the player does not have enough Action Points (AP) to build the structure.
+     * @throws InsufficientResourcesException If the player lacks the required amount of the specific resource material.
+     * @throws GameException If any generic game logic violation occurs during execution.
+     */
     public static void createStructure(
             WorldMap map,
             Player player,
@@ -56,6 +83,20 @@ public class GameEngine {
         player.removeResource(materialType, materialCost);
     }
 
+    /**
+     * Upgrades an existing structure on the map at the specified coordinates.
+     * Validates interaction rights and checks if the player has enough Action Points (AP)
+     * before performing the upgrade.
+     *
+     * @param map The current WorldMap instance.
+     * @param player The Player attempting to upgrade the structure.
+     * @param x The X-coordinate of the target structure.
+     * @param y The Y-coordinate of the target structure.
+     * @param scoreModifier The current score multiplier affecting the points granted upon upgrading.
+     * @throws InsufficientAPException If the player lacks the required Action Points (AP) to upgrade.
+     * @throws GameException If the structure does not exist, belongs to the opponent, or any other validation fails.
+     */
+
     public static void upgradeStructure(
             WorldMap map,
             Player player,
@@ -68,10 +109,6 @@ public class GameEngine {
 
         Structures structure = map.getStructure(x, y);
 
-        if (structure == null) {
-            throw new StructureDontExistException();
-        }
-
         int apCost = structure.getAPCostToUpgrade();
 
         if (player.getActionPoints() < apCost) {
@@ -83,6 +120,16 @@ public class GameEngine {
         player.removeResource(ResourceType.ACTION_POINTS, apCost);
     }
 
+    /**
+     * Prevents player soft-locking by allowing manual resource gathering without requiring structures.
+     * Consumes a fixed amount of Action Points (AP) to generate a random quantity of a specific resource.
+     *
+     * @param player The Player performing the search action.
+     * @param type The ResourceType to be gathered (cannot be NONE or ACTION_POINTS).
+     * @return The total quantity of resources successfully gathered.
+     * @throws InsufficientAPException If the player lacks the required Action Points (AP) to perform the search.
+     * @throws GameException If the requested resource type is invalid or cannot be gathered manually.
+     */
     public static int searchResources(Player player, ResourceType type) throws GameException {
 
         if (player.getActionPoints() < AP_COST_SEARCH) {
@@ -95,6 +142,7 @@ public class GameEngine {
 
         player.removeResource(ResourceType.ACTION_POINTS, AP_COST_SEARCH);
 
+        // Generates a value between BONUS_SEARCH_VALUE and (BASE_SEARCH_VALUE + BONUS_SEARCH_VALUE - 1)
         int gathered = random.nextInt(BASE_SEARCH_VALUE) + BONUS_SEARCH_VALUE   ;
 
         player.addResource(type, gathered);
@@ -102,6 +150,14 @@ public class GameEngine {
         return gathered;
     }
 
+    /**
+     * Retrieves the structure information located at the specified map coordinates.
+     * @param map The current WorldMap instance.
+     * @param x The X-coordinate on the map grid.
+     * @param y The Y-coordinate on the map grid.
+     * @return The Structures object found at the given position.
+     * @throws StructureDontExistException If no structure exists at the specified coordinates or if the coordinates are invalid.
+     */
     public static Structures getStructureInfo(
             WorldMap map,
             int x,
@@ -111,7 +167,7 @@ public class GameEngine {
         Structures structure = map.getStructure(x, y);
 
         if (structure == null) {
-            throw new GameException("Não existe nenhuma estrutura nessa posição.");
+            throw new StructureDontExistException();
         }
 
         return structure;

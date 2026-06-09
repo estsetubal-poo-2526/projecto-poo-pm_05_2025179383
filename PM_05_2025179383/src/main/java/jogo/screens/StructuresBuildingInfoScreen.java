@@ -51,7 +51,7 @@ public class StructuresBuildingInfoScreen {
         vBox.setPadding(new Insets(0, 40, 0, 10));
 
         try {
-            // Reutiliza as mesmas imagens que usamos no ecrã de upgrade
+            
             String structureName = type.name().toLowerCase();
             Image buildingImg = new Image(getClass().getResourceAsStream("/icons/" + structureName + ".png"));
             ImageView iv = new ImageView(buildingImg);
@@ -80,14 +80,14 @@ public class StructuresBuildingInfoScreen {
         grid.setAlignment(Pos.CENTER_LEFT);
         grid.setPadding(new Insets(30, 0, 30, 0));
 
-        // Linha 1: Nome da Estrutura
+        
         adicionarLinhaGrid(grid, 0, "/icons/table-saw.png", "Estrutura:", getStructureName(type), "value-old");
 
-        // Linha 2: Custo de Manutenção / Despesa
+        
         String expenseText = CreateStructure.getMaterialType(type) + " " + CreateStructure.getMaterialCost(type);
         adicionarLinhaGrid(grid, 1, "/icons/dollar.png", "Manutenção:", expenseText, "value-cost");
 
-        // Linha 3: Produção Diária
+        
         String productionText = getProfitStructure(type) + " " + getProductionStructure(type);
         adicionarLinhaGrid(grid, 2, "/icons/cube.png", "Produção Diária:", productionText, "value-new");
 

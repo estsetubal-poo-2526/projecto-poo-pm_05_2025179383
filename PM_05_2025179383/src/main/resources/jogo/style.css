@@ -719,3 +719,24 @@
     -fx-font-size: 22px;
     -fx-text-fill: -fx-cor-texto-escuro;
 }
+
+.end-day-costs-box {
+    -fx-background-color: #fff7ed;
+    -fx-background-radius: 10;
+    -fx-border-color: #fed7aa;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.04), 8, 0, 0, 2);
+}
+
+.end-day-costs-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #7c2d12;
+}
+
+.end-day-costs-text {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #9a3412;
+}

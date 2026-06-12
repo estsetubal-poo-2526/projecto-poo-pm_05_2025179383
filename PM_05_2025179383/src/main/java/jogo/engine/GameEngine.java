@@ -7,6 +7,8 @@ import jogo.models.Structures.CreateStructure;
 import jogo.models.Structures.Structures;
 import jogo.models.Structures.StructuresType;
 
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -16,7 +18,6 @@ import java.util.Random;
  * @author Fabio Cruz
  * @author Tiago Silva
  */
-
 public class GameEngine {
 
     private static final Random random = new Random();
@@ -27,7 +28,6 @@ public class GameEngine {
     /**
      * Private constructor to prevent instantiation of this utility class.
      */
-
     private GameEngine() {
     }
 
@@ -96,7 +96,6 @@ public class GameEngine {
      * @throws InsufficientAPException If the player lacks the required Action Points (AP) to upgrade.
      * @throws GameException If the structure does not exist, belongs to the opponent, or any other validation fails.
      */
-
     public static void upgradeStructure(
             WorldMap map,
             Player player,
@@ -125,7 +124,7 @@ public class GameEngine {
      * Consumes a fixed amount of Action Points (AP) to generate a random quantity of a specific resource.
      *
      * @param player The Player performing the search action.
-     * @param type The ResourceType to be gathered (cannot be NONE or ACTION_POINTS).
+     * @param type The ResourceType to be gathered.
      * @return The total quantity of resources successfully gathered.
      * @throws InsufficientAPException If the player lacks the required Action Points (AP) to perform the search.
      * @throws GameException If the requested resource type is invalid or cannot be gathered manually.
@@ -142,8 +141,7 @@ public class GameEngine {
 
         player.removeResource(ResourceType.ACTION_POINTS, AP_COST_SEARCH);
 
-        // Generates a value between BONUS_SEARCH_VALUE and (BASE_SEARCH_VALUE + BONUS_SEARCH_VALUE - 1)
-        int gathered = random.nextInt(BASE_SEARCH_VALUE) + BONUS_SEARCH_VALUE   ;
+        int gathered = random.nextInt(BASE_SEARCH_VALUE) + BONUS_SEARCH_VALUE;
 
         player.addResource(type, gathered);
 
@@ -152,11 +150,13 @@ public class GameEngine {
 
     /**
      * Retrieves the structure information located at the specified map coordinates.
+     *
      * @param map The current WorldMap instance.
      * @param x The X-coordinate on the map grid.
      * @param y The Y-coordinate on the map grid.
      * @return The Structures object found at the given position.
-     * @throws StructureDontExistException If no structure exists at the specified coordinates or if the coordinates are invalid.
+     * @throws StructureDontExistException If no structure exists at the specified coordinates.
+     * @throws GameException If any generic game logic violation occurs during execution.
      */
     public static Structures getStructureInfo(
             WorldMap map,
@@ -173,6 +173,70 @@ public class GameEngine {
         return structure;
     }
 
+    /**
+     * Calculates the resources that will be consumed by a specific player's structures
+     * at the end of the day.
+     *
+     * @param map The current WorldMap instance.
+     * @param player The player whose structures will be checked.
+     * @return A map containing the total cost of WOOD, STONE and FOOD.
+     */
+    public static Map<ResourceType, Integer> calculateEndDayCosts(WorldMap map, Player player) {
+        Map<ResourceType, Integer> costs = new EnumMap<>(ResourceType.class);
+
+        costs.put(ResourceType.WOOD, 0);
+        costs.put(ResourceType.STONE, 0);
+        costs.put(ResourceType.FOOD, 0);
+
+        int columns = map.getCOLUMN_SIZE();
+        int rows = map.getLINE_SIZE();
+
+        for (int x = 0; x < columns; x++) {
+            for (int y = 0; y < rows; y++) {
+                try {
+                    Structures structure = map.getStructure(x, y);
+
+                    if (structure == null) {
+                        continue;
+                    }
+
+                    if (structure.getOwner() == null || player == null) {
+                        continue;
+                    }
+
+                    if (!structure.getOwner().getName().equals(player.getName())) {
+                        continue;
+                    }
+
+                    ResourceType maintenanceMaterial = structure.getCostType();
+                    int expense = structure.getExpense();
+
+                    switch (maintenanceMaterial) {
+                        case WOOD:
+                            costs.put(ResourceType.WOOD, costs.get(ResourceType.WOOD) + expense);
+                            break;
+
+                        case STONE:
+                            costs.put(ResourceType.STONE, costs.get(ResourceType.STONE) + expense);
+                            break;
+
+                        case FOOD:
+                            costs.put(ResourceType.FOOD, costs.get(ResourceType.FOOD) + expense);
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                } catch (Exception e) {
+                    System.out.println("Erro ao calcular custos em " + x + "," + y + ": " + e.getMessage());
+                }
+            }
+        }
+
+        return costs;
+    }
+
     public static int getApCostSearch() {
         return AP_COST_SEARCH;
     }
@@ -184,5 +248,4 @@ public class GameEngine {
     public static int getBonusSearchValue() {
         return BONUS_SEARCH_VALUE;
     }
-
 }

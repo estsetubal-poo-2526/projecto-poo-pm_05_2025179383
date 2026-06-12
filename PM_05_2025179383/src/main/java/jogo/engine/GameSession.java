@@ -1,7 +1,9 @@
 package jogo.engine;
 
 import jogo.models.Player;
+import jogo.models.ResourceType;
 
+import java.util.Map;
 
 /**
  * Manages the core game state, including player turns, day progression,
@@ -10,7 +12,6 @@ import jogo.models.Player;
  * @author Fabio Cruz
  * @author Tiago Silva
  */
-
 public class GameSession {
 
     private WorldMap map;
@@ -29,6 +30,8 @@ public class GameSession {
 
     private boolean playerOneTurn;
 
+    private String currentEventMessage;
+
     public GameSession() {
         this.map = new WorldMap();
         this.events = new Events();
@@ -36,6 +39,7 @@ public class GameSession {
         this.scoreModifier = 1;
         this.resourceModifier = 1;
         this.playerOneTurn = true;
+        this.currentEventMessage = "";
     }
 
     /**
@@ -45,7 +49,6 @@ public class GameSession {
      * @param player1Name The name of the player who takes the first turn.
      * @param player2Name The name of the player who follows.
      */
-
     public void startNewGame(String player1Name, String player2Name) {
         this.map = new WorldMap();
 
@@ -61,6 +64,8 @@ public class GameSession {
         this.events = new Events();
         this.scoreModifier = 1;
         this.resourceModifier = 1;
+
+        this.currentEventMessage = startDayEvent();
     }
 
     /**
@@ -72,7 +77,6 @@ public class GameSession {
      * @param player2 The saved data for player 2.
      * @param day The current day retrieved from the save file.
      */
-
     public void loadGame(WorldMap map, Player player1, Player player2, int day) {
         this.map = map;
 
@@ -88,6 +92,8 @@ public class GameSession {
         this.events = new Events();
         this.scoreModifier = 1;
         this.resourceModifier = 1;
+
+        this.currentEventMessage = startDayEvent();
     }
 
     /**
@@ -96,28 +102,20 @@ public class GameSession {
      *
      * @return A String describing the event and its effects for the current day.
      */
-
     public String startDayEvent() {
-        String eventMessage = events.triggerEvent();
+        this.currentEventMessage = events.triggerEvent();
 
         this.scoreModifier = events.getScoreModifier();
         this.resourceModifier = events.getResourceModifier();
 
-        return eventMessage;
+        return currentEventMessage;
     }
 
     /**
      * Ends the current player's turn, switching active players and managing day progression.
      *
-     * When Player 1 ends their turn, control switches to Player 2, and Player 1's Action Points (AP) are restored.
-     * When Player 2 ends their turn, the current day concludes, triggers resource generation and consumption
-     * across the map, advances the day counter, and resets the turn order back to Player 1.
-     * If the maximum number of days has not been reached, a new daily event is triggered.
-     *
-     * @return A String containing the next day's event message if Player 2 ended the turn and the game
-     * continues; null if Player 1 ended their turn or if the game has reached day 30 (Game Over).
+     * @return A String containing the current or new event message.
      */
-
     public String endTurn() {
 
         if (isGameOver()) {
@@ -131,7 +129,7 @@ public class GameSession {
             opponent = player1;
             playerOneTurn = false;
 
-            return null;
+            return currentEventMessage;
         }
 
         map.generateResources(resourceModifier);
@@ -151,13 +149,22 @@ public class GameSession {
     }
 
     /**
+     * Returns the resources that will be consumed at the end of the day
+     * for the current active player.
+     *
+     * @return A map containing the resource costs for the current player.
+     */
+    public Map<ResourceType, Integer> getActualPlayerEndDayCosts() {
+        return GameEngine.calculateEndDayCosts(map, actualPlayer);
+    }
+
+    /**
      * Determines the winner of the game session once the match has concluded.
      * Compares the final scores of both players to declare the victor.
      *
      * @return The Player object with the highest score;
      * null if the game is still in progress or if the match ends in a tie.
      */
-
     public Player getWinner() {
         if (!isGameOver()) {
             return null;
@@ -218,6 +225,7 @@ public class GameSession {
         return playerOneTurn;
     }
 
-
-
+    public String getCurrentEventMessage() {
+        return currentEventMessage;
+    }
 }

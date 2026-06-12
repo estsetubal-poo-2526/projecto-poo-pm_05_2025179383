@@ -16,8 +16,6 @@ import jogo.models.Structures.Structures;
 
 /**
  * The primary gameplay interface controller and view dashboard.
- * Assembles core workspace matrices including navigation sidebars, active player
- * inventory asset monitors, and live operational updates within an in-place refresh layout.
  *
  * @author Fabio Cruz
  * @author Tiago Silva
@@ -39,39 +37,25 @@ public class MainGameScreen {
     private Label woodLabel;
     private Label stoneLabel;
     private Label foodLabel;
+
+    private Label endDayWoodLabel;
+    private Label endDayStoneLabel;
+    private Label endDayFoodLabel;
+
     private Label messageLabel;
 
     private String eventMessage;
 
-    /**
-     * Constructs a baseline MainGameScreen sequence without any pending event logs.
-     *
-     * @param stage   The primary Stage window architecture container.
-     * @param session The current active {@link GameSession} core engine state tracker.
-     */
     public MainGameScreen(Stage stage, GameSession session) {
         this(stage, session, "");
     }
 
-    /**
-     * Constructs an operational MainGameScreen viewport carrying an active event notification banner.
-     *
-     * @param stage        The primary Stage window architecture container.
-     * @param session      The current active {@link GameSession} core engine state tracker.
-     * @param eventMessage A log summary text detailing structural updates or match events from the turn.
-     */
     public MainGameScreen(Stage stage, GameSession session, String eventMessage) {
         this.STAGE = stage;
         this.SESSION = session;
         this.eventMessage = eventMessage;
     }
 
-    /**
-     * Instantiates primary structural viewport nodes, binds sub-menus,
-     * triggers data population passes, and wraps everything inside the primary Scene layout.
-     *
-     * @return A compiled and fully populated JavaFX Scene instance ready for rendering.
-     */
     public Scene createScene() {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("main-game-root");
@@ -82,16 +66,12 @@ public class MainGameScreen {
 
         refreshDashboardState();
 
-        Scene scene = new Scene(root, 1200, 800);
+        Scene scene = new Scene(root, 1300, 850);
         loadStyle(scene);
 
         return scene;
     }
 
-    /**
-     * Assembles the left sidebar menu layout filled with structural buttons for actions,
-     * serialization triggers, turn finalization, and scene exits.
-     */
     private VBox createLeftMenu() {
         VBox menu = new VBox(26);
         menu.getStyleClass().add("sidebar-menu");
@@ -137,7 +117,11 @@ public class MainGameScreen {
         saveButton.setOnAction(event -> saveGame());
 
         endTurnButton.setOnAction(event -> {
-            this.eventMessage = SESSION.endTurn();
+            String newEventMessage = SESSION.endTurn();
+
+            if (newEventMessage != null && !newEventMessage.isBlank()) {
+                this.eventMessage = newEventMessage;
+            }
 
             if (SESSION.isGameOver()) {
                 EndScreen endScreen = new EndScreen(SESSION);
@@ -145,7 +129,6 @@ public class MainGameScreen {
                 return;
             }
 
-            // ATUALIZAÇÃO IN-PLACE: Nada de criar ecrãs novos! Atualizamos o que já existe.
             refreshDashboardState();
         });
 
@@ -166,9 +149,6 @@ public class MainGameScreen {
         return menu;
     }
 
-    /**
-     * Factory utility method to assemble structured navigation buttons fitted with custom graphic asset markers.
-     */
     private Button createMenuButton(String imagePath, String text, String extraClass) {
         ImageView iconView = createIcon(imagePath, 32, 32);
 
@@ -186,9 +166,6 @@ public class MainGameScreen {
         return button;
     }
 
-    /**
-     * Streamlines streaming input pipelines to safely extract internal icon images from application packages.
-     */
     private ImageView createIcon(String imagePath, double width, double height) {
         ImageView imageView = new ImageView();
 
@@ -213,12 +190,9 @@ public class MainGameScreen {
         return imageView;
     }
 
-    /**
-     * Compiles central layouts including header information bars and structural maps.
-     */
     private VBox createCenterArea() {
-        VBox centerContainer = new VBox(20);
-        centerContainer.setPadding(new Insets(30, 28, 20, 28));
+        VBox centerContainer = new VBox(16);
+        centerContainer.setPadding(new Insets(24, 28, 14, 28));
         centerContainer.setAlignment(Pos.TOP_CENTER);
 
         StackPane mapPanel = createMapPanel();
@@ -233,17 +207,14 @@ public class MainGameScreen {
         return centerContainer;
     }
 
-    /**
-     * Assembles status rows mapping match progression indexes, active player identifiers, and action potential thresholds.
-     */
     private VBox createTopArea() {
-        VBox topContainer = new VBox(12);
+        VBox topContainer = new VBox(10);
         topContainer.setAlignment(Pos.CENTER);
 
         HBox infoBar = new HBox(80);
         infoBar.getStyleClass().add("top-info-box");
         infoBar.setAlignment(Pos.CENTER);
-        infoBar.setPadding(new Insets(18, 40, 18, 40));
+        infoBar.setPadding(new Insets(14, 40, 14, 40));
 
         dayLabel = new Label();
         playerLabel = new Label();
@@ -262,7 +233,7 @@ public class MainGameScreen {
         eventBar = new HBox(12);
         eventBar.getStyleClass().add("event-bar");
         eventBar.setAlignment(Pos.CENTER_LEFT);
-        eventBar.setPadding(new Insets(14, 28, 14, 28));
+        eventBar.setPadding(new Insets(10, 28, 10, 28));
 
         ImageView eventIcon = createIcon("/icons/confetti.png", 26, 26);
 
@@ -301,9 +272,6 @@ public class MainGameScreen {
         return mapPanel;
     }
 
-    /**
-     * Parses current matrix configurations to regenerate tile vectors in-place.
-     */
     private void populateMapGrid() {
         mapGrid.getChildren().clear();
 
@@ -318,10 +286,6 @@ public class MainGameScreen {
         }
     }
 
-    /**
-     * Assembles interactive location controls, attaching low-opacity underlying
-     * structural images to improve background visibility.
-     */
     private Button createMapCell(int x, int y) {
         Button cellButton = new Button();
 
@@ -330,18 +294,18 @@ public class MainGameScreen {
         cellButton.setMaxSize(60, 60);
         cellButton.getStyleClass().add("map-cell");
 
-        // CAMADA DE OPACIDADE: Criamos uma StackPane interna para empilhar o terreno desbotado e o edifício por cima
         StackPane cellStack = new StackPane();
 
         try {
             ImageView terrainView = createIcon("/icons/grassland.png", 54, 54);
-            // AJUSTE SOLICITADO: Define a opacidade do fundo da célula para 45% para não ofuscar o resto
             terrainView.setOpacity(0.45);
             cellStack.getChildren().add(terrainView);
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
 
         try {
             Structures structure = SESSION.getMap().getStructure(x, y);
+
             if (structure != null) {
                 String typeName = structure.getClass().getSimpleName().toLowerCase();
                 ImageView structureIcon = createIcon("/icons/" + typeName + ".png", 44, 44);
@@ -354,7 +318,9 @@ public class MainGameScreen {
                     cellButton.getStyleClass().add("cell-owner-p2");
                 }
             }
-        } catch (Exception ignored) {}
+
+        } catch (Exception ignored) {
+        }
 
         cellButton.setGraphic(cellStack);
         cellButton.setOnAction(event -> openMapCellPopup(x, y));
@@ -362,9 +328,6 @@ public class MainGameScreen {
         return cellButton;
     }
 
-    /**
-     * Opens a modal popup window detailing contextual management choices for a targeted grid cell.
-     */
     private void openMapCellPopup(int x, int y) {
         if (currentPopupStage != null && currentPopupStage.isShowing()) {
             currentPopupStage.close();
@@ -377,7 +340,7 @@ public class MainGameScreen {
                 SESSION,
                 x,
                 y,
-                this::refreshDashboardState // Executa a atualização in-place mal o popup feche com ações!
+                this::refreshDashboardState
         );
 
         currentPopupStage.setTitle("Ações na posição " + x + ", " + y);
@@ -385,19 +348,48 @@ public class MainGameScreen {
         currentPopupStage.show();
     }
 
-    /**
-     * Builds base interface layouts dedicated to active inventory changes.
-     */
     private VBox createBottomArea() {
-        VBox bottomContainer = new VBox(14);
-        bottomContainer.setPadding(new Insets(0, 28, 24, 28));
+        VBox bottomContainer = new VBox(8);
+        bottomContainer.setPadding(new Insets(0, 28, 12, 28));
 
-        HBox inventoryBox = new HBox(34);
+        HBox inventoryBox = createInventoryBox();
+        HBox endDayCostsBox = createEndDayCostsBox();
+
+        HBox resourcesRow = new HBox(14);
+        resourcesRow.setAlignment(Pos.CENTER);
+        resourcesRow.getChildren().addAll(inventoryBox, endDayCostsBox);
+
+        HBox.setHgrow(inventoryBox, Priority.ALWAYS);
+        HBox.setHgrow(endDayCostsBox, Priority.ALWAYS);
+
+        HBox statusBar = new HBox(14);
+        statusBar.getStyleClass().add("status-bar");
+        statusBar.setAlignment(Pos.CENTER_LEFT);
+        statusBar.setPadding(new Insets(10, 28, 10, 28));
+
+        ImageView checkIcon = createIcon("/icons/check.png", 28, 28);
+
+        messageLabel = new Label("Pronto para o próximo turno!");
+        messageLabel.getStyleClass().add("status-message");
+
+        statusBar.getChildren().addAll(checkIcon, messageLabel);
+
+        bottomContainer.getChildren().addAll(
+                resourcesRow,
+                statusBar
+        );
+
+        return bottomContainer;
+    }
+
+    private HBox createInventoryBox() {
+        HBox inventoryBox = new HBox(22);
         inventoryBox.getStyleClass().add("inventory-box");
         inventoryBox.setAlignment(Pos.CENTER_LEFT);
-        inventoryBox.setPadding(new Insets(18, 28, 18, 28));
+        inventoryBox.setPadding(new Insets(12, 20, 12, 20));
+        inventoryBox.setMaxWidth(Double.MAX_VALUE);
 
-        ImageView inventoryIcon = createIcon("/icons/backpack.png", 34, 34);
+        ImageView inventoryIcon = createIcon("/icons/backpack.png", 30, 30);
 
         Label invTitle = new Label("Inventário:");
         invTitle.getStyleClass().add("inventory-title");
@@ -414,21 +406,34 @@ public class MainGameScreen {
                 createInventoryItem("/icons/beef.png", foodLabel)
         );
 
-        HBox statusBar = new HBox(14);
-        statusBar.getStyleClass().add("status-bar");
-        statusBar.setAlignment(Pos.CENTER_LEFT);
-        statusBar.setPadding(new Insets(14, 28, 14, 28));
+        return inventoryBox;
+    }
 
-        ImageView checkIcon = createIcon("/icons/check.png", 28, 28);
+    private HBox createEndDayCostsBox() {
+        HBox endDayCostsBox = new HBox(22);
+        endDayCostsBox.getStyleClass().add("end-day-costs-box");
+        endDayCostsBox.setAlignment(Pos.CENTER_LEFT);
+        endDayCostsBox.setPadding(new Insets(12, 20, 12, 20));
+        endDayCostsBox.setMaxWidth(Double.MAX_VALUE);
 
-        messageLabel = new Label("Pronto para o próximo turno!");
-        messageLabel.getStyleClass().add("status-message");
+        ImageView costIcon = createIcon("/icons/check.png", 26, 26);
 
-        statusBar.getChildren().addAll(checkIcon, messageLabel);
+        Label title = new Label("Custos:");
+        title.getStyleClass().add("end-day-costs-title");
 
-        bottomContainer.getChildren().addAll(inventoryBox, statusBar);
+        endDayWoodLabel = createEndDayCostLabel();
+        endDayStoneLabel = createEndDayCostLabel();
+        endDayFoodLabel = createEndDayCostLabel();
 
-        return bottomContainer;
+        endDayCostsBox.getChildren().addAll(
+                costIcon,
+                title,
+                createInventoryItem("/icons/log.png", endDayWoodLabel),
+                createInventoryItem("/icons/granite.png", endDayStoneLabel),
+                createInventoryItem("/icons/beef.png", endDayFoodLabel)
+        );
+
+        return endDayCostsBox;
     }
 
     private Label createInventoryLabel() {
@@ -437,19 +442,21 @@ public class MainGameScreen {
         return label;
     }
 
-    private HBox createInventoryItem(String imagePath, Label textLabel) {
-        ImageView iconView = createIcon(imagePath, 28, 28);
+    private Label createEndDayCostLabel() {
+        Label label = new Label();
+        label.getStyleClass().add("end-day-costs-text");
+        return label;
+    }
 
-        HBox box = new HBox(10, iconView, textLabel);
+    private HBox createInventoryItem(String imagePath, Label textLabel) {
+        ImageView iconView = createIcon(imagePath, 24, 24);
+
+        HBox box = new HBox(8, iconView, textLabel);
         box.setAlignment(Pos.CENTER);
 
         return box;
     }
 
-    /**
-     * Master synchronization workflow that updates global label matrices and reconstructs
-     * grid elements in-place without stage scene flashing.
-     */
     private void refreshDashboardState() {
         dayLabel.setText("Dia: " + SESSION.getDay());
         playerLabel.setText("Jogador atual: " + SESSION.getActualPlayer().getName());
@@ -457,11 +464,18 @@ public class MainGameScreen {
 
         updateEventBar();
         updateInventory();
-        populateMapGrid(); // Reconstrói apenas os botões do mapa!
+        updateEndDayCosts();
+        populateMapGrid();
     }
 
     private void updateEventBar() {
-        if (eventMessage == null || eventMessage.isBlank()) {
+        String messageToShow = eventMessage;
+
+        if (messageToShow == null || messageToShow.isBlank()) {
+            messageToShow = SESSION.getCurrentEventMessage();
+        }
+
+        if (messageToShow == null || messageToShow.isBlank()) {
             eventBar.setVisible(false);
             eventBar.setManaged(false);
             return;
@@ -469,12 +483,9 @@ public class MainGameScreen {
 
         eventBar.setVisible(true);
         eventBar.setManaged(true);
-        eventLabel.setText("Evento: " + eventMessage);
+        eventLabel.setText("Evento: " + messageToShow);
     }
 
-    /**
-     * Extracts values from the active player's resource map to safely populate inventory indicators.
-     */
     private void updateInventory() {
         try {
             var player = SESSION.getActualPlayer();
@@ -490,9 +501,23 @@ public class MainGameScreen {
         }
     }
 
-    /**
-     * Dispatches current structural boards, player metrics, and session markers to persistent storage files.
-     */
+    private void updateEndDayCosts() {
+        try {
+            var costs = SESSION.getActualPlayerEndDayCosts();
+
+            endDayWoodLabel.setText("Madeira: -" + costs.getOrDefault(ResourceType.WOOD, 0));
+            endDayStoneLabel.setText("Pedra: -" + costs.getOrDefault(ResourceType.STONE, 0));
+            endDayFoodLabel.setText("Comida: -" + costs.getOrDefault(ResourceType.FOOD, 0));
+
+        } catch (Exception e) {
+            endDayWoodLabel.setText("Madeira: -0");
+            endDayStoneLabel.setText("Pedra: -0");
+            endDayFoodLabel.setText("Comida: -0");
+
+            System.out.println("Erro ao atualizar custos no ecrã: " + e.getMessage());
+        }
+    }
+
     private void saveGame() {
         try {
             FileHandler.saveFullGame(
@@ -509,9 +534,6 @@ public class MainGameScreen {
         }
     }
 
-    /**
-     * Resolves the primary stylesheet, using absolute disk path resolution as a fallback if necessary.
-     */
     private void loadStyle(Scene scene) {
         try {
             scene.getStylesheets().clear();

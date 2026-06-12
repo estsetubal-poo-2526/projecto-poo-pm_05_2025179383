@@ -26,13 +26,14 @@ No final dos 30 dias, vence o jogador com maior pontuação.
 # Pre-Requesitos
 
  - JDK 17+ Instalado
+ - Ter Liberica 25 instalado
  - Ter um IDE de Java com suporte a Maven
 
 
 # Como executar o Projeto
 
  - Copiar o repositorio: https://github.com/estsetubal-poo-2526/projecto-poo-pm_05_2025179383.git
- - Executar o ficheiro Main.java
+ - Executar o ficheiro Launcher.java
 
 
 # Estrutura do Projeto

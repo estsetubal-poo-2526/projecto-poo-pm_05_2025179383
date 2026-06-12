@@ -136,6 +136,18 @@ public class Player {
     }
 
     /**
+     * Permanently decreases the player's maximum baseline Action Points and updates
+     * the current available pool.
+     *
+     * @param value The amount of baseline points to decrease.
+     */
+
+    public void removeBaseActionPoints(int value) {
+        removeResource(ResourceType.ACTION_POINTS,value);
+        baseActionPoints -= value;
+    }
+
+    /**
      * Increments the player's total victory score.
      *
      * @param value The points to be added to the score.

@@ -104,7 +104,7 @@ public class CreateStructureScreen {
         title.getStyleClass().add("create-structure-title");
 
         Button forestButton = createStructureCard("Floresta", "forest.png", "card-forest", "label-forest", StructuresType.FOREST);
-        Button mineButton = createStructureCard("Mina", "granite.png", "card-mine", "label-mine", StructuresType.MINE);
+        Button mineButton = createStructureCard("Mina", "mine.png", "card-mine", "label-mine", StructuresType.MINE);
         Button ranchButton = createStructureCard("Rancho", "ranch.png", "card-ranch", "label-ranch", StructuresType.RANCH);
         Button cityButton = createStructureCard("Cidade", "city.png", "card-city", "label-city", StructuresType.CITY);
 

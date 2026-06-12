@@ -740,3 +740,25 @@
     -fx-font-weight: bold;
     -fx-text-fill: #9a3412;
 }
+
+.start-screen-root {
+    -fx-background-size: cover;
+    -fx-background-position: center;
+}
+
+.menu-card-container {
+    -fx-background-color: rgba(253, 251, 247, 0.95);
+    -fx-padding: 50 60 40 60;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 15, 0, 0, 5);
+    -fx-min-width: 500px;
+    -fx-max-width: 500px;
+    -fx-alignment: center;
+}
+
+.menu-logo-view {
+    -fx-alignment: center;
+    -fx-padding: 0 0 20 0;
+    -fx-min-width: 380px;
+    -fx-max-width: 380px;
+}

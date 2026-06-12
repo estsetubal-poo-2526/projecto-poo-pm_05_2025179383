@@ -111,11 +111,14 @@ public class StructuresBuildingInfoScreen {
         // Consome os dados traduzidos e formatados diretamente da Factory do domínio
         addGridRow(grid, 0, "/icons/table-saw.png", "Estrutura:", CreateStructure.getStructureName(type), "value-old");
 
-        String expenseText = CreateStructure.getMaterialType(type) + " " + CreateStructure.getMaterialCost(type);
+        String expenseText = CreateStructure.getMaterialCost(type) + " " + CreateStructure.getMaterialType(type);
         addGridRow(grid, 1, "/icons/dollar.png", "Manutenção:", expenseText, "value-cost");
 
         String productionText = CreateStructure.getProductionInfo(type);
         addGridRow(grid, 2, "/icons/cube.png", "Produção Diária:", productionText, "value-new");
+
+        String apNeeded = CreateStructure.getApCost(type) + " AP";
+        addGridRow(grid,3,"/icons/lighting.png","AP necessário para construir: ", apNeeded, "value-cost");
 
         VBox centerBox = new VBox(10);
         centerBox.setAlignment(Pos.CENTER_LEFT);

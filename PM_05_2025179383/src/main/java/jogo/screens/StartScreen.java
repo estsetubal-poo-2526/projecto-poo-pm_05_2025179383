@@ -55,13 +55,20 @@ public class StartScreen {
         menuCard.getStyleClass().add("menu-card-container");
 
         try {
-            ImageView logoView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/shield.png"))));
+            ImageView logoView = new ImageView(
+                    new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/shield.png")))
+            );
+
             logoView.setFitWidth(180);
-            logoView.setFitHeight(180);
             logoView.setPreserveRatio(true);
+            logoView.setSmooth(true);
 
             VBox logoWrapper = new VBox(logoView);
+            logoWrapper.setAlignment(Pos.CENTER);
+            logoWrapper.setPrefWidth(380);
+            logoWrapper.setMaxWidth(380);
             logoWrapper.getStyleClass().add("menu-logo-view");
+
             menuCard.getChildren().add(logoWrapper);
         } catch (Exception ignore) {
 
@@ -73,15 +80,20 @@ public class StartScreen {
 
         Button newGameButton = new Button("NOVO JOGO");
         newGameButton.getStyleClass().add("btn-menu-primary");
+
         try {
-            ImageView icon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/swords.png"))));
+            ImageView icon = new ImageView(
+                    new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/swords.png")))
+            );
             icon.setFitWidth(22);
             icon.setFitHeight(22);
+            icon.setPreserveRatio(true);
             newGameButton.setGraphic(icon);
             newGameButton.setGraphicTextGap(10);
         } catch (Exception ignore) {
 
         }
+
         newGameButton.setOnAction(event -> {
             SelectPlayersNameScreen inputScreen = new SelectPlayersNameScreen(STAGE, SESSION);
             STAGE.setScene(inputScreen.createScene());
@@ -89,26 +101,38 @@ public class StartScreen {
 
         Button loadGameButton = new Button("CARREGAR JOGO");
         loadGameButton.getStyleClass().add("btn-menu-secondary");
+
         try {
-            ImageView icon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/load.png"))));
+            ImageView icon = new ImageView(
+                    new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/load.png")))
+            );
             icon.setFitWidth(20);
             icon.setFitHeight(20);
+            icon.setPreserveRatio(true);
             loadGameButton.setGraphic(icon);
             loadGameButton.setGraphicTextGap(10);
         } catch (Exception ignore) {
+
         }
+
         loadGameButton.setOnAction(event -> loadSavedGame());
 
         Button exitButton = new Button("SAIR");
         exitButton.getStyleClass().add("btn-menu-neutral");
+
         try {
-            ImageView icon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/back.png"))));
+            ImageView icon = new ImageView(
+                    new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/back.png")))
+            );
             icon.setFitWidth(20);
             icon.setFitHeight(20);
+            icon.setPreserveRatio(true);
             exitButton.setGraphic(icon);
             exitButton.setGraphicTextGap(10);
         } catch (Exception ignore) {
+
         }
+
         exitButton.setOnAction(event -> STAGE.close());
 
         menuCard.getChildren().addAll(newGameButton, loadGameButton, exitButton);
@@ -120,21 +144,27 @@ public class StartScreen {
         infoBar.setMaxWidth(380);
 
         try {
-            ImageView infoIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/information.png"))));
+            ImageView infoIcon = new ImageView(
+                    new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/information.png")))
+            );
             infoIcon.setFitWidth(20);
             infoIcon.setFitHeight(20);
+            infoIcon.setPreserveRatio(true);
             infoBar.getChildren().add(infoIcon);
         } catch (Exception ignore) {
+
         }
 
         Label infoText = new Label("Escolha uma opção para começar.");
         infoText.getStyleClass().add("result-text");
         infoBar.getChildren().add(infoText);
-        menuCard.getChildren().add(infoBar);
 
+        menuCard.getChildren().add(infoBar);
         rootBackground.getChildren().add(menuCard);
+
         Scene scene = new Scene(rootBackground, 1200, 800);
         loadStyle(scene);
+
         return scene;
     }
 
@@ -145,9 +175,17 @@ public class StartScreen {
     private void loadSavedGame() {
         try {
             FileHandler.SaveData data = FileHandler.loadGame();
-            SESSION.loadGame(data.getMap(), data.getP1(), data.getP2(), data.getDay());
+
+            SESSION.loadGame(
+                    data.getMap(),
+                    data.getP1(),
+                    data.getP2(),
+                    data.getDay()
+            );
+
             MainGameScreen mainGameScreen = new MainGameScreen(STAGE, SESSION);
             STAGE.setScene(mainGameScreen.createScene());
+
         } catch (GameException e) {
             ErrorPopUp.show(e.getMessage());
         }
@@ -161,11 +199,15 @@ public class StartScreen {
     private void loadStyle(Scene scene) {
         try {
             String userDir = System.getProperty("user.dir");
-            java.io.File cssFile = new java.io.File(userDir + "/PM_05_2025179383/src/main/resources/jogo/style.css");
+            java.io.File cssFile = new java.io.File(
+                    userDir + "/PM_05_2025179383/src/main/resources/jogo/style.css"
+            );
+
             if (cssFile.exists()) {
                 scene.getStylesheets().add(cssFile.toURI().toString());
             }
         } catch (Exception ignore) {
+
         }
     }
 }

@@ -103,13 +103,27 @@ public class WorldMap {
      * Iterates through the entire map grid to trigger daily resource consumption for all structures.
      * If a structure's level drops to or below zero due to starvation or maintenance failure,
      * it is decommissioned and removed from the world map.
+     *
+     * if the structure is a city, remove the maximum AP the player has.
      */
     public void consumeResources() {
         for (int i = 0; i < COLUMN_SIZE; i++) {
             for (int j = 0; j < LINE_SIZE; j++) {
+
                 if (map[i][j] != null) {
-                    map[i][j].consumeResources();
-                    if (map[i][j].getLevel() <= 0) {
+                    Structures structure = map[i][j];
+
+                    int levelBefore = structure.getLevel();
+
+                    structure.consumeResources();
+
+                    int levelAfter = structure.getLevel();
+
+                    if (levelBefore > levelAfter && structure.getStructureType().equals(StructuresType.CITY)) {
+                        structure.getOwner().removeBaseActionPoints(City.getAP_BY_LEVEL());
+                    }
+
+                    if (structure.getLevel() <= 0) {
                         map[i][j] = null;
                     }
                 }
